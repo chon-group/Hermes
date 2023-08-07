@@ -1,0 +1,10 @@
+MAS hello_agent {
+
+    infrastructure: Centralised
+
+    agents:
+        simple_agent;
+
+    aslSourcePath:
+        "/home/vinicius/chon/MESTRADO/Workspace/hermes/examples/hello-agent/asl";
+}

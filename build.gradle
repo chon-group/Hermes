@@ -1,0 +1,36 @@
+plugins {
+    id 'java'
+}
+
+group 'com.github.chon-group'
+version '1.0'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven { url "https://jitpack.io" }
+    maven { url "https://raw.githubusercontent.com/jacamo-lang/mvn-repo/master" }
+    maven { url "https://repo.gradle.org/gradle/libs-releases" }
+    maven { url "https://bitbucket.org/endler/contextnet-dependencies/raw/master/"}
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    implementation 'com.github.chon-group:javino:1.6.1'
+    implementation 'io.github.jason-lang:jason-interpreter:3.2.0'
+    //implementation 'io.github.jason-lang:jason-interpreter:3.3.0-SNAPSHOT'
+    //implementation 'br.pucrio.inf.lac:contextnet-eSMA:2.7'
+    implementation 'br.pucrio.inf.lac:contextnet:2.7'
+    implementation 'com.github.f4b6a3:uuid-creator:4.6.1'
+}
+
+
+test {
+    useJUnitPlatform()
+}
