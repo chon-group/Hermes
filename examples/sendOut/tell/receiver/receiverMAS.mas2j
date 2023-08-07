@@ -6,6 +6,6 @@ MAS receiverMAS {
         simple_agent agentArchClass jason.Hermes;
 
     aslSourcePath:
-        "/home/vinicius/chon/MESTRADO/Workspace/hermes/examples/hello-hermes/receiver/asl";
+        "examples/sendOut/tell/receiver/asl";
 
 }

@@ -1,4 +1,4 @@
-MAS senderMAS {
+MAS receiverMAS {
 
     infrastructure: Centralised
 
@@ -6,5 +6,6 @@ MAS senderMAS {
         simple_agent agentArchClass jason.Hermes;
 
     aslSourcePath:
-        "/home/vinicius/chon/MESTRADO/Workspace/hermes/examples/hello-hermes/sender/asl";
+        "examples/sendOut/unachieve/receiver/asl";
+
 }

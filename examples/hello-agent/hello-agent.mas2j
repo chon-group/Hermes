@@ -6,5 +6,5 @@ MAS hello_agent {
         simple_agent;
 
     aslSourcePath:
-        "/home/vinicius/chon/MESTRADO/Workspace/hermes/examples/hello-agent/asl";
+        "examples/hello-agent/asl";
 }
