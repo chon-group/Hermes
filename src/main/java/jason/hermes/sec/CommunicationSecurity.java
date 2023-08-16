@@ -1,11 +1,9 @@
 package jason.hermes.sec;
 
-import jason.asSemantics.Message;
-
 public interface CommunicationSecurity {
 
-    Message decrypt(String messageReceived);
+    Object decrypt(String messageReceived);
 
-    String encrypt(Message message);
+    String encrypt(Object message);
 
 }

@@ -31,9 +31,18 @@ import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.StringTerm;
 import jason.asSyntax.Term;
-import jason.hermes.utils.HermesUtils;
 import jason.hermes.OutGoingMessage;
+import jason.hermes.bioinspired.BioinspiredData;
+import jason.hermes.bioinspired.BioinspiredProcessor;
+import jason.hermes.bioinspired.BioinspiredProtocolsEnum;
+import jason.hermes.bioinspired.dto.AgentTransferRequestMessageDto;
 import jason.hermes.middlewares.CommunicationMiddleware;
+import jason.hermes.utils.BioInspiredUtils;
+import jason.hermes.utils.HermesUtils;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.logging.Level;
 
 /**
  * <p>
@@ -90,7 +99,7 @@ import jason.hermes.middlewares.CommunicationMiddleware;
  * asynchronous ask since it does not suspend jomi's intention. If rafael has,
  * for instance, the literal <code>value(beer,2)</code> in its belief base, this
  * belief is automatically sent to jomi. Otherwise an event like
- * <code>+?value(beer,X)[source(communicator)]</code> is generated in rafael's side and
+ * <code>+?value(beer,X)[source(self)]</code> is generated in rafael's side and
  * the result of this query is then sent to jomi. In the jomi's side, the
  * rafael's answer is added in the jomi's belief base and an event like
  * <code>+value(beer,10)[source(rafael)]</code> is generated.</li>
@@ -112,14 +121,14 @@ import jason.hermes.middlewares.CommunicationMiddleware;
  * @see my_name
  */
 @SuppressWarnings("serial")
-public class sendOut extends DefaultInternalAction {
+public class moveOut extends DefaultInternalAction {
 
     private boolean lastSendWasSynAsk = false;
 
     @SuppressWarnings("unused")
     private void delegateSendToArch(Term to, TransitionSystem ts, Message m) throws Exception {
         if (!to.isAtom() && !to.isString()) {
-            throw new JasonException("The TO parameter ('" + to + "') of the internal action 'send' is not an atom!");
+            throw new JasonException("The TO parameter ('" + to + "') of the internal action 'moveOut' is not an atom!");
         }
 
         String rec = null;
@@ -128,7 +137,7 @@ public class sendOut extends DefaultInternalAction {
         } else {
             rec = to.toString();
         }
-        if (rec.equals("hermes")) {
+        if (rec.equals("self")) {
             rec = ts.getUserAgArch().getAgName();
         }
         //m.setReceiver(rec);
@@ -147,48 +156,98 @@ public class sendOut extends DefaultInternalAction {
 
     @Override
     public int getMinArgs() {
-        return 3;
+        return 2;
     }
 
     @Override
     public int getMaxArgs() {
-        return 5;
+        return 4;
     }
 
     @Override
     protected void checkArguments(Term[] args) throws JasonException {
-        super.checkArguments(args); // check number of arguments
+        // Verifica a quantidade de argumentos.
+        if (args.length < getMinArgs() || args.length > getMaxArgs()) {
+            BioInspiredUtils.LOGGER.log(Level.SEVERE, "Error: The number of arguments passed was ('"
+                    + args.length + "') and must be between "+ getMinArgs() + " and " + getMaxArgs() + "!");
+            throw JasonException.createWrongArgumentNb(this);
+        }
+
         if (!args[0].isAtom() && !args[0].isList() && !args[0].isString()) {
-            throw JasonException.createWrongArgument(this, "TO parameter ('" + args[0] + "') must be an atom, a string or a list of receivers!");
+            throw JasonException.createWrongArgument(this,
+                    "TO parameter ('" + args[0] + "') must be an atom, a string or a list of receivers!");
         }
 
         if (!args[1].isAtom()) {
-            throw JasonException.createWrongArgument(this, "illocutionary force parameter ('" + args[1] + "') must be an atom!");
+            throw JasonException.createWrongArgument(this,
+                    "The protocol name parameter ('" + args[1] + "') must be an atom!");
+        }
+        // verifica o protocolo passado.
+        String protocolName = HermesUtils.getParameterInString(args[1]).toUpperCase();
+        BioinspiredProtocolsEnum bioInspiredProtocol = BioinspiredProtocolsEnum.getBioInspiredProtocol(protocolName);
+        if (bioInspiredProtocol == null) {
+            String msgError = "Error: The bioinspired protocol ('" + protocolName + "') does not exists!";
+            BioInspiredUtils.LOGGER.log(Level.SEVERE, msgError);
+            throw JasonException.createWrongArgument(this, msgError);
+        }
+
+        // Verifica se o protocolo é o Mutualismo para permitir a passagem de 4 argumentos.
+        if (args.length == getMaxArgs() && !BioinspiredProtocolsEnum.MUTUALISM.equals(bioInspiredProtocol)) {
+            String msgError = "Error: The number of arguments passed was ('"
+                    + args.length + "') with the protocol ('" + protocolName + "') but only the " +
+                    BioinspiredProtocolsEnum.MUTUALISM.name() + " protocol allows to pass " + getMaxArgs() + " args!";
+            BioInspiredUtils.LOGGER.log(Level.SEVERE, msgError);
+            throw JasonException.createWrongArgument(this, msgError);
+        }
+
+        // Verifica se existe um agente com o nome passado.
+        if (args.length == getMaxArgs()) {
+            String agentName = HermesUtils.getParameterInString(args[2]);
+            if (!BioInspiredUtils.verifyAgentExist(agentName)) {
+                String msgError = "Error: Does not exists an agent named ('" + agentName + "') to be transfer!";
+                BioInspiredUtils.LOGGER.log(Level.SEVERE, msgError);
+                throw JasonException.createWrongArgument(this, msgError);
+            }
         }
     }
+
+
 
     @Override
     public Object execute(final TransitionSystem ts, Unifier un, Term[] args) throws Exception {
-        this.checkArguments(args);
+        checkArguments(args);
 
-        String receiverUuid = HermesUtils.getParameterInString(args[0]);
-        String force = HermesUtils.getParameterInString(args[1]);
-        String content = HermesUtils.getParameterInString(args[2]);
-
+        String receiver = HermesUtils.getParameterInString(args[0]);
+        String protocolName = HermesUtils.getParameterInString(args[1]).toUpperCase();
+        BioinspiredProtocolsEnum bioinspiredProtocol = BioinspiredProtocolsEnum.getBioInspiredProtocol(protocolName);
         Hermes hermes = HermesUtils.checkArchClass(ts.getAgArch(), this.getClass().getName());
-
         String connectionIdentification = hermes.getFirstConnectionAvailable();
-        if (args.length == getMaxArgs()) {
-            connectionIdentification = HermesUtils.getParameterInString(args[3]);
-        }
 
-        CommunicationMiddleware communicationMiddleware = hermes.getCommunicationMiddleware(connectionIdentification);
-        String senderAgentIdentification = communicationMiddleware.getAgentIdentification();
-        Message message = HermesUtils.formatMessage(senderAgentIdentification, receiverUuid, force, content);
+        BioInspiredUtils.LOGGER.info("The " + bioinspiredProtocol.name() + " protocol"
+                + " starts at " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss.SSS")));
 
-        OutGoingMessage.sendMessage(message, communicationMiddleware);
+        BioinspiredData bioinspiredDataToStartTheTransference = BioinspiredProcessor
+                .getBioinspiredDataToStartTheTransference(bioinspiredProtocol, args, connectionIdentification);
+        String myIdentification = hermes.getCommunicationMiddleware(
+                bioinspiredDataToStartTheTransference.getConnectionIdentifier()).getAgentIdentification();
+        bioinspiredDataToStartTheTransference.setSenderIdentification(myIdentification);
+        bioinspiredDataToStartTheTransference.setReceiverIdentification(receiver);
+        hermes.setBioinspiredData(bioinspiredDataToStartTheTransference);
+
+        CommunicationMiddleware communicationMiddleware = hermes.getCommunicationMiddleware(
+                bioinspiredDataToStartTheTransference.getConnectionIdentifier());
+
+        // TODO: Fazer um Mapper.
+        AgentTransferRequestMessageDto agentTransferRequestMessageDto = new AgentTransferRequestMessageDto(
+                bioinspiredDataToStartTheTransference.getSenderIdentification(),
+                bioinspiredDataToStartTheTransference.getNameOfAgentsToBeTransferred(),
+                bioinspiredDataToStartTheTransference.isHasHermesAgentTransferred(),
+                bioinspiredDataToStartTheTransference.getBioinspiredProtocol());
+
+        BioInspiredUtils.LOGGER.log(Level.INFO, "Sending the agent transfer request.");
+        OutGoingMessage.sendMessageBioinspiredMessage(agentTransferRequestMessageDto, communicationMiddleware, receiver);
 
         return true;
-
     }
+
 }

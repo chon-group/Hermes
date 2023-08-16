@@ -1,21 +1,14 @@
 package jason.hermes.sec;
 
-import jason.asSemantics.Message;
-import jason.asSyntax.parser.ParseException;
-
 public class NoSecurity implements CommunicationSecurity {
 
     @Override
-    public Message decrypt(String messageReceived) {
-        try {
-            return Message.parseMsg(messageReceived);
-        } catch (ParseException e) {
-            throw new RuntimeException("Was not possible to convert the receivedMessage to a JasonMessage!");
-        }
+    public Object decrypt(String messageReceived) {
+        return messageReceived;
     }
 
     @Override
-    public String encrypt(Message message) {
+    public String encrypt(Object message) {
         return message.toString();
     }
 }

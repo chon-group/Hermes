@@ -6,7 +6,7 @@ import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.Term;
-import jason.hermes.HermesUtils;
+import jason.hermes.utils.HermesUtils;
 import jason.hermes.middlewares.CommunicationMiddleware;
 
 public class disconnect extends DefaultInternalAction {
