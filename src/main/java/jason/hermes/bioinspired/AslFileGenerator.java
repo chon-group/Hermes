@@ -177,22 +177,18 @@ public class AslFileGenerator {
         // recupera as intenções que estão pendentes para serem executadas em algum momento em ordem.
         Map<String, Intention> pendingIntentions = circumstance.getPendingIntentions();
         if (pendingIntentions != null && !pendingIntentions.isEmpty()) {
-            List<Integer> intentionsNumberList = new ArrayList<>();
-            for (String key : pendingIntentions.keySet()) {
-                String[] intentionNumberSplit = key.split("\\/");
-                int intentionNumber = Integer.parseInt(intentionNumberSplit[0]);
-                intentionsNumberList.add(intentionNumber);
+            Map<Integer, String> intentionsNumberAndKeyMap = new HashMap<>();
+            for (String keyPendingIntention : pendingIntentions.keySet()) {
+                intentionsNumberAndKeyMap.put(pendingIntentions.get(keyPendingIntention).getId(), keyPendingIntention);
             }
-            intentionsNumberList = intentionsNumberList.stream().sorted().collect(Collectors.toList());
-            for (Integer intentionNumber : intentionsNumberList) {
-                for (String key : pendingIntentions.keySet()) {
-                    if (key.startsWith(intentionNumber+"/")) {
-                        String intentionName = getIntentionName(pendingIntentions.get(key));
-                        if (!intentionsNames.contains(intentionName)) {
-                            intentionsNames.add(intentionName);
-                        }
-                        break;
-                    }
+
+            List<Integer> intentionsNumberOrdenedList = intentionsNumberAndKeyMap.keySet().stream().sorted().collect(Collectors.toList());
+
+            for (Integer intentionId : intentionsNumberOrdenedList) {
+                Intention intention = pendingIntentions.get(intentionsNumberAndKeyMap.get(intentionId));
+                String intentionName = getIntentionName(intention);
+                if (!intentionsNames.contains(intentionName)) {
+                    intentionsNames.add(intentionName);
                 }
             }
         }
