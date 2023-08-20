@@ -22,8 +22,7 @@ public class ContextNetMiddleware implements CommunicationMiddleware, NodeConnec
     private MrUdpNodeConnection connection;
     private UUID myUUID;
 
-    public ContextNetMiddleware(Configuration configuration) {
-        this.setConfiguration(configuration);
+    public ContextNetMiddleware() {
     }
 
     @Override

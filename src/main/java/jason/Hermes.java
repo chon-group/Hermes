@@ -8,7 +8,7 @@ import jason.hermes.bioinspired.BioinspiredProcessor;
 import jason.hermes.bioinspired.BioinspiredStageEnum;
 import jason.hermes.config.Configuration;
 import jason.hermes.middlewares.CommunicationMiddleware;
-import jason.hermes.middlewares.ContextNetMiddleware;
+import jason.hermes.middlewares.CommunicationMiddlewareIdentifier;
 import jason.hermes.utils.BioInspiredUtils;
 
 import java.time.LocalDateTime;
@@ -28,9 +28,8 @@ public class Hermes extends AgArch {
     }
 
     public void addConnectionConfiguration(Configuration configuration) {
-        // TODO: criar uma abstração para identificar a instancia correta.
-        ContextNetMiddleware contextNetMiddleware = new ContextNetMiddleware(configuration);
-        this.communicationMiddlewareHashMap.put(configuration.getConnectionIdentifier(), contextNetMiddleware);
+        CommunicationMiddleware communicationMiddleware = CommunicationMiddlewareIdentifier.identify(configuration);
+        this.communicationMiddlewareHashMap.put(configuration.getConnectionIdentifier(), communicationMiddleware);
     }
 
     public String getFirstConnectionAvailable() {

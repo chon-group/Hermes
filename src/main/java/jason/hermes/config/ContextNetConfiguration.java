@@ -8,6 +8,9 @@ public class ContextNetConfiguration extends Configuration{
     private int gatewayPort;
     private String myUUIDString;
 
+    public ContextNetConfiguration() {
+    }
+
     public ContextNetConfiguration(String connectionIdentifier, CommunicationSecurity communicationSecurity,
                                    String gatewayIP, int gatewayPort, String myUUIDString) {
         super.setConnectionIdentifier(connectionIdentifier);
