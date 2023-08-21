@@ -88,16 +88,15 @@ public class AslFileGenerator {
             path = path.substring(5);
         }
         File file = new File(path);
-//        try {
-//            // Cria o arquivo no sistema de arquivos
-//            if (file.createNewFile()) {
-//                System.out.println("Arquivo criado com sucesso!");
-//            } else {
-//                System.out.println("O arquivo já existe.");
-//            }
-//        } catch (IOException e) {
-//            System.out.println("Erro ao criar o arquivo: " + e.getMessage());
+
+//        int agentNumber = 1;
+//        while (file.exists()) {
+//            String newPath = path.substring(0, path.length() - 5);
+//            newPath = newPath + "_" + agentNumber + ASL_EXTENSION;
+//            file = new File(newPath);
+//            agentNumber++;
 //        }
+
         try {
             FileOutputStream fileOutputStream = new FileOutputStream(file);
             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);

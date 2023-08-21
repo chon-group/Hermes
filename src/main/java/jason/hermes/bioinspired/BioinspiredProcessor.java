@@ -14,8 +14,7 @@ import jason.infra.local.LocalAgArch;
 import jason.infra.local.RunLocalMAS;
 import jason.runtime.RuntimeServicesFactory;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -209,16 +208,26 @@ public class BioinspiredProcessor {
         List<String> nameOfAgentsToBeTransferredList = bioinspiredData.getNameOfAgentsToBeTransferred();
         int qtdAgentsInstantiated = 0;
 
+        List<String> nameOfAgentsInstantiated = new ArrayList<>();
+        // TODO: tratar se tiver erro para instanciar os agentes.
         for (String agentName : nameOfAgentsToBeTransferredList) {
             AslTransferenceModel aslTransferenceModel = agentTransferContentMessageDto.getAgentsSourceCode()
                     .get(agentName);
-            String name = aslTransferenceModel.getName();
-            String path = BioInspiredUtils.getPath(name);
-            String agArchClass = aslTransferenceModel.getAgentArchClass();
+            String agentNameInstantiated = null;
+            try {
+                agentNameInstantiated = RuntimeServicesFactory.get().getNewAgentName(aslTransferenceModel.getName());
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+            if (agentNameInstantiated != null) {
+                String path = BioInspiredUtils.getPath(agentNameInstantiated);
+                String agArchClass = aslTransferenceModel.getAgentArchClass();
 
-            AslFileGenerator.createAslFile(path, aslTransferenceModel);
+                AslFileGenerator.createAslFile(path, aslTransferenceModel);
 
-            qtdAgentsInstantiated = BioInspiredUtils.startAgent(ts, name, path, agArchClass, qtdAgentsInstantiated);
+                qtdAgentsInstantiated = BioInspiredUtils.startAgent(ts, agentNameInstantiated, path, agArchClass, qtdAgentsInstantiated);
+                nameOfAgentsInstantiated.add(agentNameInstantiated);
+            }
         }
 
         if (qtdAgentsInstantiated == nameOfAgentsToBeTransferredList.size()) {
@@ -238,7 +247,7 @@ public class BioinspiredProcessor {
 
         if (BioinspiredProtocolsEnum.PREDATION.equals(bioinspiredData.getBioinspiredProtocol())){
             BioInspiredUtils.LOGGER.log(Level.INFO, "Dominating the MAS!");
-            BioInspiredUtils.killAgentsNotTransferred(ts, nameOfAgentsToBeTransferredList);
+            BioInspiredUtils.killAgentsNotTransferred(ts, nameOfAgentsInstantiated);
         }
 
     }
