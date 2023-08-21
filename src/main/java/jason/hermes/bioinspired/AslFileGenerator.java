@@ -80,6 +80,7 @@ public class AslFileGenerator {
      */
     public static void createAslFile(String path, AslTransferenceModel aslTransferenceModel) {
         // TODO: verificar o que deve ser feito com esse 'file:'.
+        // TODO: fazer um tratamento correto para cada excecao.
         path = path.replaceAll("\\\\", "/");
         if (path.charAt(path.length() -1) != '/') {
             path += "/";
@@ -88,24 +89,32 @@ public class AslFileGenerator {
             path = path.substring(5);
         }
         File file = new File(path);
-
-//        int agentNumber = 1;
-//        while (file.exists()) {
-//            String newPath = path.substring(0, path.length() - 5);
-//            newPath = newPath + "_" + agentNumber + ASL_EXTENSION;
-//            file = new File(newPath);
-//            agentNumber++;
-//        }
-
+        FileOutputStream fileOutputStream = null;
+        BufferedOutputStream bufferedOutputStream = null;
         try {
-            FileOutputStream fileOutputStream = new FileOutputStream(file);
-            BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
+            fileOutputStream = new FileOutputStream(file);
+            bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
             bufferedOutputStream.write(aslTransferenceModel.getFileContent());
             bufferedOutputStream.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            if (bufferedOutputStream != null) {
+                try {
+                    bufferedOutputStream.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            if (fileOutputStream != null) {
+                try {
+                    fileOutputStream.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
     }
 
@@ -133,6 +142,7 @@ public class AslFileGenerator {
     }
 
     private static String getIntentionName(Intention intention) {
+        // TODO: Verificar uma maneira mais correta de recuperar o nome da Intention, pois esse peek pode vir nulo as vezes.
         String intentionNameAndImplementation = intention.peek().toString();
         String[] intentionNameAndImplementationSplit = intentionNameAndImplementation.split("<-");
         String intentionName = intentionNameAndImplementationSplit[0];
