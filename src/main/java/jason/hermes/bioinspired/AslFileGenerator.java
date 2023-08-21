@@ -6,12 +6,9 @@ import jason.asSemantics.Circumstance;
 import jason.asSemantics.Intention;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Plan;
-import jason.infra.local.RunLocalMAS;
-import jason.runtime.RuntimeServicesFactory;
-import jason.runtime.SourcePath;
+import jason.asSyntax.Trigger;
 
 import java.io.*;
-import java.nio.file.Files;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -142,15 +139,22 @@ public class AslFileGenerator {
     }
 
     private static String getIntentionName(Intention intention) {
-        // TODO: Verificar uma maneira mais correta de recuperar o nome da Intention, pois esse peek pode vir nulo as vezes.
-        String intentionNameAndImplementation = intention.peek().toString();
-        String[] intentionNameAndImplementationSplit = intentionNameAndImplementation.split("<-");
-        String intentionName = intentionNameAndImplementationSplit[0];
-        intentionName = intentionName.replaceAll("!", "");
-        intentionName = intentionName.replaceAll("\\+", "");
-        intentionName = intentionName.replaceAll("-", "");
-        if (intentionName.contains(" ")) {
-            intentionName = intentionName.replaceAll(" ", "");
+        String intentionName = null;
+        while (intention.iterator().hasNext()) {
+            Trigger trigger = intention.iterator().next().getTrigger();
+            if (trigger != null) {
+                intentionName = trigger.toString();
+                break;
+            }
+        }
+        if (intentionName != null) {
+            intentionName = intentionName.replaceAll("!", "");
+            intentionName = intentionName.replaceAll("\\+", "");
+            intentionName = intentionName.replaceAll("-", "");
+            intentionName = intentionName.trim();
+            if (intentionName.contains(" ")) {
+                intentionName = intentionName.replaceAll(" ", "");
+            }
         }
         return intentionName;
     }
@@ -170,16 +174,16 @@ public class AslFileGenerator {
         Queue<Intention> intentions = circumstance.getRunningIntentions();
         // recupera as intenções atuais.
         for (Intention intention : intentions) {
-            String intentionName1 = getIntentionName(intention);
-            if (!intentionsNames.contains(intentionName1)) {
-                intentionsNames.add(intentionName1);
+            String runningIntentionName = getIntentionName(intention);
+            if (runningIntentionName != null && !intentionsNames.contains(runningIntentionName)) {
+                intentionsNames.add(runningIntentionName);
             }
         }
         // recupera a intenção selecionada para ser executada no proximo ciclo.
         Intention selectedIntention = circumstance.getSelectedIntention();
         if (selectedIntention != null) {
             String selectedIntentionName = getIntentionName(selectedIntention);
-            if (!intentionsNames.contains(selectedIntentionName)) {
+            if (selectedIntentionName != null && !intentionsNames.contains(selectedIntentionName)) {
                 intentionsNames.add(selectedIntentionName);
             }
         }
@@ -195,9 +199,9 @@ public class AslFileGenerator {
 
             for (Integer intentionId : intentionsNumberOrdenedList) {
                 Intention intention = pendingIntentions.get(intentionsNumberAndKeyMap.get(intentionId));
-                String intentionName = getIntentionName(intention);
-                if (!intentionsNames.contains(intentionName)) {
-                    intentionsNames.add(intentionName);
+                String pendingIntentionName = getIntentionName(intention);
+                if (pendingIntentionName != null && !intentionsNames.contains(pendingIntentionName)) {
+                    intentionsNames.add(pendingIntentionName);
                 }
             }
         }
