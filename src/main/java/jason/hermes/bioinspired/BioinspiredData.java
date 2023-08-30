@@ -21,27 +21,55 @@ public class BioinspiredData {
     private BioinspiredRoleEnum bioinspiredRole;
 
     private BioinspiredStageEnum bioinspiredStage;
+    private DominanceDegrees myDominanceDegree;
+    private DominanceDegrees otherMASDominanceDegree;
+
+    public BioinspiredData(DominanceDegrees myDominanceDegree) {
+        this.myDominanceDegree = myDominanceDegree;
+    }
 
     public BioinspiredData(List<String> nameOfAgentsToBeTransferred, BioinspiredProtocolsEnum bioinspiredProtocol,
                            boolean hasHermesAgentTransferred, String connectionIdentifier,
-                           BioinspiredRoleEnum bioinspiredRole, BioinspiredStageEnum bioinspiredStage) {
+                           BioinspiredRoleEnum bioinspiredRole, BioinspiredStageEnum bioinspiredStage,
+                           DominanceDegrees myDominanceDegree) {
         this.nameOfAgentsToBeTransferred = nameOfAgentsToBeTransferred;
         this.bioinspiredProtocol = bioinspiredProtocol;
         this.hasHermesAgentTransferred = hasHermesAgentTransferred;
         this.connectionIdentifier = connectionIdentifier;
         this.bioinspiredRole = bioinspiredRole;
         this.bioinspiredStage = bioinspiredStage;
+        this.myDominanceDegree = myDominanceDegree;
     }
 
     public BioinspiredData(List<String> nameOfAgentsToBeTransferred, BioinspiredProtocolsEnum bioinspiredProtocol,
-                           String receiverIdentification, boolean hasHermesAgentTransferred, BioinspiredRoleEnum bioinspiredRole,
-                           BioinspiredStageEnum bioinspiredStage) {
+                           String receiverIdentification, boolean hasHermesAgentTransferred,
+                           BioinspiredRoleEnum bioinspiredRole, BioinspiredStageEnum bioinspiredStage,
+                           DominanceDegrees myDominanceDegree, DominanceDegrees otherMASDominanceDegree) {
         this.nameOfAgentsToBeTransferred = nameOfAgentsToBeTransferred;
         this.bioinspiredProtocol = bioinspiredProtocol;
         this.receiverIdentification = receiverIdentification;
         this.hasHermesAgentTransferred = hasHermesAgentTransferred;
         this.bioinspiredRole = bioinspiredRole;
         this.bioinspiredStage = bioinspiredStage;
+        this.myDominanceDegree = myDominanceDegree;
+        this.otherMASDominanceDegree = otherMASDominanceDegree;
+    }
+
+    public void clean() {
+        this.nameOfAgentsToBeTransferred = null;
+        this.bioinspiredProtocol = null;
+        this.transferredAgentsAslModel = null;
+        this.senderIdentification = null;
+        this.receiverIdentification = null;
+        this.hasHermesAgentTransferred = false;
+        this.connectionIdentifier = null;
+        this.bioinspiredRole = null;
+        this.bioinspiredStage = null;
+        this.otherMASDominanceDegree = null;
+    }
+
+    public boolean bioinspiredTransferenceActive() {
+        return this.bioinspiredProtocol != null && this.bioinspiredRole != null && this.bioinspiredStage != null;
     }
 
     public List<String> getNameOfAgentsToBeTransferred() {
@@ -114,5 +142,21 @@ public class BioinspiredData {
 
     public void setBioinspiredStage(BioinspiredStageEnum bioinspiredStage) {
         this.bioinspiredStage = bioinspiredStage;
+    }
+
+    public DominanceDegrees getMyDominanceDegree() {
+        return myDominanceDegree;
+    }
+
+    public void setMyDominanceDegree(DominanceDegrees myDominanceDegree) {
+        this.myDominanceDegree = myDominanceDegree;
+    }
+
+    public DominanceDegrees getOtherMASDominanceDegree() {
+        return otherMASDominanceDegree;
+    }
+
+    public void setOtherMASDominanceDegree(DominanceDegrees otherMASDominanceDegree) {
+        this.otherMASDominanceDegree = otherMASDominanceDegree;
     }
 }

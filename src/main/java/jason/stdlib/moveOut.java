@@ -35,6 +35,7 @@ import jason.hermes.OutGoingMessage;
 import jason.hermes.bioinspired.BioinspiredData;
 import jason.hermes.bioinspired.BioinspiredProcessor;
 import jason.hermes.bioinspired.BioinspiredProtocolsEnum;
+import jason.hermes.bioinspired.DominanceDegrees;
 import jason.hermes.bioinspired.dto.AgentTransferRequestMessageDto;
 import jason.hermes.middlewares.CommunicationMiddleware;
 import jason.hermes.utils.BioInspiredUtils;
@@ -226,8 +227,9 @@ public class moveOut extends DefaultInternalAction {
         BioInspiredUtils.LOGGER.info("The " + bioinspiredProtocol.name() + " protocol"
                 + " starts at " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss.SSS")));
 
+        DominanceDegrees dominanceDegrees = hermes.getBioinspiredData().getMyDominanceDegree();
         BioinspiredData bioinspiredDataToStartTheTransference = BioinspiredProcessor
-                .getBioinspiredDataToStartTheTransference(bioinspiredProtocol, args, connectionIdentification);
+                .getBioinspiredDataToStartTheTransference(bioinspiredProtocol, args, connectionIdentification, dominanceDegrees);
         String myIdentification = hermes.getCommunicationMiddleware(
                 bioinspiredDataToStartTheTransference.getConnectionIdentifier()).getAgentIdentification();
         bioinspiredDataToStartTheTransference.setSenderIdentification(myIdentification);
@@ -242,7 +244,8 @@ public class moveOut extends DefaultInternalAction {
                 bioinspiredDataToStartTheTransference.getSenderIdentification(),
                 bioinspiredDataToStartTheTransference.getNameOfAgentsToBeTransferred(),
                 bioinspiredDataToStartTheTransference.isHasHermesAgentTransferred(),
-                bioinspiredDataToStartTheTransference.getBioinspiredProtocol());
+                bioinspiredDataToStartTheTransference.getBioinspiredProtocol(),
+                bioinspiredDataToStartTheTransference.getMyDominanceDegree());
 
         BioInspiredUtils.LOGGER.log(Level.INFO, "Sending the agent transfer request.");
         OutGoingMessage.sendMessageBioinspiredMessage(agentTransferRequestMessageDto, communicationMiddleware, receiver);

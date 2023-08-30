@@ -15,6 +15,8 @@ import jason.infra.local.RunLocalMAS;
 import jason.runtime.RuntimeServicesFactory;
 
 import java.rmi.RemoteException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +27,8 @@ public class BioinspiredProcessor {
 
     public static BioinspiredData getBioinspiredDataToStartTheTransference(BioinspiredProtocolsEnum bioinspiredProtocol,
                                                                            Term[] args,
-                                                                           String connectionIdentifier) {
+                                                                           String connectionIdentifier,
+                                                                           DominanceDegrees dominanceDegrees) {
         if (args.length == 2) {
             boolean hasHermesAgent;
             List<String> nameOfAgentsToBeTransferred;
@@ -37,7 +40,7 @@ public class BioinspiredProcessor {
                 hasHermesAgent = true;
             }
             return new BioinspiredData(nameOfAgentsToBeTransferred, bioinspiredProtocol, hasHermesAgent,
-                    connectionIdentifier, BioinspiredRoleEnum.SENDER, BioinspiredStageEnum.TRANSFER_REQUEST);
+                    connectionIdentifier, BioinspiredRoleEnum.SENDER, BioinspiredStageEnum.TRANSFER_REQUEST, dominanceDegrees);
         } else if (args.length == 3){
             boolean hasHermesAgent;
             List<String> nameOfAgentsToBeTransferred = new ArrayList<>();
@@ -56,7 +59,7 @@ public class BioinspiredProcessor {
                 }
             }
             return new BioinspiredData(nameOfAgentsToBeTransferred, bioinspiredProtocol, hasHermesAgent,
-                    connectionIdentifier, BioinspiredRoleEnum.SENDER, BioinspiredStageEnum.TRANSFER_REQUEST);
+                    connectionIdentifier, BioinspiredRoleEnum.SENDER, BioinspiredStageEnum.TRANSFER_REQUEST, dominanceDegrees);
         } else {
             String agentName = HermesUtils.getParameterInString(args[2]);
             connectionIdentifier = HermesUtils.getParameterInString(args[3]);
@@ -64,25 +67,28 @@ public class BioinspiredProcessor {
             List<String> nameOfAgentsToBeTransferred = new ArrayList<>();
             nameOfAgentsToBeTransferred.add(agentName);
             return new BioinspiredData(nameOfAgentsToBeTransferred, bioinspiredProtocol, hasHermesAgent,
-                    connectionIdentifier, BioinspiredRoleEnum.SENDER, BioinspiredStageEnum.TRANSFER_REQUEST);
+                    connectionIdentifier, BioinspiredRoleEnum.SENDER, BioinspiredStageEnum.TRANSFER_REQUEST, dominanceDegrees);
         }
     }
 
-    public static BioinspiredData getBioinspiredRole(AgentTransferRequestMessageDto agentTransferRequestMessageDto) {
+    public static BioinspiredData getBioinspiredRole(AgentTransferRequestMessageDto agentTransferRequestMessageDto,
+                                                     BioinspiredData bioinspiredData) {
         if (agentTransferRequestMessageDto != null) {
-            return getBioinspiredData(agentTransferRequestMessageDto);
+            return getBioinspiredData(agentTransferRequestMessageDto, bioinspiredData.getMyDominanceDegree());
         }
 
-        return null;
+        return bioinspiredData;
     }
 
-    public static BioinspiredData getBioinspiredData(AgentTransferRequestMessageDto agentTransferRequestMessageDto) {
+    public static BioinspiredData getBioinspiredData(AgentTransferRequestMessageDto agentTransferRequestMessageDto,
+                                                     DominanceDegrees myDominanceDegree) {
         // TODO: Refatorar depois de fazer o Mapper.
         return new BioinspiredData(agentTransferRequestMessageDto.getNameOfAgentsToBeTransferred(),
                 agentTransferRequestMessageDto.getBioinspiredProtocol(),
                 agentTransferRequestMessageDto.getSenderIdentification(),
                 agentTransferRequestMessageDto.isHasHermesAgentTransferred(),
-                BioinspiredRoleEnum.RECEIVED, BioinspiredStageEnum.RECEIVE_TRANSFER_REQUEST);
+                BioinspiredRoleEnum.RECEIVED, BioinspiredStageEnum.RECEIVE_TRANSFER_REQUEST, myDominanceDegree,
+                agentTransferRequestMessageDto.getDominanceDegree());
     }
 
     public static void updateBioinspiredStage(BioinspiredData bioinspiredData) {
@@ -128,8 +134,16 @@ public class BioinspiredProcessor {
 
     }
 
-    private static boolean canTransfer() {
-        return true;
+    private static boolean canTransfer(BioinspiredData bioinspiredData) {
+        boolean canTransfer = true;
+
+        if (BioinspiredProtocolsEnum.PREDATION.equals(bioinspiredData.getBioinspiredProtocol())) {
+            int comparison = DominanceDegrees.dominanceComparation(bioinspiredData.getOtherMASDominanceDegree(),
+                    bioinspiredData.getMyDominanceDegree());
+            return comparison > 0;
+        }
+
+        return canTransfer;
     }
 
     private static boolean canKillOriginCopy() {
@@ -139,7 +153,7 @@ public class BioinspiredProcessor {
     private static void receiveTransferRequest(BioinspiredData bioinspiredData,
                                               CommunicationMiddleware communicationMiddleware,
                                               AgentTransferRequestMessageDto agentTransferRequestMessageDto) {
-        boolean canTransfer = canTransfer();
+        boolean canTransfer = canTransfer(bioinspiredData);
         AgentTransferResponseMessageDto agentTransferResponseMessageDto =
                 new AgentTransferResponseMessageDto(canTransfer);
 
@@ -151,9 +165,10 @@ public class BioinspiredProcessor {
                 bioinspiredData.getReceiverIdentification());
 
         if (!canTransfer) {
-            bioinspiredData.setBioinspiredStage(BioinspiredStageEnum.FINISHED);
+            bioinspiredData.clean();
+            BioInspiredUtils.LOGGER.info("The execution of the protocol ended at "
+                    + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss.SSS")));
         }
-
     }
 
     private static void receiveResponseToTransfer(BioinspiredData bioinspiredData,
@@ -193,8 +208,25 @@ public class BioinspiredProcessor {
                         + "agentes esperados para envio não foi satisfeita.");
             }
         } else {
-            BioInspiredUtils.LOGGER.log(Level.INFO, "The Receiver MAS did not allow the agents transference.");
-            bioinspiredData.setBioinspiredStage(BioinspiredStageEnum.FINISHED);
+            BioInspiredUtils.LOGGER.log(Level.INFO, "The Receiver MAS did not allow the agents transference with the protocol "
+                    + BioinspiredProtocolsEnum.PREDATION + ".");
+            if (BioinspiredProtocolsEnum.PREDATION.equals(bioinspiredData.getBioinspiredProtocol())) {
+                BioInspiredUtils.LOGGER.log(Level.INFO, "So, changing to " + BioinspiredProtocolsEnum.INQUILINISM + " protocol.");
+                bioinspiredData.setBioinspiredProtocol(BioinspiredProtocolsEnum.INQUILINISM);
+                bioinspiredData.setBioinspiredStage(BioinspiredStageEnum.TRANSFER_REQUEST);
+                AgentTransferRequestMessageDto anotherAgentTransferRequestMessageDto = new AgentTransferRequestMessageDto(
+                        bioinspiredData.getSenderIdentification(),
+                        bioinspiredData.getNameOfAgentsToBeTransferred(),
+                        bioinspiredData.isHasHermesAgentTransferred(),
+                        bioinspiredData.getBioinspiredProtocol(),
+                        bioinspiredData.getMyDominanceDegree());
+
+                BioInspiredUtils.LOGGER.log(Level.INFO, "Sending the agent transfer request again.");
+                OutGoingMessage.sendMessageBioinspiredMessage(anotherAgentTransferRequestMessageDto,
+                        communicationMiddleware, bioinspiredData.getReceiverIdentification());
+            } else {
+                bioinspiredData.setBioinspiredStage(BioinspiredStageEnum.FINISHED);
+            }
         }
 
     }

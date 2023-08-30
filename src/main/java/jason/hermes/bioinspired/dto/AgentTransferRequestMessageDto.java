@@ -1,6 +1,7 @@
 package jason.hermes.bioinspired.dto;
 
 import jason.hermes.bioinspired.BioinspiredProtocolsEnum;
+import jason.hermes.bioinspired.DominanceDegrees;
 
 import java.io.Serializable;
 import java.util.List;
@@ -15,14 +16,18 @@ public class AgentTransferRequestMessageDto extends AgentTransferMessageDto impl
 
     private BioinspiredProtocolsEnum bioinspiredProtocol;
 
+    private DominanceDegrees dominanceDegree;
+
     public AgentTransferRequestMessageDto(String senderIdentification,
                                           List<String> nameOfAgentsToBeTransferred,
                                           boolean hasHermesAgentTransferred,
-                                          BioinspiredProtocolsEnum bioinspiredProtocol) {
+                                          BioinspiredProtocolsEnum bioinspiredProtocol,
+                                          DominanceDegrees dominanceDegree) {
         this.senderIdentification = senderIdentification;
         this.nameOfAgentsToBeTransferred = nameOfAgentsToBeTransferred;
         this.hasHermesAgentTransferred = hasHermesAgentTransferred;
         this.bioinspiredProtocol = bioinspiredProtocol;
+        this.dominanceDegree = dominanceDegree;
     }
 
     public String getSenderIdentification() {
@@ -40,4 +45,9 @@ public class AgentTransferRequestMessageDto extends AgentTransferMessageDto impl
     public BioinspiredProtocolsEnum getBioinspiredProtocol() {
         return bioinspiredProtocol;
     }
+
+    public DominanceDegrees getDominanceDegree() {
+        return dominanceDegree;
+    }
+
 }

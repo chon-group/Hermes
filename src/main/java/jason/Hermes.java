@@ -6,6 +6,7 @@ import jason.hermes.InComingMessages;
 import jason.hermes.bioinspired.BioinspiredData;
 import jason.hermes.bioinspired.BioinspiredProcessor;
 import jason.hermes.bioinspired.BioinspiredStageEnum;
+import jason.hermes.bioinspired.DominanceDegrees;
 import jason.hermes.config.Configuration;
 import jason.hermes.middlewares.CommunicationMiddleware;
 import jason.hermes.middlewares.CommunicationMiddlewareIdentifier;
@@ -18,9 +19,16 @@ import java.util.List;
 
 public class Hermes extends AgArch {
 
-    private HashMap<String, CommunicationMiddleware> communicationMiddlewareHashMap = new HashMap<>();
+    private final HashMap<String, CommunicationMiddleware> communicationMiddlewareHashMap;
 
     private BioinspiredData bioinspiredData;
+
+
+    public Hermes() {
+        super();
+        this.communicationMiddlewareHashMap = new HashMap<>();
+        this.bioinspiredData = new BioinspiredData(DominanceDegrees.LOW_RANK);
+    }
 
     public CommunicationMiddleware getCommunicationMiddleware(String connectionIdentifier) {
         // TODO: Adicionar uma validação para quando não existe a conexão com o identificador passado.
@@ -62,12 +70,13 @@ public class Hermes extends AgArch {
             getTS().getC().addMsg(message);
         }
 
-        if (this.bioinspiredData == null) {
+        if (!this.bioinspiredData.bioinspiredTransferenceActive()) {
             this.bioinspiredData = BioinspiredProcessor.getBioinspiredRole(
-                    inComingMessages.getAgentTransferRequestMessageDto());
+                    inComingMessages.getAgentTransferRequestMessageDto(),
+                    this.bioinspiredData);
         }
 
-        if (this.bioinspiredData != null) {
+        if (this.bioinspiredData.bioinspiredTransferenceActive()) {
             if (this.bioinspiredData.getSenderIdentification() == null) {
                 this.bioinspiredData.setConnectionIdentifier(inComingMessages.getBioinspiredConnectionIdentifier());
                 String myIdentification = this.communicationMiddlewareHashMap.get(inComingMessages.getBioinspiredConnectionIdentifier()).getAgentIdentification();
@@ -82,11 +91,10 @@ public class Hermes extends AgArch {
                         inComingMessages.getAgentTransferContentMessageDto(),
                         inComingMessages.getAgentTransferConfirmationMessageDto());
             } else {
-                this.bioinspiredData = null;
+                this.bioinspiredData.clean();
                 BioInspiredUtils.LOGGER.info("The execution of the protocol ended at "
                         + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss.SSS")));
             }
         }
-
     }
 }
