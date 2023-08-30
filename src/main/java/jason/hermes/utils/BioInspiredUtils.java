@@ -20,7 +20,7 @@ import java.util.logging.Logger;
 
 public class BioInspiredUtils {
 
-    public static final Logger LOGGER = Logger.getLogger("BIOINSPIRED PROTOCOL");
+    private static final Logger LOGGER = Logger.getLogger("BIOINSPIRED PROTOCOL");
     public static List<String> getAllAgentsName() {
         Map<String, LocalAgArch> agentsOfTheSMA = RunLocalMAS.getRunner().getAgs();
         List<String> nameAgents = new ArrayList<String>();
@@ -77,7 +77,7 @@ public class BioInspiredUtils {
             qtdAgentsInstantiated++;
             return qtdAgentsInstantiated;
         } catch (Exception e) {
-            BioInspiredUtils.LOGGER.log(Level.SEVERE, "Error instantiating the agent: " + name);
+            BioInspiredUtils.log(Level.SEVERE, "Error instantiating the agent: " + name);
             e.printStackTrace();
         }
         return qtdAgentsInstantiated;
@@ -91,14 +91,14 @@ public class BioInspiredUtils {
                     RuntimeServicesFactory.get().killAgent(localAgArch.getAgName(),
                             ts.getAgArch().getAgName(), 0);
                 } catch (RemoteException e) {
-                    BioInspiredUtils.LOGGER.log(Level.SEVERE, "Error when killing the agent '" + localAgArch.getAgName() + "'");
+                    BioInspiredUtils.log(Level.SEVERE, "Error when killing the agent '" + localAgArch.getAgName() + "'");
                 }
                 String aslSrc = localAgArch.getTS().getAg().getASLSrc();
                 if (aslSrc.startsWith("file:")) {
                     aslSrc = aslSrc.substring(5);
                 }
                 File file = new File(aslSrc);
-                BioInspiredUtils.LOGGER.log(Level.INFO, "Killing existing agents in the MAS: " + localAgArch.getAgName());
+                BioInspiredUtils.log(Level.INFO, "Killing existing agents in the MAS: " + localAgArch.getAgName());
                 deleteFileAsl(file);
             }
         }
@@ -112,7 +112,7 @@ public class BioInspiredUtils {
                     RuntimeServicesFactory.get().killAgent(localAgArch.getAgName(),
                             ts.getAgArch().getAgName(), 0);
                 } catch (RemoteException e) {
-                    BioInspiredUtils.LOGGER.log(Level.SEVERE, "Error when killing the agent '" + localAgArch.getAgName() + "'");
+                    BioInspiredUtils.log(Level.SEVERE, "Error when killing the agent '" + localAgArch.getAgName() + "'");
                 }
                 // TODO: Resolver o problema de estar vindo esse 'file:' no inicio do path do agent.
                 String aslSrc = localAgArch.getTS().getAg().getASLSrc();
@@ -120,7 +120,7 @@ public class BioInspiredUtils {
                     aslSrc = aslSrc.substring(5);
                 }
                 File file = new File(aslSrc);
-                BioInspiredUtils.LOGGER.log(Level.INFO, "Killing the transferred agent copy: " + localAgArch.getAgName());
+                BioInspiredUtils.log(Level.INFO, "Killing the transferred agent copy: " + localAgArch.getAgName());
                 deleteFileAsl(file);
             }
         }
@@ -129,6 +129,14 @@ public class BioInspiredUtils {
     public static void deleteFileAsl(File file) {
         if (file.exists()) {
             file.delete();
+        }
+    }
+
+    public static void log(Level level, String message) {
+        try {
+            LOGGER.log(level, message);
+        } catch (Exception e) {
+            //ignore
         }
     }
 }

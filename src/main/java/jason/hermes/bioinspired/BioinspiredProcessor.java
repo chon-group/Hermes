@@ -159,14 +159,14 @@ public class BioinspiredProcessor {
 
         bioinspiredData.setBioinspiredStage(BioinspiredStageEnum.RESPONSE_TO_TRANSFER);
 
-        BioInspiredUtils.LOGGER.log(Level.INFO, "Sending the agents transfer response: " + canTransfer);
+        BioInspiredUtils.log(Level.INFO, "Sending the agents transfer response: " + canTransfer);
         OutGoingMessage.sendMessageBioinspiredMessage(agentTransferResponseMessageDto,
                 communicationMiddleware,
                 bioinspiredData.getReceiverIdentification());
 
         if (!canTransfer) {
             bioinspiredData.clean();
-            BioInspiredUtils.LOGGER.info("The execution of the protocol ended at "
+            BioInspiredUtils.log(Level.INFO,"The execution of the protocol ended at "
                     + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss.SSS")));
         }
     }
@@ -199,19 +199,19 @@ public class BioinspiredProcessor {
                 AgentTransferContentMessageDto agentTransferContentMessageDto =
                         new AgentTransferContentMessageDto(agentsSourceCode);
                 bioinspiredData.setBioinspiredStage(BioinspiredStageEnum.CONTENT_TRANSFER);
-                BioInspiredUtils.LOGGER.log(Level.INFO, "Sending the agents content.");
+                BioInspiredUtils.log(Level.INFO, "Sending the agents content.");
                 OutGoingMessage.sendMessageBioinspiredMessage(agentTransferContentMessageDto,
                         communicationMiddleware,
                         bioinspiredData.getReceiverIdentification());
             } else {
-                BioInspiredUtils.LOGGER.log(Level.SEVERE, "[ERRO]: Não é possível realizar a transferência porque a quantidade de "
+                BioInspiredUtils.log(Level.SEVERE, "[ERRO]: Não é possível realizar a transferência porque a quantidade de "
                         + "agentes esperados para envio não foi satisfeita.");
             }
         } else {
-            BioInspiredUtils.LOGGER.log(Level.INFO, "The Receiver MAS did not allow the agents transference with the protocol "
+            BioInspiredUtils.log(Level.INFO, "The Receiver MAS did not allow the agents transference with the protocol "
                     + BioinspiredProtocolsEnum.PREDATION + ".");
             if (BioinspiredProtocolsEnum.PREDATION.equals(bioinspiredData.getBioinspiredProtocol())) {
-                BioInspiredUtils.LOGGER.log(Level.INFO, "So, changing to " + BioinspiredProtocolsEnum.INQUILINISM + " protocol.");
+                BioInspiredUtils.log(Level.INFO, "So, changing to " + BioinspiredProtocolsEnum.INQUILINISM + " protocol.");
                 bioinspiredData.setBioinspiredProtocol(BioinspiredProtocolsEnum.INQUILINISM);
                 bioinspiredData.setBioinspiredStage(BioinspiredStageEnum.TRANSFER_REQUEST);
                 AgentTransferRequestMessageDto anotherAgentTransferRequestMessageDto = new AgentTransferRequestMessageDto(
@@ -221,7 +221,7 @@ public class BioinspiredProcessor {
                         bioinspiredData.getBioinspiredProtocol(),
                         bioinspiredData.getMyDominanceDegree());
 
-                BioInspiredUtils.LOGGER.log(Level.INFO, "Sending the agent transfer request again.");
+                BioInspiredUtils.log(Level.INFO, "Sending the agent transfer request again.");
                 OutGoingMessage.sendMessageBioinspiredMessage(anotherAgentTransferRequestMessageDto,
                         communicationMiddleware, bioinspiredData.getReceiverIdentification());
             } else {
@@ -272,13 +272,13 @@ public class BioinspiredProcessor {
         bioinspiredData.setBioinspiredStage(BioinspiredStageEnum.CONFIRMATION_TRANSFER);
         AgentTransferConfirmationMessageDto agentTransferConfirmationMessageDto =
                 new AgentTransferConfirmationMessageDto(agentTransferSuccess, canKill);
-        BioInspiredUtils.LOGGER.log(Level.INFO, "Sending the agent transfer confirmation that is: " + agentTransferSuccess);
+        BioInspiredUtils.log(Level.INFO, "Sending the agent transfer confirmation that is: " + agentTransferSuccess);
         OutGoingMessage.sendMessageBioinspiredMessage(agentTransferConfirmationMessageDto,
                 communicationMiddleware,
                 bioinspiredData.getReceiverIdentification());
 
         if (BioinspiredProtocolsEnum.PREDATION.equals(bioinspiredData.getBioinspiredProtocol())){
-            BioInspiredUtils.LOGGER.log(Level.INFO, "Dominating the MAS!");
+            BioInspiredUtils.log(Level.INFO, "Dominating the MAS!");
             BioInspiredUtils.killAgentsNotTransferred(ts, nameOfAgentsInstantiated);
         }
 
@@ -297,14 +297,14 @@ public class BioinspiredProcessor {
                 try {
                     RuntimeServicesFactory.get().stopMAS();
                 } catch (Exception e) {
-                    BioInspiredUtils.LOGGER.log(Level.SEVERE, "Error stopping MAS execution");
+                    BioInspiredUtils.log(Level.SEVERE, "Error stopping MAS execution");
                     throw new RuntimeException(e);
                 }
             }
 
             bioinspiredData.setBioinspiredStage(BioinspiredStageEnum.FINISHED);
         } else {
-            BioInspiredUtils.LOGGER.log(Level.SEVERE, "Agents did not successfully arrive at the destination MAS");
+            BioInspiredUtils.log(Level.SEVERE, "Agents did not successfully arrive at the destination MAS");
         }
     }
 

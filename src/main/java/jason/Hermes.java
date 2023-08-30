@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
 
 public class Hermes extends AgArch {
 
@@ -92,8 +93,10 @@ public class Hermes extends AgArch {
                         inComingMessages.getAgentTransferConfirmationMessageDto());
             } else {
                 this.bioinspiredData.clean();
-                BioInspiredUtils.LOGGER.info("The execution of the protocol ended at "
-                        + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss.SSS")));
+                String logMessage = "The execution of the protocol ended at "
+                        + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss.SSS"));
+                BioInspiredUtils.log(Level.INFO, logMessage);
+
             }
         }
     }

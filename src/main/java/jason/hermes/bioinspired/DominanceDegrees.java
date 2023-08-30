@@ -13,6 +13,10 @@ public enum DominanceDegrees {
     }
 
     public static DominanceDegrees get(int value) {
+        if (value >= DOMINANT.getValue()) {
+            return DOMINANT;
+        }
+
         for (DominanceDegrees degrees : values()) {
             if (degrees.getValue() == value) {
                 return degrees;

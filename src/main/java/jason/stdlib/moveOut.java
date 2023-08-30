@@ -169,7 +169,7 @@ public class moveOut extends DefaultInternalAction {
     protected void checkArguments(Term[] args) throws JasonException {
         // Verifica a quantidade de argumentos.
         if (args.length < getMinArgs() || args.length > getMaxArgs()) {
-            BioInspiredUtils.LOGGER.log(Level.SEVERE, "Error: The number of arguments passed was ('"
+            BioInspiredUtils.log(Level.SEVERE, "Error: The number of arguments passed was ('"
                     + args.length + "') and must be between "+ getMinArgs() + " and " + getMaxArgs() + "!");
             throw JasonException.createWrongArgumentNb(this);
         }
@@ -188,7 +188,7 @@ public class moveOut extends DefaultInternalAction {
         BioinspiredProtocolsEnum bioInspiredProtocol = BioinspiredProtocolsEnum.getBioInspiredProtocol(protocolName);
         if (bioInspiredProtocol == null) {
             String msgError = "Error: The bioinspired protocol ('" + protocolName + "') does not exists!";
-            BioInspiredUtils.LOGGER.log(Level.SEVERE, msgError);
+            BioInspiredUtils.log(Level.SEVERE, msgError);
             throw JasonException.createWrongArgument(this, msgError);
         }
 
@@ -197,7 +197,7 @@ public class moveOut extends DefaultInternalAction {
             String msgError = "Error: The number of arguments passed was ('"
                     + args.length + "') with the protocol ('" + protocolName + "') but only the " +
                     BioinspiredProtocolsEnum.MUTUALISM.name() + " protocol allows to pass " + getMaxArgs() + " args!";
-            BioInspiredUtils.LOGGER.log(Level.SEVERE, msgError);
+            BioInspiredUtils.log(Level.SEVERE, msgError);
             throw JasonException.createWrongArgument(this, msgError);
         }
 
@@ -206,7 +206,7 @@ public class moveOut extends DefaultInternalAction {
             String agentName = HermesUtils.getParameterInString(args[2]);
             if (!BioInspiredUtils.verifyAgentExist(agentName)) {
                 String msgError = "Error: Does not exists an agent named ('" + agentName + "') to be transfer!";
-                BioInspiredUtils.LOGGER.log(Level.SEVERE, msgError);
+                BioInspiredUtils.log(Level.SEVERE, msgError);
                 throw JasonException.createWrongArgument(this, msgError);
             }
         }
@@ -224,7 +224,7 @@ public class moveOut extends DefaultInternalAction {
         Hermes hermes = HermesUtils.checkArchClass(ts.getAgArch(), this.getClass().getName());
         String connectionIdentification = hermes.getFirstConnectionAvailable();
 
-        BioInspiredUtils.LOGGER.info("The " + bioinspiredProtocol.name() + " protocol"
+        BioInspiredUtils.log(Level.INFO,"The " + bioinspiredProtocol.name() + " protocol"
                 + " starts at " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss.SSS")));
 
         DominanceDegrees dominanceDegrees = hermes.getBioinspiredData().getMyDominanceDegree();
@@ -247,7 +247,7 @@ public class moveOut extends DefaultInternalAction {
                 bioinspiredDataToStartTheTransference.getBioinspiredProtocol(),
                 bioinspiredDataToStartTheTransference.getMyDominanceDegree());
 
-        BioInspiredUtils.LOGGER.log(Level.INFO, "Sending the agent transfer request.");
+        BioInspiredUtils.log(Level.INFO, "Sending the agent transfer request.");
         OutGoingMessage.sendMessageBioinspiredMessage(agentTransferRequestMessageDto, communicationMiddleware, receiver);
 
         return true;

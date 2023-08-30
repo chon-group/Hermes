@@ -178,27 +178,27 @@ public class HermesUtils {
             byte[] compressedBytes = bos.toByteArray();
             serializedMessage = Base64.getEncoder().encodeToString(compressedBytes);
         } catch (IOException e) {
-            BioInspiredUtils.LOGGER.log(Level.SEVERE,"Erro ao deserializar o Objeto: " + message.toString());
+            BioInspiredUtils.log(Level.SEVERE,"Erro ao deserializar o Objeto: " + message.toString());
         } finally {
             if (out != null) {
                 try {
                     out.close();
                 } catch (IOException e) {
-                    BioInspiredUtils.LOGGER.log(Level.SEVERE,"Erro ao fechar a instancia: " + out.toString());
+                    BioInspiredUtils.log(Level.SEVERE,"Erro ao fechar a instancia: " + out.toString());
                 }
             }
             if (gzipOut != null) {
                 try {
                     gzipOut.close();
                 } catch (IOException e) {
-                    BioInspiredUtils.LOGGER.log(Level.SEVERE,"Erro ao fechar a instancia: " + gzipOut.toString());
+                    BioInspiredUtils.log(Level.SEVERE,"Erro ao fechar a instancia: " + gzipOut.toString());
                 }
             }
             if (bos != null) {
                 try {
                     bos.close();
                 } catch (IOException e) {
-                    BioInspiredUtils.LOGGER.log(Level.SEVERE,"Erro ao fechar a instancia: " + bos.toString());
+                    BioInspiredUtils.log(Level.SEVERE,"Erro ao fechar a instancia: " + bos.toString());
                 }
             }
         }
@@ -218,27 +218,27 @@ public class HermesUtils {
             in = new ObjectInputStream(gzipIn);
             deserializedObject = in.readObject();
         } catch (IOException | ClassNotFoundException e) {
-            BioInspiredUtils.LOGGER.log(Level.SEVERE,"Erro ao deserializar o Objeto: " + message);
+            BioInspiredUtils.log(Level.SEVERE,"Erro ao deserializar o Objeto: " + message);
         } finally {
             if (in != null) {
                 try {
                     in.close();
                 } catch (IOException e) {
-                    BioInspiredUtils.LOGGER.log(Level.SEVERE,"Erro ao fechar a instancia: " + in.toString());
+                    BioInspiredUtils.log(Level.SEVERE,"Erro ao fechar a instancia: " + in.toString());
                 }
             }
             if (gzipIn != null) {
                 try {
                     gzipIn.close();
                 } catch (IOException e) {
-                    BioInspiredUtils.LOGGER.log(Level.SEVERE,"Erro ao fechar a instancia: " + gzipIn.toString());
+                    BioInspiredUtils.log(Level.SEVERE,"Erro ao fechar a instancia: " + gzipIn.toString());
                 }
             }
             if (bis != null) {
                 try {
                     bis.close();
                 } catch (IOException e) {
-                    BioInspiredUtils.LOGGER.log(Level.SEVERE,"Erro ao fechar a instancia: " + bis.toString());
+                    BioInspiredUtils.log(Level.SEVERE,"Erro ao fechar a instancia: " + bis.toString());
                 }
             }
         }

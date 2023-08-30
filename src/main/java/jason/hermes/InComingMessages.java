@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 
 public class InComingMessages {
 
-    public static final Logger LOGGER = Logger.getLogger("IN COMING MESSAGES");
+    private static final Logger LOGGER = Logger.getLogger("IN COMING MESSAGES");
     private List<Message> messages;
 
     private AgentTransferRequestMessageDto agentTransferRequestMessageDto;
@@ -63,7 +63,7 @@ public class InComingMessages {
         for (String receivedEncryptedMessage : receivedEncryptedMessages) {
             Object decryptedObjectMessage = communicationMiddleware.getCommunicationSecurity()
                     .decrypt(receivedEncryptedMessage);
-            LOGGER.log(Level.FINE, "New message received.");
+            log(Level.FINE, "New message received.");
 
             Message decryptedMessage = HermesUtils.getJasonMessage(decryptedObjectMessage);
             if (decryptedMessage != null) {
@@ -76,7 +76,7 @@ public class InComingMessages {
             if (agentTransferRequestMessageDto != null &&
                     (this.bioinspiredConnectionIdentifier == null || connectionIdentifier.equals(this.bioinspiredConnectionIdentifier))) {
                 this.agentTransferRequestMessageDto = agentTransferRequestMessageDto;
-                BioInspiredUtils.LOGGER.log(Level.INFO, "Received an agent transfer request!");
+                BioInspiredUtils.log(Level.INFO, "Received an agent transfer request!");
                 this.bioinspiredConnectionIdentifier = connectionIdentifier;
                 continue;
             }
@@ -85,7 +85,7 @@ public class InComingMessages {
                     .getAgentTransferResponseMessage(decryptedObjectMessage);
             if (agentTransferResponseMessageDto != null && connectionIdentifier.equals(this.bioinspiredConnectionIdentifier)) {
                 this.agentTransferResponseMessageDto = agentTransferResponseMessageDto;
-                BioInspiredUtils.LOGGER.log(Level.INFO, "The response to the transfer of agents was: "
+                BioInspiredUtils.log(Level.INFO, "The response to the transfer of agents was: "
                         + agentTransferResponseMessageDto.isCanBeTransferred());
                 continue;
             }
@@ -94,7 +94,7 @@ public class InComingMessages {
                     .getAgentTransferContentMessage(decryptedObjectMessage);
             if (agentTransferContentMessageDto != null && connectionIdentifier.equals(this.bioinspiredConnectionIdentifier)) {
                 this.agentTransferContentMessageDto = agentTransferContentMessageDto;
-                BioInspiredUtils.LOGGER.log(Level.INFO, "Received the agents content");
+                BioInspiredUtils.log(Level.INFO, "Received the agents content");
                 continue;
             }
 
@@ -102,16 +102,24 @@ public class InComingMessages {
                     .getAgentTransferConfirmationMessage(decryptedObjectMessage);
             if (agentTransferConfirmationMessageDto != null && connectionIdentifier.equals(this.bioinspiredConnectionIdentifier)) {
                 this.agentTransferConfirmationMessageDto = agentTransferConfirmationMessageDto;
-                BioInspiredUtils.LOGGER.log(Level.INFO, "The agent transfer confirmation was: "
+                BioInspiredUtils.log(Level.INFO, "The agent transfer confirmation was: "
                         + agentTransferConfirmationMessageDto.isAgentTransferSuccess());
                 continue;
             }
 
             // TODO: verificar oque fazer se não for uma mensagem Jason e nem uma mensagem dos Bioinspired protocols.
-            LOGGER.log(Level.INFO, "Unable to classify the received message: " + decryptedObjectMessage);
+            log(Level.INFO, "Unable to classify the received message: " + decryptedObjectMessage);
 
         }
         communicationMiddleware.cleanReceivedMessages();
+    }
+
+    public static void log(Level level, String message) {
+        try {
+            LOGGER.log(level, message);
+        } catch (Exception e) {
+            //ignore
+        }
     }
 
     public List<Message> getMessages() {
