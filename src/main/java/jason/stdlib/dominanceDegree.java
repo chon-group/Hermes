@@ -6,7 +6,9 @@ import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.Term;
+import jason.bb.BeliefBase;
 import jason.hermes.bioinspired.DominanceDegrees;
+import jason.hermes.utils.BeliefUtils;
 import jason.hermes.utils.HermesUtils;
 
 public class dominanceDegree extends DefaultInternalAction {
@@ -34,6 +36,9 @@ public class dominanceDegree extends DefaultInternalAction {
         DominanceDegrees dominanceDegrees = DominanceDegrees.get(dominanceDegree);
         Hermes hermes = HermesUtils.checkArchClass(ts.getAgArch(), this.getClass().getName());
         hermes.getBioinspiredData().setMyDominanceDegree(dominanceDegrees);
+
+        BeliefUtils.replaceBelief(BeliefUtils.MY_DOMINANCE_DEGREE_PREFIX, BeliefUtils.MY_DOMINANCE_DEGREE_VALUE, BeliefBase.ASelf,
+                dominanceDegrees.name(), hermes.getTS().getAg());
 
         return true;
     }

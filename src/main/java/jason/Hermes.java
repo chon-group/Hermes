@@ -2,6 +2,7 @@ package jason;
 
 import jason.architecture.AgArch;
 import jason.asSemantics.Message;
+import jason.bb.BeliefBase;
 import jason.hermes.InComingMessages;
 import jason.hermes.bioinspired.BioinspiredData;
 import jason.hermes.bioinspired.BioinspiredProcessor;
@@ -10,6 +11,7 @@ import jason.hermes.bioinspired.DominanceDegrees;
 import jason.hermes.config.Configuration;
 import jason.hermes.middlewares.CommunicationMiddleware;
 import jason.hermes.middlewares.CommunicationMiddlewareIdentifier;
+import jason.hermes.utils.BeliefUtils;
 import jason.hermes.utils.BioInspiredUtils;
 
 import java.time.LocalDateTime;
@@ -29,6 +31,14 @@ public class Hermes extends AgArch {
         super();
         this.communicationMiddlewareHashMap = new HashMap<>();
         this.bioinspiredData = new BioinspiredData(DominanceDegrees.LOW_RANK);
+    }
+
+    @Override
+    public void init() throws Exception {
+        super.init();
+
+        BeliefUtils.addBelief(BeliefUtils.MY_DOMINANCE_DEGREE_VALUE, BeliefBase.ASelf,
+                this.bioinspiredData.getMyDominanceDegree().name(), this.getTS().getAg());
     }
 
     public CommunicationMiddleware getCommunicationMiddleware(String connectionIdentifier) {
