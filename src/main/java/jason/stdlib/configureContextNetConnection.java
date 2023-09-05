@@ -5,11 +5,16 @@ import jason.JasonException;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
+import jason.asSyntax.Literal;
 import jason.asSyntax.Term;
+import jason.hermes.utils.BeliefUtils;
+import jason.hermes.utils.BioInspiredUtils;
 import jason.hermes.utils.HermesUtils;
 import jason.hermes.config.ContextNetConfiguration;
 import jason.hermes.sec.CommunicationSecurity;
 import jason.hermes.sec.NoSecurity;
+
+import java.util.logging.Level;
 
 public class configureContextNetConnection extends DefaultInternalAction {
 
@@ -47,6 +52,9 @@ public class configureContextNetConnection extends DefaultInternalAction {
         Hermes hermes = HermesUtils.checkArchClass(ts.getAgArch(), this.getClass().getName());
 
         hermes.addConnectionConfiguration(contextNetConfiguration);
+
+        BioInspiredUtils.log(Level.INFO, contextNetConfiguration.toString());
+        BeliefUtils.addBelief(Literal.parseLiteral(contextNetConfiguration.toString()), hermes.getTS().getAg());
 
         return true;
     }

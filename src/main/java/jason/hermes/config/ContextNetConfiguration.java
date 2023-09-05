@@ -32,4 +32,19 @@ public class ContextNetConfiguration extends Configuration{
         return myUUIDString;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        String className = this.getClass().getSimpleName();
+        char firstChar = Character.toLowerCase(className.charAt(0));
+        String classNameFirstCharacterLowerCase = firstChar + className.substring(1);
+        stringBuilder.append(classNameFirstCharacterLowerCase);
+        stringBuilder.append("(");
+        stringBuilder.append("\"").append(getConnectionIdentifier()).append("\"").append(",");
+        stringBuilder.append("\"").append(getGatewayIP()).append("\"").append(",");
+        stringBuilder.append("\"").append(getGatewayPort()).append("\"").append(",");
+        stringBuilder.append("\"").append(getMyUUIDString()).append("\"");
+        stringBuilder.append(")");
+        return stringBuilder.toString();
+    }
 }

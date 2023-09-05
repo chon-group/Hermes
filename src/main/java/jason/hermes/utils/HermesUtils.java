@@ -60,6 +60,10 @@ public class HermesUtils {
         return term.toString().trim().replace("\"", "");
     }
 
+    public static String treatString(String value) {
+        return value.trim().replace("\"", "");
+    }
+
     public static Message getJasonMessage(Object message) {
         // TODO: Verificar como vamos fazer o tratamento das exceções.
         if (message instanceof Message) {

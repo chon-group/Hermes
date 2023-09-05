@@ -13,12 +13,6 @@ import java.util.logging.Level;
 
 public class BeliefUtils {
 
-    public static final String SERVER_ADDRESS_BELIEF_PREFIX = "serverAddress";
-
-    public static final String SERVER_PORT_BELIEF_PREFIX = "serverPort";
-
-    public static final String MY_UUID_BELIEF_PREFIX = "myUUID";
-
     public static final String MY_MAS_BELIEF_PREFIX = "myMAS";
 
     public static final String MY_DOMINANCE_DEGREE_PREFIX = "myDominanceDegree";
@@ -26,12 +20,6 @@ public class BeliefUtils {
     public static final String VALUE_REPLACEMENT = "#";
 
     private static final String BELIEF_VALUE = "(\""+VALUE_REPLACEMENT+"\")";
-
-    public static String SERVER_ADDRESS_BELIEF_VALUE = SERVER_ADDRESS_BELIEF_PREFIX + BELIEF_VALUE;
-
-    public static String SERVER_PORT_BELIEF_VALUE = SERVER_PORT_BELIEF_PREFIX + BELIEF_VALUE;
-
-    public static String MY_UUID_BELIEF_VALUE = MY_UUID_BELIEF_PREFIX + BELIEF_VALUE;
 
     public static String MY_MAS_BELIEF_VALUE = MY_MAS_BELIEF_PREFIX + BELIEF_VALUE;
 
@@ -63,26 +51,34 @@ public class BeliefUtils {
                     int finalIndex = correctBelief.indexOf(")");
                     if (initialIndex != -1 && finalIndex != -1) {
                         correctBelief = correctBelief.substring(initialIndex + 1, finalIndex);
-                        beliefValuesList.add(correctBelief.trim().replace("\"", ""));
+                        beliefValuesList.add(HermesUtils.treatString(correctBelief));
                     }
                 }
             }
         }
         return beliefValuesList;
     }
-    
-    public static void addBelief(String beliefValueConstantName, Term beliefSource, String value, Agent agent) {
-        Literal myDominanceDegreeBelief = Literal.parseLiteral(beliefValueConstantName.replace(
+
+    public static Literal getBelief(String beliefValueConstantName, Term beliefSource, String value) {
+        Literal belief = Literal.parseLiteral(beliefValueConstantName.replace(
                 BeliefUtils.VALUE_REPLACEMENT,
                 value));
-        myDominanceDegreeBelief.addSource(beliefSource);
+        belief.addSource(beliefSource);
 
+        return belief;
+    }
+
+    public static void addBelief(Literal belief, Agent agent) {
         try {
-            agent.addBel(myDominanceDegreeBelief);
+            agent.addBel(belief);
         } catch (RevisionFailedException e) {
             BioInspiredUtils.log(Level.SEVERE,
-                    "Error: Tt was not possible to add the belief: '" + myDominanceDegreeBelief + "'.\nCause: " + e);
+                    "Error: Tt was not possible to add the belief: '" + belief + "'.\nCause: " + e);
         }
+    }
+    public static void addBelief(String beliefValueConstantName, Term beliefSource, String value, Agent agent) {
+        Literal belief = getBelief(beliefValueConstantName, beliefSource, value);
+        addBelief(belief, agent);
     }
 
     public static void replaceBelief(String beliefConstantPrefix, String beliefValueConstantName,Term beliefSource, String value, Agent agent) {

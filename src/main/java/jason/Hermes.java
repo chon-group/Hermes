@@ -13,6 +13,8 @@ import jason.hermes.middlewares.CommunicationMiddleware;
 import jason.hermes.middlewares.CommunicationMiddlewareIdentifier;
 import jason.hermes.utils.BeliefUtils;
 import jason.hermes.utils.BioInspiredUtils;
+import jason.hermes.utils.HermesUtils;
+import jason.infra.local.RunLocalMAS;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -37,8 +39,24 @@ public class Hermes extends AgArch {
     public void init() throws Exception {
         super.init();
 
-        BeliefUtils.addBelief(BeliefUtils.MY_DOMINANCE_DEGREE_VALUE, BeliefBase.ASelf,
-                this.bioinspiredData.getMyDominanceDegree().name(), this.getTS().getAg());
+        BeliefBase beliefBase = this.getTS().getAg().getBB();
+
+        List<String> beliefByStartWithList = BeliefUtils.getBeliefByStartWith(beliefBase,
+                BeliefUtils.MY_DOMINANCE_DEGREE_PREFIX);
+
+        if (beliefByStartWithList.isEmpty()) {
+            BeliefUtils.addBelief(BeliefUtils.MY_DOMINANCE_DEGREE_VALUE, BeliefBase.ASelf,
+                    this.bioinspiredData.getMyDominanceDegree().name(), this.getTS().getAg());
+        } else {
+            String source = HermesUtils.getParameterInString(BeliefBase.ASelf);
+            List<String> beliefValue = BeliefUtils.getBeliefValue(beliefByStartWithList, source);
+            String value = HermesUtils.treatString(beliefValue.get(0));
+            DominanceDegrees dominanceDegrees = DominanceDegrees.get(value);
+            this.bioinspiredData.setMyDominanceDegree(dominanceDegrees);
+        }
+
+        BeliefUtils.replaceBelief(BeliefUtils.MY_MAS_BELIEF_PREFIX, BeliefUtils.MY_MAS_BELIEF_VALUE, BeliefBase.ASelf,
+                RunLocalMAS.getRunner().getProject().getSocName(), this.getTS().getAg());
     }
 
     public CommunicationMiddleware getCommunicationMiddleware(String connectionIdentifier) {
