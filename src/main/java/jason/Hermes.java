@@ -2,6 +2,7 @@ package jason;
 
 import jason.architecture.AgArch;
 import jason.asSemantics.Message;
+import jason.asSyntax.Literal;
 import jason.bb.BeliefBase;
 import jason.hermes.InComingMessages;
 import jason.hermes.bioinspired.BioinspiredData;
@@ -10,6 +11,7 @@ import jason.hermes.bioinspired.BioinspiredStageEnum;
 import jason.hermes.bioinspired.DominanceDegrees;
 import jason.hermes.config.Configuration;
 import jason.hermes.middlewares.CommunicationMiddleware;
+import jason.hermes.middlewares.CommunicationMiddlewareEnum;
 import jason.hermes.middlewares.CommunicationMiddlewareIdentifier;
 import jason.hermes.utils.BeliefUtils;
 import jason.hermes.utils.BioInspiredUtils;
@@ -57,6 +59,27 @@ public class Hermes extends AgArch {
 
         BeliefUtils.replaceBelief(BeliefUtils.MY_MAS_BELIEF_PREFIX, BeliefUtils.MY_MAS_BELIEF_VALUE, BeliefBase.ASelf,
                 RunLocalMAS.getRunner().getProject().getSocName(), this.getTS().getAg());
+
+        for (CommunicationMiddlewareEnum communicationMiddlewareEnum : CommunicationMiddlewareEnum.values()) {
+            String className = communicationMiddlewareEnum.getConfiguration().getClass().getSimpleName();
+            char firstChar = Character.toLowerCase(className.charAt(0));
+            String classNameFirstCharacterLowerCase = firstChar + className.substring(1);
+            List<String> communicationMiddlewareList = BeliefUtils.getBeliefByStartWith(beliefBase,
+                    classNameFirstCharacterLowerCase);
+            if (!communicationMiddlewareList.isEmpty()) {
+                for (String communicationMiddlewareEnumValue : communicationMiddlewareList) {
+                    Configuration configurationByBelief = communicationMiddlewareEnum.getConfiguration().getByBelief(
+                            Literal.parseLiteral(communicationMiddlewareEnumValue));
+                    this.addConnectionConfiguration(configurationByBelief);
+                    if (configurationByBelief.isConnected()) {
+                        CommunicationMiddleware communicationMiddleware = this.getCommunicationMiddleware(
+                                configurationByBelief.getConnectionIdentifier());
+                        communicationMiddleware.connect();
+                    }
+                }
+            }
+        }
+
     }
 
     public CommunicationMiddleware getCommunicationMiddleware(String connectionIdentifier) {

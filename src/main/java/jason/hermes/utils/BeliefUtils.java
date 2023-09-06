@@ -25,6 +25,8 @@ public class BeliefUtils {
 
     public static String MY_DOMINANCE_DEGREE_VALUE = MY_DOMINANCE_DEGREE_PREFIX + BELIEF_VALUE;
 
+    public static final String BELIEF_SEPARATOR = ",";
+
     public static List<String> getBeliefByStartWith(BeliefBase beliefBase, String startAt) {
         List<String> beliefs = new ArrayList<>();
         Iterator<Literal> beliefsIterator = beliefBase.iterator();

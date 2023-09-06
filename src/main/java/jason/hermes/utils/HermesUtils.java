@@ -37,7 +37,8 @@ public class HermesUtils {
         // TODO: Verificar o que deve ser feito se não for possivel identificar a implementação de segurança passada.
         SecurityImplementations[] securityImplementations = SecurityImplementations.values();
         for (SecurityImplementations securityImplementation : securityImplementations) {
-            if (securityImplementation.getSecurityClassName().equalsIgnoreCase(securityClassName)) {
+            if (securityImplementation.getSecurityClassName().equalsIgnoreCase(securityClassName)
+                    || securityImplementation.getSecurityImplementation().getClass().getSimpleName().equalsIgnoreCase(securityClassName)) {
                 return securityImplementation.getSecurityImplementation();
             }
         }

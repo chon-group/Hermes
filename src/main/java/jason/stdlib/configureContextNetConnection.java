@@ -53,8 +53,7 @@ public class configureContextNetConnection extends DefaultInternalAction {
 
         hermes.addConnectionConfiguration(contextNetConfiguration);
 
-        BioInspiredUtils.log(Level.INFO, contextNetConfiguration.toString());
-        BeliefUtils.addBelief(Literal.parseLiteral(contextNetConfiguration.toString()), hermes.getTS().getAg());
+        BeliefUtils.addBelief(contextNetConfiguration.toBelief(), hermes.getTS().getAg());
 
         return true;
     }

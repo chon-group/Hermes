@@ -1,5 +1,6 @@
 package jason.hermes.config;
 
+import jason.asSyntax.Literal;
 import jason.hermes.sec.CommunicationSecurity;
 
 public abstract class Configuration {
@@ -9,6 +10,10 @@ public abstract class Configuration {
     private boolean connected = false;
 
     private CommunicationSecurity security;
+
+    public abstract Literal toBelief();
+
+    public abstract Configuration getByBelief(Literal belief);
 
 
     public String getConnectionIdentifier() {
