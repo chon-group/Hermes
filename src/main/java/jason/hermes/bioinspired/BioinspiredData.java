@@ -1,5 +1,7 @@
 package jason.hermes.bioinspired;
 
+import jason.asSemantics.Agent;
+
 import java.util.List;
 
 public class BioinspiredData {
@@ -15,6 +17,8 @@ public class BioinspiredData {
     private String receiverIdentification;
 
     private boolean hasHermesAgentTransferred;
+
+    private List<Agent> hermesAgentsTransferred;
 
     private String connectionIdentifier;
 
@@ -62,6 +66,7 @@ public class BioinspiredData {
         this.senderIdentification = null;
         this.receiverIdentification = null;
         this.hasHermesAgentTransferred = false;
+        this.hermesAgentsTransferred = null;
         this.connectionIdentifier = null;
         this.bioinspiredRole = null;
         this.bioinspiredStage = null;
@@ -118,6 +123,14 @@ public class BioinspiredData {
 
     public void setHasHermesAgentTransferred(boolean hasHermesAgentTransferred) {
         this.hasHermesAgentTransferred = hasHermesAgentTransferred;
+    }
+
+    public List<Agent> getHermesAgentsTransferred() {
+        return hermesAgentsTransferred;
+    }
+
+    public void setHermesAgentsTransferred(List<Agent> hermesAgentsTransferred) {
+        this.hermesAgentsTransferred = hermesAgentsTransferred;
     }
 
     public String getConnectionIdentifier() {

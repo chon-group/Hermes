@@ -3,7 +3,9 @@ package jason.hermes.config;
 import jason.asSyntax.Literal;
 import jason.hermes.sec.CommunicationSecurity;
 
-public abstract class Configuration {
+import java.util.Observable;
+
+public abstract class Configuration extends Observable implements Cloneable {
 
     private String connectionIdentifier;
 
@@ -30,6 +32,8 @@ public abstract class Configuration {
 
     public void setConnected(boolean connected) {
         this.connected = connected;
+        setChanged();
+        notifyObservers();
     }
 
     public CommunicationSecurity getSecurity() {
@@ -39,4 +43,7 @@ public abstract class Configuration {
     public void setSecurity(CommunicationSecurity security) {
         this.security = security;
     }
+
+    public abstract Configuration clone();
+
 }

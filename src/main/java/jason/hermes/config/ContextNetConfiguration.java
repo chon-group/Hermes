@@ -23,6 +23,16 @@ public class ContextNetConfiguration extends Configuration{
         this.myUUIDString = myUUIDString;
     }
 
+    public ContextNetConfiguration(String connectionIdentifier, CommunicationSecurity communicationSecurity,
+                                   String gatewayIP, int gatewayPort, String myUUIDString, boolean connected) {
+        super.setConnectionIdentifier(connectionIdentifier);
+        super.setSecurity(communicationSecurity);
+        super.setConnected(connected);
+        this.gatewayIP = gatewayIP;
+        this.gatewayPort = gatewayPort;
+        this.myUUIDString = myUUIDString;
+    }
+
     public String getGatewayIP() {
         return gatewayIP;
     }
@@ -38,9 +48,7 @@ public class ContextNetConfiguration extends Configuration{
     @Override
     public Literal toBelief() {
         StringBuilder stringBuilder = new StringBuilder();
-        String className = this.getClass().getSimpleName();
-        char firstChar = Character.toLowerCase(className.charAt(0));
-        String classNameFirstCharacterLowerCase = firstChar + className.substring(1);
+        String classNameFirstCharacterLowerCase = BeliefUtils.getPrefix(this.getClass());
         stringBuilder.append(classNameFirstCharacterLowerCase);
         stringBuilder.append("(");
         stringBuilder.append("\"").append(getConnectionIdentifier()).append("\"").append(BeliefUtils.BELIEF_SEPARATOR);
@@ -66,7 +74,7 @@ public class ContextNetConfiguration extends Configuration{
             String gatewayIP = HermesUtils.treatString(configurationAtributes[1]);
             int gatewayPort = Integer.parseInt(HermesUtils.treatString(configurationAtributes[2]));
             String myUUIDString = HermesUtils.treatString(configurationAtributes[3]);
-            boolean connected = Boolean.getBoolean(HermesUtils.treatString(configurationAtributes[4]));
+            boolean connected = Boolean.parseBoolean(HermesUtils.treatString(configurationAtributes[4]));
             String securityImplementationClassName = HermesUtils.treatString(configurationAtributes[5]);
             CommunicationSecurity securityImplementation = HermesUtils.getSecurityImplementation(securityImplementationClassName);
             ContextNetConfiguration contextNetConfiguration = new ContextNetConfiguration(configurationIdentifier,
@@ -78,4 +86,9 @@ public class ContextNetConfiguration extends Configuration{
         return null;
     }
 
+    @Override
+    public ContextNetConfiguration clone() {
+        return new ContextNetConfiguration(getConnectionIdentifier(), getSecurity(), getGatewayIP(), getGatewayPort(),
+                getMyUUIDString(), isConnected());
+    }
 }

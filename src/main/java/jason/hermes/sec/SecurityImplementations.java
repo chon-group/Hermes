@@ -14,11 +14,11 @@ public enum SecurityImplementations {
     }
 
     public String getSecurityClassName() {
-        return securityClassName;
+        return this.securityClassName;
     }
 
     public CommunicationSecurity getSecurityImplementation() {
-        return securityImplementation;
+        return this.securityImplementation.clone();
     }
 
 }

@@ -3,11 +3,14 @@ package jason.hermes.middlewares;
 import jason.hermes.config.Configuration;
 import jason.hermes.config.ContextNetConfiguration;
 import jason.hermes.sec.CommunicationSecurity;
+import jason.hermes.utils.BioInspiredUtils;
 import lac.cnclib.net.NodeConnection;
 import lac.cnclib.net.NodeConnectionListener;
 import lac.cnclib.net.mrudp.MrUdpNodeConnection;
+import lac.cnclib.net.mrudp.MrUdpNodeConnectionReliableSocketProfile;
 import lac.cnclib.sddl.message.ApplicationMessage;
 import lac.cnclib.sddl.serialization.Serialization;
+import net.rudp.ReliableSocket;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -15,6 +18,7 @@ import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
 
 public class ContextNetMiddleware implements CommunicationMiddleware, NodeConnectionListener {
     private List<String> receivedMessages = new ArrayList<>();
@@ -32,11 +36,18 @@ public class ContextNetMiddleware implements CommunicationMiddleware, NodeConnec
     }
 
     @Override
+    public Configuration getConfiguration() {
+        return this.contextNetConfiguration;
+    }
+
+    @Override
     public void connect() {
         InetSocketAddress address = new InetSocketAddress(this.contextNetConfiguration.getGatewayIP(),
                 this.contextNetConfiguration.getGatewayPort());
         try {
-            this.connection = new MrUdpNodeConnection(this.myUUID);
+            MrUdpNodeConnectionReliableSocketProfile reliableSocketProfile = new MrUdpNodeConnectionReliableSocketProfile();
+            ReliableSocket reliableSocket = new ReliableSocket(reliableSocketProfile);
+            this.connection = new MrUdpNodeConnection(reliableSocket, reliableSocketProfile, this.myUUID);
             this.connection.addNodeConnectionListener(this);
             this.connection.connect(address);
             this.contextNetConfiguration.setConnected(true);
@@ -101,6 +112,16 @@ public class ContextNetMiddleware implements CommunicationMiddleware, NodeConnec
     @Override
     public CommunicationSecurity getCommunicationSecurity() {
         return this.contextNetConfiguration.getSecurity();
+    }
+
+
+    @Override
+    public ContextNetMiddleware clone() {
+        ContextNetMiddleware contextNetMiddleware = new ContextNetMiddleware();
+        if (this.contextNetConfiguration != null) {
+            contextNetMiddleware.setConfiguration(this.contextNetConfiguration.clone());
+        }
+        return contextNetMiddleware;
     }
 
     // NodeConnectionListener implementations (ContextNet Interface)

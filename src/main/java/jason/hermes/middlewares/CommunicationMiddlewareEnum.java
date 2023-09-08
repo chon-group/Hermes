@@ -25,11 +25,11 @@ public enum CommunicationMiddlewareEnum {
     }
 
     public Configuration getConfiguration() {
-        return configuration;
+        return this.configuration.clone();
     }
 
     public CommunicationMiddleware getCommunicationMiddleware() {
-        return communicationMiddleware;
+        return this.communicationMiddleware.clone();
     }
 
 }

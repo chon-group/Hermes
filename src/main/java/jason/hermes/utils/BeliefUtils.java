@@ -27,7 +27,7 @@ public class BeliefUtils {
 
     public static final String BELIEF_SEPARATOR = ",";
 
-    public static List<String> getBeliefByStartWith(BeliefBase beliefBase, String startAt) {
+    public static List<String> getBeliefsInStringByStartWith(BeliefBase beliefBase, String startAt) {
         List<String> beliefs = new ArrayList<>();
         Iterator<Literal> beliefsIterator = beliefBase.iterator();
         while (beliefsIterator.hasNext()) {
@@ -35,6 +35,19 @@ public class BeliefUtils {
             String belief = literal.toString();
             if (belief.startsWith(startAt)){
                 beliefs.add(belief);
+            }
+        }
+        return beliefs;
+    }
+
+    public static List<Literal> getBeliefsByStartWith(BeliefBase beliefBase, String startAt) {
+        List<Literal> beliefs = new ArrayList<>();
+        Iterator<Literal> beliefsIterator = beliefBase.iterator();
+        while (beliefsIterator.hasNext()) {
+            Literal literal = beliefsIterator.next();
+            String belief = literal.toString();
+            if (belief.startsWith(startAt)){
+                beliefs.add(literal);
             }
         }
         return beliefs;
@@ -83,8 +96,9 @@ public class BeliefUtils {
         addBelief(belief, agent);
     }
 
-    public static void replaceBelief(String beliefConstantPrefix, String beliefValueConstantName,Term beliefSource, String value, Agent agent) {
-        List<String> beliefWithPrefixList = BeliefUtils.getBeliefByStartWith(agent.getBB(), beliefConstantPrefix);
+    public static void replaceAllBelief(String beliefConstantPrefix, String beliefValueConstantName, Term beliefSource,
+                                        String value, Agent agent) {
+        List<String> beliefWithPrefixList = BeliefUtils.getBeliefsInStringByStartWith(agent.getBB(), beliefConstantPrefix);
         String source = HermesUtils.getParameterInString(beliefSource);
 
         List<String> beliefValueList = BeliefUtils.getBeliefValue(beliefWithPrefixList, source);
@@ -103,5 +117,56 @@ public class BeliefUtils {
 
         addBelief(beliefValueConstantName, beliefSource, value, agent);
     }
-    
+
+    public static void replaceAllBelief(Literal belief, Term source, Agent agent) {
+        String beliefString = belief.toString();
+        String sourceString = HermesUtils.getParameterInString(source);
+        int initialIndex = beliefString.indexOf("(");
+        String beliefPrefix = "";
+        if(initialIndex != 1) {
+            beliefPrefix = beliefString.substring(0, initialIndex);
+        }
+        if (!beliefPrefix.isEmpty()) {
+            List<String> beliefWithPrefixList = BeliefUtils.getBeliefsInStringByStartWith(agent.getBB(), beliefPrefix);
+
+            List<String> beliefValueList = BeliefUtils.getBeliefValue(beliefWithPrefixList, sourceString);
+
+            if (!beliefValueList.isEmpty()) {
+                for (String beliefValueString : beliefWithPrefixList) {
+                    if (!beliefValueString.equals(beliefString)) {
+                        Literal beliefValueLiteral = Literal.parseLiteral(beliefValueString);
+                        try {
+                            agent.delBel(beliefValueLiteral);
+                        } catch (RevisionFailedException e) {
+                            BioInspiredUtils.log(Level.SEVERE,
+                                    "Error: Tt was not possible to remove the belief: '" + beliefValueString + "'.\nCause: " + e);
+                        }
+                    }
+                }
+            }
+
+            if (!beliefWithPrefixList.contains(beliefString)) {
+                addBelief(belief, agent);
+            }
+        }
+
+    }
+
+    public static void replaceBelief(Literal newBelief, Literal oldBelief, Agent agent) {
+        try {
+            agent.delBel(oldBelief);
+        } catch (RevisionFailedException e) {
+            BioInspiredUtils.log(Level.SEVERE,
+                    "Error: Tt was not possible to remove the belief: '" + oldBelief + "'.\nCause: " + e);
+        }
+
+        addBelief(newBelief, agent);
+    }
+
+    public static String getPrefix(Class aClass) {
+        String className = aClass.getSimpleName();
+        char firstChar = Character.toLowerCase(className.charAt(0));
+        return firstChar + className.substring(1);
+    }
+
 }

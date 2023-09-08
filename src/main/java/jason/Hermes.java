@@ -1,14 +1,12 @@
 package jason;
 
 import jason.architecture.AgArch;
+import jason.asSemantics.Agent;
 import jason.asSemantics.Message;
 import jason.asSyntax.Literal;
 import jason.bb.BeliefBase;
 import jason.hermes.InComingMessages;
-import jason.hermes.bioinspired.BioinspiredData;
-import jason.hermes.bioinspired.BioinspiredProcessor;
-import jason.hermes.bioinspired.BioinspiredStageEnum;
-import jason.hermes.bioinspired.DominanceDegrees;
+import jason.hermes.bioinspired.*;
 import jason.hermes.config.Configuration;
 import jason.hermes.middlewares.CommunicationMiddleware;
 import jason.hermes.middlewares.CommunicationMiddlewareEnum;
@@ -20,11 +18,10 @@ import jason.infra.local.RunLocalMAS;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 
-public class Hermes extends AgArch {
+public class Hermes extends AgArch implements Observer {
 
     private final HashMap<String, CommunicationMiddleware> communicationMiddlewareHashMap;
 
@@ -43,7 +40,7 @@ public class Hermes extends AgArch {
 
         BeliefBase beliefBase = this.getTS().getAg().getBB();
 
-        List<String> beliefByStartWithList = BeliefUtils.getBeliefByStartWith(beliefBase,
+        List<String> beliefByStartWithList = BeliefUtils.getBeliefsInStringByStartWith(beliefBase,
                 BeliefUtils.MY_DOMINANCE_DEGREE_PREFIX);
 
         if (beliefByStartWithList.isEmpty()) {
@@ -57,25 +54,19 @@ public class Hermes extends AgArch {
             this.bioinspiredData.setMyDominanceDegree(dominanceDegrees);
         }
 
-        BeliefUtils.replaceBelief(BeliefUtils.MY_MAS_BELIEF_PREFIX, BeliefUtils.MY_MAS_BELIEF_VALUE, BeliefBase.ASelf,
+        BeliefUtils.replaceAllBelief(BeliefUtils.MY_MAS_BELIEF_PREFIX, BeliefUtils.MY_MAS_BELIEF_VALUE, BeliefBase.ASelf,
                 RunLocalMAS.getRunner().getProject().getSocName(), this.getTS().getAg());
 
         for (CommunicationMiddlewareEnum communicationMiddlewareEnum : CommunicationMiddlewareEnum.values()) {
-            String className = communicationMiddlewareEnum.getConfiguration().getClass().getSimpleName();
-            char firstChar = Character.toLowerCase(className.charAt(0));
-            String classNameFirstCharacterLowerCase = firstChar + className.substring(1);
-            List<String> communicationMiddlewareList = BeliefUtils.getBeliefByStartWith(beliefBase,
+            String classNameFirstCharacterLowerCase = BeliefUtils.getPrefix(communicationMiddlewareEnum.getConfiguration()
+                    .getClass());
+            List<String> communicationMiddlewareList = BeliefUtils.getBeliefsInStringByStartWith(beliefBase,
                     classNameFirstCharacterLowerCase);
             if (!communicationMiddlewareList.isEmpty()) {
                 for (String communicationMiddlewareEnumValue : communicationMiddlewareList) {
                     Configuration configurationByBelief = communicationMiddlewareEnum.getConfiguration().getByBelief(
                             Literal.parseLiteral(communicationMiddlewareEnumValue));
                     this.addConnectionConfiguration(configurationByBelief);
-                    if (configurationByBelief.isConnected()) {
-                        CommunicationMiddleware communicationMiddleware = this.getCommunicationMiddleware(
-                                configurationByBelief.getConnectionIdentifier());
-                        communicationMiddleware.connect();
-                    }
                 }
             }
         }
@@ -87,7 +78,12 @@ public class Hermes extends AgArch {
         return this.communicationMiddlewareHashMap.get(connectionIdentifier);
     }
 
+    public HashMap<String, CommunicationMiddleware> getCommunicationMiddlewareHashMap() {
+        return communicationMiddlewareHashMap;
+    }
+
     public void addConnectionConfiguration(Configuration configuration) {
+        configuration.addObserver(this);
         CommunicationMiddleware communicationMiddleware = CommunicationMiddlewareIdentifier.identify(configuration);
         this.communicationMiddlewareHashMap.put(configuration.getConnectionIdentifier(), communicationMiddleware);
     }
@@ -100,6 +96,21 @@ public class Hermes extends AgArch {
             }
         }
         return "";
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        if (o instanceof Configuration) {
+            Configuration configuration = (Configuration) o;
+            String prefix = BeliefUtils.getPrefix(configuration.getClass());
+            List<Literal> beliefsByStartWith = BeliefUtils.getBeliefsByStartWith(this.getTS().getAg().getBB(), prefix);
+            for (Literal literal : beliefsByStartWith) {
+                Configuration byBelief = configuration.getByBelief(literal);
+                if (byBelief.getConnectionIdentifier().equals(configuration.getConnectionIdentifier())) {
+                    BeliefUtils.replaceBelief(configuration.toBelief(), literal, this.getTS().getAg());
+                }
+            }
+        }
     }
 
     public BioinspiredData getBioinspiredData() {
@@ -143,6 +154,10 @@ public class Hermes extends AgArch {
                         inComingMessages.getAgentTransferContentMessageDto(),
                         inComingMessages.getAgentTransferConfirmationMessageDto());
             } else {
+                if (BioinspiredRoleEnum.RECEIVED.equals(this.bioinspiredData.getBioinspiredRole())
+                        && this.bioinspiredData.isHasHermesAgentTransferred()) {
+                    BioinspiredProcessor.autoConnection(this.bioinspiredData.getHermesAgentsTransferred());
+                }
                 this.bioinspiredData.clean();
                 String logMessage = "The execution of the protocol ended at "
                         + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss.SSS"));

@@ -11,4 +11,9 @@ public class NoSecurity implements CommunicationSecurity {
     public String encrypt(Object message) {
         return message.toString();
     }
+
+    @Override
+    public CommunicationSecurity clone() {
+        return new NoSecurity();
+    }
 }

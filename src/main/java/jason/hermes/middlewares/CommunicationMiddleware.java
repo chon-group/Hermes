@@ -5,9 +5,11 @@ import jason.hermes.sec.CommunicationSecurity;
 
 import java.util.List;
 
-public interface CommunicationMiddleware {
+public interface CommunicationMiddleware extends Cloneable {
 
     void setConfiguration(Configuration configuration);
+
+    Configuration getConfiguration();
 
     void connect();
 
@@ -28,5 +30,7 @@ public interface CommunicationMiddleware {
     String getAgentIdentification();
 
     CommunicationSecurity getCommunicationSecurity();
+
+    CommunicationMiddleware clone();
 
 }

@@ -1,5 +1,7 @@
 package jason.hermes.bioinspired;
 
+import jason.Hermes;
+import jason.asSemantics.Agent;
 import jason.asSemantics.TransitionSystem;
 import jason.asSyntax.Term;
 import jason.hermes.OutGoingMessage;
@@ -8,6 +10,7 @@ import jason.hermes.bioinspired.dto.AgentTransferContentMessageDto;
 import jason.hermes.bioinspired.dto.AgentTransferRequestMessageDto;
 import jason.hermes.bioinspired.dto.AgentTransferResponseMessageDto;
 import jason.hermes.middlewares.CommunicationMiddleware;
+import jason.hermes.middlewares.ContextNetMiddleware;
 import jason.hermes.utils.BioInspiredUtils;
 import jason.hermes.utils.HermesUtils;
 import jason.infra.local.LocalAgArch;
@@ -17,10 +20,7 @@ import jason.runtime.RuntimeServicesFactory;
 import java.rmi.RemoteException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 
 public class BioinspiredProcessor {
@@ -178,6 +178,7 @@ public class BioinspiredProcessor {
             HashMap<String, AslTransferenceModel> agentsSourceCode = new HashMap<>();
             Map<String, LocalAgArch> agentsOfTheSMA = RunLocalMAS.getRunner().getAgs();
             int qtdAgents = 0;
+            List<Agent> hermesAgentsTransferred = new ArrayList<>();
             for (LocalAgArch localAgArch : agentsOfTheSMA.values()) {
                 if (bioinspiredData.getNameOfAgentsToBeTransferred().contains(localAgArch.getAgName())) {
                     AslTransferenceModel aslTransferenceModel;
@@ -190,6 +191,9 @@ public class BioinspiredProcessor {
                     }
 
                     agentsSourceCode.put(localAgArch.getAgName(), aslTransferenceModel);
+                    if (Hermes.class.getName().equals(aslTransferenceModel.getAgentArchClass())) {
+                        hermesAgentsTransferred.add(localAgArch.getTS().getAg());
+                    }
                     qtdAgents++;
                 }
             }
@@ -198,6 +202,7 @@ public class BioinspiredProcessor {
             if (qtdAgents == bioinspiredData.getNameOfAgentsToBeTransferred().size()) {
                 AgentTransferContentMessageDto agentTransferContentMessageDto =
                         new AgentTransferContentMessageDto(agentsSourceCode);
+                bioinspiredData.setHermesAgentsTransferred(hermesAgentsTransferred);
                 bioinspiredData.setBioinspiredStage(BioinspiredStageEnum.CONTENT_TRANSFER);
                 BioInspiredUtils.log(Level.INFO, "Sending the agents content.");
                 OutGoingMessage.sendMessageBioinspiredMessage(agentTransferContentMessageDto,
@@ -241,6 +246,7 @@ public class BioinspiredProcessor {
         int qtdAgentsInstantiated = 0;
 
         List<String> nameOfAgentsInstantiated = new ArrayList<>();
+        List<Agent> hermesAgentsTransferred = new ArrayList<>();
         // TODO: tratar se tiver erro para instanciar os agentes.
         for (String agentName : nameOfAgentsToBeTransferredList) {
             AslTransferenceModel aslTransferenceModel = agentTransferContentMessageDto.getAgentsSourceCode()
@@ -258,6 +264,11 @@ public class BioinspiredProcessor {
                 AslFileGenerator.createAslFile(path, aslTransferenceModel);
 
                 qtdAgentsInstantiated = BioInspiredUtils.startAgent(ts, agentNameInstantiated, path, agArchClass, qtdAgentsInstantiated);
+                if (Hermes.class.getName().equals(aslTransferenceModel.getAgentArchClass())) {
+                    Agent agent = RunLocalMAS.getRunner().getAg(agentNameInstantiated).getTS().getAg();
+                    hermesAgentsTransferred.add(agent);
+                }
+
                 nameOfAgentsInstantiated.add(agentNameInstantiated);
             }
         }
@@ -265,6 +276,9 @@ public class BioinspiredProcessor {
         if (qtdAgentsInstantiated == nameOfAgentsToBeTransferredList.size()) {
             // Todos os agentes instanciados
             agentTransferSuccess = true;
+            if (bioinspiredData.isHasHermesAgentTransferred()) {
+                bioinspiredData.setHermesAgentsTransferred(hermesAgentsTransferred);
+            }
             canKill = canKillOriginCopy();
 
         }
@@ -288,6 +302,19 @@ public class BioinspiredProcessor {
                                             AgentTransferConfirmationMessageDto agentTransferConfirmationMessageDto) {
         if (agentTransferConfirmationMessageDto.isAgentTransferSuccess()) {
 
+            for (Agent hermesAgentTransferred : bioinspiredData.getHermesAgentsTransferred()) {
+                Hermes agArch = (Hermes) hermesAgentTransferred.getTS().getAgArch();
+                for (String connectionIdentifier : agArch.getCommunicationMiddlewareHashMap().keySet()) {
+                    CommunicationMiddleware communicationMiddleware = agArch
+                            .getCommunicationMiddleware(connectionIdentifier);
+                    if (communicationMiddleware.isConnected()) {
+                        communicationMiddleware.disconnect();
+                        BioInspiredUtils.log(Level.INFO, "The Hermes transferred agent '"
+                                + agArch.getAgName() + "' was disconected in the Sender MAS.");
+                    }
+                }
+            }
+
             if (agentTransferConfirmationMessageDto.isCanKill()) {
                 BioInspiredUtils.killTransferredAgents(ts, bioinspiredData.getNameOfAgentsToBeTransferred());
             }
@@ -308,4 +335,39 @@ public class BioinspiredProcessor {
         }
     }
 
+
+    public static void autoConnection(List<Agent> hermesAgentsTransferredList) {
+        Timer timer = new Timer();
+        final List<Agent> hermesAgentsTransferredListClone = new ArrayList<>(hermesAgentsTransferredList);
+        TimerTask tarefa = new TimerTask() {
+            @Override
+            public void run() {
+                for (Agent hermesAgentTransferred : hermesAgentsTransferredListClone) {
+                    Hermes agArch = (Hermes) hermesAgentTransferred.getTS().getAgArch();
+                    for (String connectionIdentifier : agArch.getCommunicationMiddlewareHashMap().keySet()) {
+                        CommunicationMiddleware communicationMiddleware = agArch
+                                .getCommunicationMiddleware(connectionIdentifier);
+                        if (communicationMiddleware.isConnected()) {
+                            if (communicationMiddleware instanceof ContextNetMiddleware) {
+                                communicationMiddleware.connect();
+                                communicationMiddleware.connect();
+                                communicationMiddleware.connect();
+                                communicationMiddleware.connect();
+                                communicationMiddleware.connect();
+                            } else {
+                                communicationMiddleware.connect();
+                            }
+                            BioInspiredUtils.log(Level.INFO, "The Hermes transferred agent '"
+                                    + agArch.getAgName() + "' automatically connected successfully");
+                        } else {
+                            BioInspiredUtils.log(Level.INFO, "The Hermes transferred agent '"
+                                    + agArch.getAgName() + "' was not connected before the transfer");
+                        }
+                    }
+                }
+            }
+        };
+
+        timer.schedule(tarefa, 10000);
+    }
 }

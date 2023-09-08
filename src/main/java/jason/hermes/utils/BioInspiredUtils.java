@@ -135,7 +135,7 @@ public class BioInspiredUtils {
     public static void log(Level level, String message) {
         try {
             LOGGER.log(level, message);
-        } catch (Exception e) {
+        } catch (Exception | Error e) {
             //ignore
         }
     }

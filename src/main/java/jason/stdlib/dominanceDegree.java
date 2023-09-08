@@ -37,7 +37,7 @@ public class dominanceDegree extends DefaultInternalAction {
         Hermes hermes = HermesUtils.checkArchClass(ts.getAgArch(), this.getClass().getName());
         hermes.getBioinspiredData().setMyDominanceDegree(dominanceDegrees);
 
-        BeliefUtils.replaceBelief(BeliefUtils.MY_DOMINANCE_DEGREE_PREFIX, BeliefUtils.MY_DOMINANCE_DEGREE_VALUE, BeliefBase.ASelf,
+        BeliefUtils.replaceAllBelief(BeliefUtils.MY_DOMINANCE_DEGREE_PREFIX, BeliefUtils.MY_DOMINANCE_DEGREE_VALUE, BeliefBase.ASelf,
                 dominanceDegrees.name(), hermes.getTS().getAg());
 
         return true;
