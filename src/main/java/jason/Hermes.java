@@ -18,8 +18,12 @@ import jason.infra.local.RunLocalMAS;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 public class Hermes extends AgArch implements Observer {
 
@@ -27,11 +31,14 @@ public class Hermes extends AgArch implements Observer {
 
     private BioinspiredData bioinspiredData;
 
+    private boolean autoLocalization;
+
 
     public Hermes() {
         super();
         this.communicationMiddlewareHashMap = new HashMap<>();
         this.bioinspiredData = new BioinspiredData(DominanceDegrees.LOW_RANK);
+        this.autoLocalization = false;
     }
 
     @Override
@@ -124,6 +131,12 @@ public class Hermes extends AgArch implements Observer {
     @Override
     public void checkMail() {
         super.checkMail();
+
+        if (!this.autoLocalization) {
+            List<Agent> agentsOfTheMAS = RunLocalMAS.getRunner().getAgs().values().stream()
+                    .map(localAgArch -> localAgArch.getTS().getAg()).collect(Collectors.toList());
+            BioinspiredProcessor.autoLocalization(this.getAgName(), agentsOfTheMAS, false);
+        }
 
         InComingMessages inComingMessages = new InComingMessages(this.bioinspiredData, this.communicationMiddlewareHashMap);
 

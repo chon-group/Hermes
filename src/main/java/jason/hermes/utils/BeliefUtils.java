@@ -96,8 +96,8 @@ public class BeliefUtils {
         addBelief(belief, agent);
     }
 
-    public static void replaceAllBelief(String beliefConstantPrefix, String beliefValueConstantName, Term beliefSource,
-                                        String value, Agent agent) {
+    public static void replaceAllBeliefBySource(String beliefConstantPrefix, String beliefValueConstantName, Term beliefSource,
+                                                String value, Agent agent) {
         List<String> beliefWithPrefixList = BeliefUtils.getBeliefsInStringByStartWith(agent.getBB(), beliefConstantPrefix);
         String source = HermesUtils.getParameterInString(beliefSource);
 
@@ -111,6 +111,27 @@ public class BeliefUtils {
                 } catch (RevisionFailedException e) {
                     BioInspiredUtils.log(Level.SEVERE,
                             "Error: Tt was not possible to remove the belief: '" + beliefValueString + "'.\nCause: " + e);
+                }
+            }
+        }
+
+        addBelief(beliefValueConstantName, beliefSource, value, agent);
+    }
+
+    public static void replaceAllBelief(String beliefConstantPrefix, String beliefValueConstantName, Term beliefSource,
+                                        String value, Agent agent) {
+        List<String> beliefWithPrefixList = BeliefUtils.getBeliefsInStringByStartWith(agent.getBB(), beliefConstantPrefix);
+
+        if (!beliefWithPrefixList.isEmpty()) {
+            for (String beliefValueString : beliefWithPrefixList) {
+                if (!beliefValueString.contains(value)) {
+                    Literal beliefValueLiteral = Literal.parseLiteral(beliefValueString);
+                    try {
+                        agent.delBel(beliefValueLiteral);
+                    } catch (RevisionFailedException e) {
+                        BioInspiredUtils.log(Level.SEVERE,
+                                "Error: Tt was not possible to remove the belief: '" + beliefValueString + "'.\nCause: " + e);
+                    }
                 }
             }
         }
@@ -148,6 +169,15 @@ public class BeliefUtils {
             if (!beliefWithPrefixList.contains(beliefString)) {
                 addBelief(belief, agent);
             }
+        }
+
+    }
+
+    public static void addBeliefIfAbsent(String beliefConstantPrefix, String beliefValueConstantName, Term beliefSource,
+                                         String value, Agent agent) {
+        List<String> beliefWithPrefixList = BeliefUtils.getBeliefsInStringByStartWith(agent.getBB(), beliefConstantPrefix);
+        if (beliefWithPrefixList.isEmpty()) {
+            addBelief(beliefValueConstantName, beliefSource, value, agent);
         }
 
     }
