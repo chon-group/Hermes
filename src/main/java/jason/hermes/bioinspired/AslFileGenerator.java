@@ -3,10 +3,13 @@ package jason.hermes.bioinspired;
 import jason.architecture.AgArch;
 import jason.asSemantics.Agent;
 import jason.asSemantics.Circumstance;
+import jason.asSemantics.IntendedMeans;
 import jason.asSemantics.Intention;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Plan;
+import jason.asSyntax.PlanBody;
 import jason.asSyntax.Trigger;
+import jason.stdlib.cryogenic;
 
 import java.io.*;
 import java.util.*;
@@ -61,6 +64,25 @@ public class AslFileGenerator {
         StringBuilder content = new StringBuilder();
         content.append(generateInitialBeliefs(agent) + NEXT_LINE);
         content.append(generateInitialGoals(agent) + NEXT_LINE);
+        content.append(generatePlans(agent) + NEXT_LINE);
+
+        AslTransferenceModel aslTransferenceModel = new AslTransferenceModel(agArch.getAgName(),
+                content.toString().getBytes(), agArch.getClass().getName());
+        return aslTransferenceModel;
+    }
+
+    /**
+     * Gera o conteúdo de um arquivo asl e encapsula no modelo serializável para ser transferido via contextNet
+     * sem a inteção de criogenar o SMA.
+     *
+     * @return Modelo de transferência de agente.
+     */
+    public static AslTransferenceModel generateAslContentWithoutCryogenicIntention(AgArch agArch) {
+        Agent agent = agArch.getTS().getAg();
+
+        StringBuilder content = new StringBuilder();
+        content.append(generateInitialBeliefs(agent) + NEXT_LINE);
+        content.append(generateInitialGoalsWithoutCryogenicIntention(agent) + NEXT_LINE);
         content.append(generatePlans(agent) + NEXT_LINE);
 
         AslTransferenceModel aslTransferenceModel = new AslTransferenceModel(agArch.getAgName(),
@@ -159,6 +181,18 @@ public class AslFileGenerator {
         return intentionName;
     }
 
+    private static boolean hasCryogenicIntention(Intention intention) {
+        boolean hasCryogenicIntention = false;
+        for (IntendedMeans intendedMeans : intention) {
+            PlanBody currentStep = intendedMeans.getCurrentStep();
+            hasCryogenicIntention = currentStep.toString().equals(END_SYMBOL + cryogenic.class.getSimpleName());
+            if (hasCryogenicIntention) {
+                break;
+            }
+        }
+        return hasCryogenicIntention;
+    }
+
     /**
      * Captura os objetivos iniciais do agente em tempo de execução.
      *
@@ -201,6 +235,65 @@ public class AslFileGenerator {
                 Intention intention = pendingIntentions.get(intentionsNumberAndKeyMap.get(intentionId));
                 String pendingIntentionName = getIntentionName(intention);
                 if (pendingIntentionName != null && !intentionsNames.contains(pendingIntentionName)) {
+                    intentionsNames.add(pendingIntentionName);
+                }
+            }
+        }
+        for (String intentionsName : intentionsNames) {
+            initialGoals.append(INITIAL_GOALS_SYMBOL + intentionsName + END_SYMBOL + NEXT_LINE);
+        }
+
+        return initialGoals.toString();
+    }
+
+    /**
+     * Captura os objetivos iniciais do agente em tempo de execução ignorando o objetivo de criogenar o SMA.
+     *
+     * @param agent Agente.
+     * @return Texto com os objetivos iniciais do agente em tempo de execução.
+     */
+    private static String generateInitialGoalsWithoutCryogenicIntention(Agent agent) {
+        StringBuilder initialGoals = new StringBuilder();
+        initialGoals.append("/* Initial goals */" + NEXT_LINE);
+        List<String> intentionsNames = new LinkedList<>();
+
+        Circumstance circumstance = agent.getTS().getC();
+        Queue<Intention> intentions = circumstance.getRunningIntentions();
+        // recupera as intenções atuais.
+        for (Intention intention : intentions) {
+            String runningIntentionName = getIntentionName(intention);
+            boolean hasCryogenicIntention = hasCryogenicIntention(intention);
+            if (runningIntentionName != null && !intentionsNames.contains(runningIntentionName)
+                    && !hasCryogenicIntention) {
+                intentionsNames.add(runningIntentionName);
+            }
+        }
+        // recupera a intenção selecionada para ser executada no proximo ciclo.
+        Intention selectedIntention = circumstance.getSelectedIntention();
+        if (selectedIntention != null) {
+            String selectedIntentionName = getIntentionName(selectedIntention);
+            boolean hasCryogenicIntention = hasCryogenicIntention(selectedIntention);
+            if (selectedIntentionName != null && !intentionsNames.contains(selectedIntentionName)
+                    && !hasCryogenicIntention) {
+                intentionsNames.add(selectedIntentionName);
+            }
+        }
+        // recupera as intenções que estão pendentes para serem executadas em algum momento em ordem.
+        Map<String, Intention> pendingIntentions = circumstance.getPendingIntentions();
+        if (pendingIntentions != null && !pendingIntentions.isEmpty()) {
+            Map<Integer, String> intentionsNumberAndKeyMap = new HashMap<>();
+            for (String keyPendingIntention : pendingIntentions.keySet()) {
+                intentionsNumberAndKeyMap.put(pendingIntentions.get(keyPendingIntention).getId(), keyPendingIntention);
+            }
+
+            List<Integer> intentionsNumberOrdenedList = intentionsNumberAndKeyMap.keySet().stream().sorted().collect(Collectors.toList());
+
+            for (Integer intentionId : intentionsNumberOrdenedList) {
+                Intention intention = pendingIntentions.get(intentionsNumberAndKeyMap.get(intentionId));
+                boolean hasCryogenicIntention = hasCryogenicIntention(intention);
+                String pendingIntentionName = getIntentionName(intention);
+                if (pendingIntentionName != null && !intentionsNames.contains(pendingIntentionName)
+                        && !hasCryogenicIntention) {
                     intentionsNames.add(pendingIntentionName);
                 }
             }
