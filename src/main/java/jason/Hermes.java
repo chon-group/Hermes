@@ -33,12 +33,15 @@ public class Hermes extends AgArch implements Observer {
 
     private boolean autoLocalization;
 
+    private boolean moved;
+
 
     public Hermes() {
         super();
         this.communicationMiddlewareHashMap = new HashMap<>();
         this.bioinspiredData = new BioinspiredData(DominanceDegrees.LOW_RANK);
         this.autoLocalization = false;
+        this.moved = false;
     }
 
     @Override
@@ -70,10 +73,17 @@ public class Hermes extends AgArch implements Observer {
             List<String> communicationMiddlewareList = BeliefUtils.getBeliefsInStringByStartWith(beliefBase,
                     classNameFirstCharacterLowerCase);
             if (!communicationMiddlewareList.isEmpty()) {
+                boolean wasConnected = false;
                 for (String communicationMiddlewareEnumValue : communicationMiddlewareList) {
                     Configuration configurationByBelief = communicationMiddlewareEnum.getConfiguration().getByBelief(
                             Literal.parseLiteral(communicationMiddlewareEnumValue));
                     this.addConnectionConfiguration(configurationByBelief);
+                    if (configurationByBelief.isConnected()) {
+                        wasConnected = true;
+                    }
+                }
+                if (wasConnected) {
+                    BioinspiredProcessor.autoConnection(this);
                 }
             }
         }
@@ -103,6 +113,14 @@ public class Hermes extends AgArch implements Observer {
             }
         }
         return "";
+    }
+
+    public void setMoved(boolean moved) {
+        this.moved = moved;
+    }
+
+    public boolean wasMoved() {
+        return moved;
     }
 
     @Override

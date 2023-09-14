@@ -1,6 +1,7 @@
 package jason.hermes.bioinspired;
 
 import jason.Hermes;
+import jason.JasonException;
 import jason.asSemantics.Agent;
 import jason.asSemantics.TransitionSystem;
 import jason.asSyntax.Atom;
@@ -269,6 +270,12 @@ public class BioinspiredProcessor {
                 qtdAgentsInstantiated = BioInspiredUtils.startAgent(ts, agentNameInstantiated, path, agArchClass, qtdAgentsInstantiated);
                 Agent agent = RunLocalMAS.getRunner().getAg(agentNameInstantiated).getTS().getAg();
                 if (Hermes.class.getName().equals(aslTransferenceModel.getAgentArchClass())) {
+                    try {
+                        Hermes hermes = HermesUtils.checkArchClass(agent.getTS().getAgArch());
+                        hermes.setMoved(true);
+                    } catch (JasonException e) {
+                        throw new RuntimeException(e);
+                    }
                     hermesAgentsTransferred.add(agent);
                 } else {
                     notHermesAgentsTransferred.add(agent);
@@ -377,6 +384,34 @@ public class BioinspiredProcessor {
         };
 
         timer.schedule(tarefa, 10000);
+    }
+
+    public static void autoConnection(Hermes hermes) {
+        Timer timer = new Timer();
+        TimerTask tarefa = new TimerTask() {
+            @Override
+            public void run() {
+                for (String connectionIdentifier : hermes.getCommunicationMiddlewareHashMap().keySet()) {
+                    if (!hermes.wasMoved()) {
+                        CommunicationMiddleware communicationMiddleware = hermes
+                                .getCommunicationMiddleware(connectionIdentifier);
+                        if (communicationMiddleware.isConnected()) {
+                            communicationMiddleware.connect();
+                            BioInspiredUtils.log(Level.INFO, "The Hermes was not moved '"
+                                    + hermes.getAgName() + "' and automatically connected successfully");
+                        } else {
+                            BioInspiredUtils.log(Level.INFO, "The Hermes was not moved '"
+                                    + hermes.getAgName() + "' but it believes it is not connected");
+                        }
+                    } else {
+                        BioInspiredUtils.log(Level.INFO, "The Hermes was moved '"
+                                + hermes.getAgName() + "'.");
+                    }
+                }
+            }
+        };
+
+        timer.schedule(tarefa, 1000);
     }
 
     public static void autoLocalization(String agentName, List<Agent> agents, boolean reload) {

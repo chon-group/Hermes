@@ -33,6 +33,17 @@ public class HermesUtils {
         return hermes;
     }
 
+    public static Hermes checkArchClass(AgArch agArch) throws JasonException {
+        Hermes hermes = null;
+        if(agArch instanceof Hermes) {
+            hermes = (Hermes) agArch;
+        } else {
+            throw new JasonException(
+                    "Was not possible to cast the agArch '" + agArch.getClass().getSimpleName() + "' to a Hermes arch.");
+        }
+        return hermes;
+    }
+
     public static CommunicationSecurity getSecurityImplementation(String securityClassName) {
         // TODO: Verificar o que deve ser feito se não for possivel identificar a implementação de segurança passada.
         SecurityImplementations[] securityImplementations = SecurityImplementations.values();
