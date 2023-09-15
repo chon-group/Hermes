@@ -8,5 +8,5 @@ MAS senderMAS {
         agent2;
 
     aslSourcePath:
-        "examples/cryogenic/inquilinism/sender/asl";
+        "examples/cryogenic/mutualism/sender/asl";
 }

@@ -13,5 +13,5 @@ MAS helloAgent {
 		agent4 agentArchClass jason.infra.local.LocalAgArch;
 		agent3 agentArchClass jason.infra.local.LocalAgArch;
 	aslSourcePath:
-		"examples/cryogenic/hello-agent/cryogenated/2023-09-13_19-23-46-007/helloAgent/asl";
+		"examples/cryogenic/hello-agent/cryogenated/2023-09-14_23-59-25-319/helloAgent/asl";
 }

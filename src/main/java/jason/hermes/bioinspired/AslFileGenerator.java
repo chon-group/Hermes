@@ -81,8 +81,15 @@ public class AslFileGenerator {
         Agent agent = agArch.getTS().getAg();
 
         StringBuilder content = new StringBuilder();
-        content.append(generateInitialBeliefs(agent) + NEXT_LINE);
-        content.append(generateInitialGoalsWithoutCryogenicIntention(agent) + NEXT_LINE);
+        String initialBeliefs = generateInitialBeliefs(agent);
+        StringBuilder beliefOfCryogenicTrigger = new StringBuilder();
+        String intentions = generateInitialGoalsWithoutCryogenicIntention(agent, beliefOfCryogenicTrigger);
+        if (!beliefOfCryogenicTrigger.isEmpty()) {
+            initialBeliefs = initialBeliefs.replace(beliefOfCryogenicTrigger.toString(), "");
+            initialBeliefs = initialBeliefs.replace(NEXT_LINE + NEXT_LINE, NEXT_LINE);
+        }
+        content.append(initialBeliefs + NEXT_LINE);
+        content.append(intentions + NEXT_LINE);
         content.append(generatePlans(agent) + NEXT_LINE);
 
         AslTransferenceModel aslTransferenceModel = new AslTransferenceModel(agArch.getAgName(),
@@ -181,12 +188,18 @@ public class AslFileGenerator {
         return intentionName;
     }
 
-    private static boolean hasCryogenicIntention(Intention intention) {
+    private static boolean hasCryogenicIntention(Intention intention, StringBuilder beliefOfCryogenicTrigger) {
         boolean hasCryogenicIntention = false;
         for (IntendedMeans intendedMeans : intention) {
             PlanBody currentStep = intendedMeans.getCurrentStep();
             hasCryogenicIntention = currentStep.toString().equals(END_SYMBOL + cryogenic.class.getSimpleName());
             if (hasCryogenicIntention) {
+                Trigger intentionTrigger = intendedMeans.getTrigger();
+                Literal intentionTriggerLiteral = intentionTrigger.getLiteral();
+
+                if (intentionTriggerLiteral.canBeAddedInBB() && Trigger.TEType.belief.equals(intentionTrigger.getType())) {
+                    beliefOfCryogenicTrigger.append(intentionTriggerLiteral.toString()).append(END_SYMBOL);
+                }
                 break;
             }
         }
@@ -252,7 +265,7 @@ public class AslFileGenerator {
      * @param agent Agente.
      * @return Texto com os objetivos iniciais do agente em tempo de execução.
      */
-    private static String generateInitialGoalsWithoutCryogenicIntention(Agent agent) {
+    private static String generateInitialGoalsWithoutCryogenicIntention(Agent agent, StringBuilder beliefOfCryogenicTrigger) {
         StringBuilder initialGoals = new StringBuilder();
         initialGoals.append("/* Initial goals */" + NEXT_LINE);
         List<String> intentionsNames = new LinkedList<>();
@@ -262,7 +275,7 @@ public class AslFileGenerator {
         // recupera as intenções atuais.
         for (Intention intention : intentions) {
             String runningIntentionName = getIntentionName(intention);
-            boolean hasCryogenicIntention = hasCryogenicIntention(intention);
+            boolean hasCryogenicIntention = hasCryogenicIntention(intention, beliefOfCryogenicTrigger);
             if (runningIntentionName != null && !intentionsNames.contains(runningIntentionName)
                     && !hasCryogenicIntention) {
                 intentionsNames.add(runningIntentionName);
@@ -272,7 +285,7 @@ public class AslFileGenerator {
         Intention selectedIntention = circumstance.getSelectedIntention();
         if (selectedIntention != null) {
             String selectedIntentionName = getIntentionName(selectedIntention);
-            boolean hasCryogenicIntention = hasCryogenicIntention(selectedIntention);
+            boolean hasCryogenicIntention = hasCryogenicIntention(selectedIntention, beliefOfCryogenicTrigger);
             if (selectedIntentionName != null && !intentionsNames.contains(selectedIntentionName)
                     && !hasCryogenicIntention) {
                 intentionsNames.add(selectedIntentionName);
@@ -290,7 +303,7 @@ public class AslFileGenerator {
 
             for (Integer intentionId : intentionsNumberOrdenedList) {
                 Intention intention = pendingIntentions.get(intentionsNumberAndKeyMap.get(intentionId));
-                boolean hasCryogenicIntention = hasCryogenicIntention(intention);
+                boolean hasCryogenicIntention = hasCryogenicIntention(intention, beliefOfCryogenicTrigger);
                 String pendingIntentionName = getIntentionName(intention);
                 if (pendingIntentionName != null && !intentionsNames.contains(pendingIntentionName)
                         && !hasCryogenicIntention) {

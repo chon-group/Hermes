@@ -1,5 +1,6 @@
 /* Initial beliefs and rules */
 day.
+agent1.
 
 /* Initial goals */
 
@@ -8,6 +9,8 @@ day.
 /* Plans */
 
 +!start: day <-
-    .configureContextNetConnection("1", "169.254.7.146", 3273, "788b2b22-baa6-4c61-b1bb-01cff1f5f880");
-    .connect("1");
     .print("Hello world!!!").
+
+-myMAS(X)[source(Y)]: true <-
+    .wait(500);
+    .send(simple_agent, tell, cryogenic).

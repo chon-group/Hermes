@@ -6,6 +6,6 @@ MAS receiverMAS {
         simple_agent agentArchClass jason.Hermes;
 
     aslSourcePath:
-        "examples/cryogenic/inquilinism/receiver/asl";
+        "examples/cryogenic/mutualism/receiver/asl";
 
 }
