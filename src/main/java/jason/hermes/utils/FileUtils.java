@@ -14,6 +14,7 @@ public class FileUtils {
     public static final String BASE_PATH = "cryogenated" + File.separator;
 
     public static final String MAS_STRUCTURE_FILE_EXTENSION = ".mas2j";
+    public static final String CRYOGENIC_FILE = ".cryogenic";
     public static final String AGENT_FOLDER = "asl";
     private static final int FILE_MAX_ATTEMPT_TO_CREATE = 3;
     private static final int FOLDER_MAX_ATTEMPT_TO_CREATE = 3;

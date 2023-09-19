@@ -8,20 +8,21 @@ import jason.bb.BeliefBase;
 import jason.hermes.InComingMessages;
 import jason.hermes.bioinspired.*;
 import jason.hermes.config.Configuration;
+import jason.hermes.exception.ErrorCryogeningMASException;
 import jason.hermes.middlewares.CommunicationMiddleware;
 import jason.hermes.middlewares.CommunicationMiddlewareEnum;
 import jason.hermes.middlewares.CommunicationMiddlewareIdentifier;
 import jason.hermes.utils.BeliefUtils;
 import jason.hermes.utils.BioInspiredUtils;
+import jason.hermes.utils.FileUtils;
 import jason.hermes.utils.HermesUtils;
 import jason.infra.local.RunLocalMAS;
+import jason.stdlib.cryogenic;
 
+import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -196,5 +197,15 @@ public class Hermes extends AgArch implements Observer {
 
             }
         }
+
+        String aslSrc = this.getTS().getAg().getASLSrc();
+        if (BioinspiredProcessor.checkCryogenicFile(aslSrc)) {
+            try {
+                BioinspiredProcessor.cryogenate(aslSrc);
+            } catch (ErrorCryogeningMASException e) {
+                BioInspiredUtils.log(Level.SEVERE, e.getMessage());
+            }
+        }
+
     }
 }

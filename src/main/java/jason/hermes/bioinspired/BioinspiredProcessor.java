@@ -7,24 +7,31 @@ import jason.asSemantics.TransitionSystem;
 import jason.asSyntax.Atom;
 import jason.asSyntax.Term;
 import jason.hermes.OutGoingMessage;
+import jason.hermes.bioinspired.criogenic.MasBuilderContent;
+import jason.hermes.bioinspired.criogenic.MasBuilderStructure;
 import jason.hermes.bioinspired.dto.AgentTransferConfirmationMessageDto;
 import jason.hermes.bioinspired.dto.AgentTransferContentMessageDto;
 import jason.hermes.bioinspired.dto.AgentTransferRequestMessageDto;
 import jason.hermes.bioinspired.dto.AgentTransferResponseMessageDto;
+import jason.hermes.exception.ErrorCryogeningMASException;
+import jason.hermes.exception.ErrorReadingFileException;
 import jason.hermes.middlewares.CommunicationMiddleware;
 import jason.hermes.middlewares.ContextNetMiddleware;
 import jason.hermes.utils.BeliefUtils;
 import jason.hermes.utils.BioInspiredUtils;
+import jason.hermes.utils.FileUtils;
 import jason.hermes.utils.HermesUtils;
 import jason.infra.local.LocalAgArch;
 import jason.infra.local.RunLocalMAS;
 import jason.runtime.RuntimeServicesFactory;
 
+import java.io.File;
 import java.rmi.RemoteException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 public class BioinspiredProcessor {
 
@@ -430,6 +437,46 @@ public class BioinspiredProcessor {
                 }
             }
         }
+    }
+
+    public static File cryogenate(String aslSrc) throws ErrorCryogeningMASException {
+        String masName = RunLocalMAS.getRunner().getProject().getSocName();
+        List<Agent> allMasAgents = RunLocalMAS.getRunner().getAgs().values().stream()
+                .map(localAgArch -> localAgArch.getTS().getAg()).collect(Collectors.toList());
+
+        MasBuilderStructure mas = new MasBuilderStructure(masName, allMasAgents);
+        File masPath = FileUtils.getMasPath(aslSrc);
+        File masFile = null;
+        if (masPath != null) {
+            try {
+                masFile = MasBuilderContent.buildMas(mas, masPath.getPath());
+            } catch (Exception e) {
+                throw new ErrorCryogeningMASException(masPath.getPath(), e);
+            }
+        } else {
+            throw new ErrorReadingFileException(aslSrc);
+        }
+        try {
+            RuntimeServicesFactory.get().stopMAS();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return masFile;
+    }
+
+    public static boolean checkCryogenicFile(String aslSrc) {
+        boolean hasCryogenicFile = false;
+        File masPath = FileUtils.getMasPath(aslSrc);
+        if (masPath != null && masPath.exists()) {
+            File[] files = masPath.listFiles();
+            if (files != null && files.length > 0) {
+                File cryogenicFile = new File(masPath.getPath(), FileUtils.CRYOGENIC_FILE);
+                List<File> list = Arrays.stream(files).toList();
+                hasCryogenicFile = list.contains(cryogenicFile);
+            }
+        }
+        return hasCryogenicFile;
     }
 
 }
