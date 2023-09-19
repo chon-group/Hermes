@@ -193,10 +193,12 @@ public class moveOut extends DefaultInternalAction {
         }
 
         // Verifica se o protocolo é o Mutualismo para permitir a passagem de 4 argumentos.
-        if (args.length == getMaxArgs() && !BioinspiredProtocolsEnum.MUTUALISM.equals(bioInspiredProtocol)) {
+        if (args.length == getMaxArgs() && !BioinspiredProtocolsEnum.MUTUALISM.equals(bioInspiredProtocol)
+                && !BioinspiredProtocolsEnum.CLONING.equals(bioInspiredProtocol)) {
             String msgError = "Error: The number of arguments passed was ('"
                     + args.length + "') with the protocol ('" + protocolName + "') but only the " +
-                    BioinspiredProtocolsEnum.MUTUALISM.name() + " protocol allows to pass " + getMaxArgs() + " args!";
+                    BioinspiredProtocolsEnum.MUTUALISM.name() + " and " + BioinspiredProtocolsEnum.CLONING.name()
+                    + " protocols allow to pass " + getMaxArgs() + " args!";
             BioInspiredUtils.log(Level.SEVERE, msgError);
             throw JasonException.createWrongArgument(this, msgError);
         }

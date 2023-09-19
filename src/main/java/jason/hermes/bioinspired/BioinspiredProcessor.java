@@ -35,7 +35,8 @@ public class BioinspiredProcessor {
         if (args.length == 2) {
             boolean hasHermesAgent;
             List<String> nameOfAgentsToBeTransferred;
-            if (BioinspiredProtocolsEnum.MUTUALISM.equals(bioinspiredProtocol)){
+            if (BioinspiredProtocolsEnum.MUTUALISM.equals(bioinspiredProtocol)
+                    || BioinspiredProtocolsEnum.CLONING.equals(bioinspiredProtocol)){
                 nameOfAgentsToBeTransferred = BioInspiredUtils.getAgentsNameExceptCommunicatorAgentName();
                 hasHermesAgent = false;
             } else {
@@ -53,7 +54,8 @@ public class BioinspiredProcessor {
                 hasHermesAgent = false;
             } else {
                 connectionIdentifier = agentNameOrConnectionIdentifier;
-                if (BioinspiredProtocolsEnum.MUTUALISM.equals(bioinspiredProtocol)){
+                if (BioinspiredProtocolsEnum.MUTUALISM.equals(bioinspiredProtocol)
+                        || BioinspiredProtocolsEnum.CLONING.equals(bioinspiredProtocol)){
                     nameOfAgentsToBeTransferred = BioInspiredUtils.getAgentsNameExceptCommunicatorAgentName();
                     hasHermesAgent = false;
                 } else {
@@ -149,8 +151,8 @@ public class BioinspiredProcessor {
         return canTransfer;
     }
 
-    private static boolean canKillOriginCopy() {
-        return true;
+    private static boolean canKillOriginCopy(BioinspiredData bioinspiredData) {
+        return !BioinspiredProtocolsEnum.CLONING.equals(bioinspiredData.getBioinspiredProtocol());
     }
 
     private static void receiveTransferRequest(BioinspiredData bioinspiredData,
@@ -294,7 +296,7 @@ public class BioinspiredProcessor {
             } else {
                 autoLocalization(ts.getAgArch().getAgName(), notHermesAgentsTransferred, true);
             }
-            canKill = canKillOriginCopy();
+            canKill = canKillOriginCopy(bioinspiredData);
 
         }
 

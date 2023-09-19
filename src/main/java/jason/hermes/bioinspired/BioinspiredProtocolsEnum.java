@@ -6,7 +6,9 @@ public enum BioinspiredProtocolsEnum {
 
     MUTUALISM,
 
-    INQUILINISM;
+    INQUILINISM,
+
+    CLONING;
 
 
     public static BioinspiredProtocolsEnum getBioInspiredProtocol(String protocolName) {
