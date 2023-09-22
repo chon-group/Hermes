@@ -12,14 +12,12 @@ import jason.hermes.exception.ErrorCryogeningMASException;
 import jason.hermes.middlewares.CommunicationMiddleware;
 import jason.hermes.middlewares.CommunicationMiddlewareEnum;
 import jason.hermes.middlewares.CommunicationMiddlewareIdentifier;
+import jason.hermes.sendOut.SendOutProcessor;
 import jason.hermes.utils.BeliefUtils;
 import jason.hermes.utils.BioInspiredUtils;
-import jason.hermes.utils.FileUtils;
 import jason.hermes.utils.HermesUtils;
 import jason.infra.local.RunLocalMAS;
-import jason.stdlib.cryogenic;
 
-import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -159,11 +157,9 @@ public class Hermes extends AgArch implements Observer {
 
         InComingMessages inComingMessages = new InComingMessages(this.bioinspiredData, this.communicationMiddlewareHashMap);
 
-        List<Message> allReceivedMessages = inComingMessages.getMessages();
+        Map<String, List<Message>> allReceivedMessages = inComingMessages.getMessages();
 
-        for (Message message : allReceivedMessages) {
-            getTS().getC().addMsg(message);
-        }
+        SendOutProcessor.process(allReceivedMessages, this);
 
         if (!this.bioinspiredData.bioinspiredTransferenceActive()) {
             this.bioinspiredData = BioinspiredProcessor.getBioinspiredRole(

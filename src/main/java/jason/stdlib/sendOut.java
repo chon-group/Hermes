@@ -29,11 +29,14 @@ import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.Message;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
+import jason.asSyntax.ASSyntax;
+import jason.asSyntax.ListTerm;
 import jason.asSyntax.StringTerm;
 import jason.asSyntax.Term;
-import jason.hermes.utils.HermesUtils;
 import jason.hermes.OutGoingMessage;
 import jason.hermes.middlewares.CommunicationMiddleware;
+import jason.hermes.sendOut.SendParserForceEnum;
+import jason.hermes.utils.HermesUtils;
 
 /**
  * <p>
@@ -117,7 +120,8 @@ public class sendOut extends DefaultInternalAction {
     private boolean lastSendWasSynAsk = false;
 
     @SuppressWarnings("unused")
-    private void delegateSendToArch(Term to, TransitionSystem ts, Message m) throws Exception {
+    private void delegateSendToArch(Term to, TransitionSystem ts, Message m,
+                                    CommunicationMiddleware communicationMiddleware) throws Exception {
         if (!to.isAtom() && !to.isString()) {
             throw new JasonException("The TO parameter ('" + to + "') of the internal action 'send' is not an atom!");
         }
@@ -128,11 +132,11 @@ public class sendOut extends DefaultInternalAction {
         } else {
             rec = to.toString();
         }
-        if (rec.equals("hermes")) {
+        if (rec.equals("self")) {
             rec = ts.getUserAgArch().getAgName();
         }
-        //m.setReceiver(rec);
-        //ts.getUserAgArch().sendMsg(m);
+        m.setReceiver(rec);
+        OutGoingMessage.sendMessage(m, communicationMiddleware);
     }
 
     @Override
@@ -171,9 +175,12 @@ public class sendOut extends DefaultInternalAction {
     public Object execute(final TransitionSystem ts, Unifier un, Term[] args) throws Exception {
         this.checkArguments(args);
 
-        String receiverUuid = HermesUtils.getParameterInString(args[0]);
+        final Term to   = args[0];
         String force = HermesUtils.getParameterInString(args[1]);
-        String content = HermesUtils.getParameterInString(args[2]);
+        Term contentTerm = args[2];
+        if (SendParserForceEnum.tellHow.name().equals(force)){
+            contentTerm = HermesUtils.treatContentTerm(args[2], ts);
+        }
 
         Hermes hermes = HermesUtils.checkArchClass(ts.getAgArch(), this.getClass().getName());
 
@@ -184,9 +191,36 @@ public class sendOut extends DefaultInternalAction {
 
         CommunicationMiddleware communicationMiddleware = hermes.getCommunicationMiddleware(connectionIdentification);
         String senderAgentIdentification = communicationMiddleware.getAgentIdentification();
-        Message message = HermesUtils.formatMessage(senderAgentIdentification, receiverUuid, force, content);
 
-        OutGoingMessage.sendMessage(message, communicationMiddleware);
+        // create a message to be sent
+        final Message m = new Message(force, senderAgentIdentification, null, contentTerm);
+
+        // async ask has a fourth argument and should suspend the intention
+        lastSendWasSynAsk = m.isAsk() && args.length > 3;
+        if (lastSendWasSynAsk) {
+            m.setSyncAskMsgId();
+            ts.getC().addPendingIntention(m.getMsgId(), ASSyntax.createAtom("waiting_ask"), ts.getC().getSelectedIntention(), false);
+        }
+
+        // (un)tell or unknown performative with 4 args is a reply to
+        if ((m.isTell() || m.isUnTell() || !m.isKnownPerformative()) && args.length > 3) {
+            Term mid = args[3];
+            if (! mid.isAtom()) {
+                throw new JasonException("The Message ID ('"+mid+"') parameter of the internal action 'send' is not an atom!");
+            }
+            m.setInReplyTo(mid.toString());
+        }
+
+        // send the message
+        if (to.isList()) {
+            for (Term t: (ListTerm)to) {
+                delegateSendToArch(t, ts, m, communicationMiddleware);
+            }
+        } else {
+            delegateSendToArch(to, ts, m, communicationMiddleware);
+        }
+
+
 
         return true;
 

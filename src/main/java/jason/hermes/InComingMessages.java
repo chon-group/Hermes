@@ -13,13 +13,14 @@ import jason.hermes.utils.HermesUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class InComingMessages {
 
     private static final Logger LOGGER = Logger.getLogger("IN COMING MESSAGES");
-    private List<Message> messages;
+    private Map<String, List<Message>> messages;
 
     private AgentTransferRequestMessageDto agentTransferRequestMessageDto;
 
@@ -38,7 +39,7 @@ public class InComingMessages {
             this.bioinspiredConnectionIdentifier = bioinspiredData.getConnectionIdentifier();
         }
         this.communicationMiddlewares = communicationMiddlewares;
-        this.messages = new ArrayList<>();
+        this.messages = new HashMap<>();
         this.agentTransferRequestMessageDto = null;
         this.agentTransferResponseMessageDto = null;
         this.agentTransferContentMessageDto = null;
@@ -67,7 +68,7 @@ public class InComingMessages {
 
             Message decryptedMessage = HermesUtils.getJasonMessage(decryptedObjectMessage);
             if (decryptedMessage != null) {
-                this.messages.add(decryptedMessage);
+                this.addMessage(connectionIdentifier, decryptedMessage);
                 continue;
             }
 
@@ -122,7 +123,19 @@ public class InComingMessages {
         }
     }
 
-    public List<Message> getMessages() {
+    private void addMessage(String connectionIdentifier, Message newMessage) {
+        List<Message> messageList = new ArrayList<>();
+        if (this.messages.containsKey(connectionIdentifier)) {
+            messageList = this.messages.get(connectionIdentifier);
+        }
+        if (messageList == null) {
+            messageList = new ArrayList<>();
+        }
+        messageList.add(newMessage);
+        this.messages.put(connectionIdentifier, messageList);
+    }
+
+    public Map<String, List<Message>> getMessages() {
         return messages;
     }
 

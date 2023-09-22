@@ -4,6 +4,10 @@ import jason.Hermes;
 import jason.JasonException;
 import jason.architecture.AgArch;
 import jason.asSemantics.Message;
+import jason.asSemantics.TransitionSystem;
+import jason.asSyntax.ASSyntax;
+import jason.asSyntax.Plan;
+import jason.asSyntax.PlanLibrary;
 import jason.asSyntax.Term;
 import jason.asSyntax.parser.ParseException;
 import jason.hermes.bioinspired.dto.AgentTransferConfirmationMessageDto;
@@ -16,6 +20,7 @@ import jason.hermes.sec.SecurityImplementations;
 
 import java.io.*;
 import java.util.Base64;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -58,18 +63,52 @@ public class HermesUtils {
         return new NoSecurity();
     }
 
-    public static Message formatMessage(String sender, String receiver, String force, String content) {
-        Message message = new Message();
-        message.setSender(sender);
-        message.setReceiver(receiver);
-        message.setIlForce(force);
-        message.setPropCont(content);
-
-        return message;
-    }
-
     public static String getParameterInString(Term term) {
         return term.toString().trim().replace("\"", "");
+    }
+
+    public static String treatPlanStringFormat(String planInString) {
+        if (planInString.endsWith(".")) {
+            planInString = planInString.substring(0, planInString.length() - 1);
+        }
+        if (!planInString.startsWith("{") && !planInString.endsWith("}")) {
+            planInString = "{" + planInString + "}";
+        }
+        return planInString;
+    }
+
+    public static Term treatContentTerm(Term term, TransitionSystem ts) throws ParseException {
+        Term treatedTerm = term.clone();
+        if (term.isStructure()) {
+            Plan plan = (Plan) term;
+            treatedTerm = ASSyntax.parseTerm(plan.toASString());
+        } else {
+            String termString = term.toString();
+            if (termString.startsWith("\"") && termString.endsWith("\"")) {
+                termString = termString.substring(1, termString.length() - 1);
+            }
+            if (termString.startsWith("@p__")) {
+                final String string = termString.replace("@", "");
+                PlanLibrary pl = ts.getAg().getPL();
+                List<Plan> plans = pl.getPlans();
+                if (plans != null && !plans.isEmpty()) {
+                    Plan plan = plans.stream().filter(plan1 -> plan1.getLabel().getFunctor().equals(string))
+                            .findFirst().orElse(null);
+                    if (plan != null) {
+                        Plan plan1 = (Plan) plan.clone();
+                        plan1.setLabel(null);
+                        String planInString = treatPlanStringFormat(plan1.toASString());
+                        treatedTerm = ASSyntax.parseTerm(planInString);
+                    }
+                }
+            } else {
+                termString = treatPlanStringFormat(termString);
+                treatedTerm = ASSyntax.parseTerm(termString);
+            }
+        }
+
+
+        return treatedTerm;
     }
 
     public static String treatString(String value) {
