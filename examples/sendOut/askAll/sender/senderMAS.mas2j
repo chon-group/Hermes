@@ -1,0 +1,11 @@
+MAS senderMAS {
+
+    infrastructure: Centralised
+
+    agents:
+        simple_agent agentArchClass jason.Hermes;
+        agent2;
+
+    aslSourcePath:
+        "examples/sendOut/askAll/sender/asl";
+}

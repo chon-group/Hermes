@@ -1,0 +1,11 @@
+MAS senderMAS {
+
+    infrastructure: Centralised
+
+    agents:
+        agent1;
+        simple_agent agentArchClass jason.Hermes;
+
+    aslSourcePath:
+        "examples/sendOut/untellHow/withPlanAnotation/sender/asl";
+}

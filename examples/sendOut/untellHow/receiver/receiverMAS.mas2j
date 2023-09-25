@@ -1,0 +1,11 @@
+MAS receiverMAS {
+
+    infrastructure: Centralised
+
+    agents:
+        simple_agent agentArchClass jason.Hermes;
+
+    aslSourcePath:
+        "examples/sendOut/untellHow/receiver/asl";
+
+}

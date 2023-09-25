@@ -178,10 +178,6 @@ public class sendOut extends DefaultInternalAction {
         final Term to   = args[0];
         String force = HermesUtils.getParameterInString(args[1]);
         Term contentTerm = args[2];
-        if (SendParserForceEnum.tellHow.name().equals(force)){
-            contentTerm = HermesUtils.treatContentTerm(args[2], ts);
-        }
-
         Hermes hermes = HermesUtils.checkArchClass(ts.getAgArch(), this.getClass().getName());
 
         String connectionIdentification = hermes.getFirstConnectionAvailable();
@@ -191,6 +187,14 @@ public class sendOut extends DefaultInternalAction {
 
         CommunicationMiddleware communicationMiddleware = hermes.getCommunicationMiddleware(connectionIdentification);
         String senderAgentIdentification = communicationMiddleware.getAgentIdentification();
+
+        if (SendParserForceEnum.tellHow.name().equals(force)){
+            contentTerm = HermesUtils.treatContentTerm(contentTerm, ts);
+        } else if (SendParserForceEnum.askHow.name().equals(force)) {
+            contentTerm = HermesUtils.treatContentTermAsTrigger(contentTerm);
+        } else if (SendParserForceEnum.untellHow.name().equals(force)) {
+            contentTerm = HermesUtils.treatContentTermForUntellHow(contentTerm, ts, senderAgentIdentification);
+        }
 
         // create a message to be sent
         final Message m = new Message(force, senderAgentIdentification, null, contentTerm);

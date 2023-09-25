@@ -7,6 +7,7 @@ public enum SendParserForceEnum {
     achieve("achieve", false),
     unachieve("unachieve", false),
     tellHow("tellHow", false),
+    untellHow("untellHow", false),
     askOne("tell", true),
     askAll("tell", true),
     askHow("tellHow", true);

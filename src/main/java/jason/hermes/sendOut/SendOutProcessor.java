@@ -3,14 +3,17 @@ package jason.hermes.sendOut;
 import jason.Hermes;
 import jason.asSemantics.Message;
 import jason.asSyntax.*;
+import jason.asSyntax.parser.ParseException;
 import jason.hermes.OutGoingMessage;
 import jason.hermes.middlewares.CommunicationMiddleware;
 import jason.hermes.utils.BioInspiredUtils;
+import jason.hermes.utils.HermesUtils;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 public class SendOutProcessor {
 
@@ -26,9 +29,33 @@ public class SendOutProcessor {
                                 .getCommunicationMiddleware(connectionIdentifier);
                         OutGoingMessage.sendMessage(messageToRespond, communicationMiddleware);
                     } else {
-                        if (SendParserForceEnum.tellHow.name().equals(message.getIlForce())) {
-                            // TODO: verificar se isso não acontece com crenca tambem, ou seja, fazer um teste de
-                            //  mandar um tell via sendOut, criogenar o MAS e ver se o source da crenca ficou correto.
+                        if (SendParserForceEnum.untellHow.name().equals(message.getIlForce())) {
+                            Plan planToBeForgotten = (Plan) message.getPropCont();
+                            Term sourceTerm = null;
+                            if (planToBeForgotten.getLabel().hasSource()) {
+                                sourceTerm = planToBeForgotten.getLabel().getSources().get(0);
+                            }
+                            if (sourceTerm != null) {
+                                Atom source = new Atom(sourceTerm.toString());
+                                Plan plan1 = hermes.getTS().getAg().getPL().getPlans().stream().filter(plan ->
+                                        plan.getTrigger().equals(planToBeForgotten.getTrigger())
+                                                && plan.getLabel().getSources().contains(source)).findFirst()
+                                        .orElse(null);
+                                if (plan1 != null) {
+                                    String planInString = HermesUtils.treatPlanStringFormat(plan1.toASString());
+                                    try {
+                                        message.setPropCont(ASSyntax.parseTerm(planInString));
+                                    } catch (ParseException e) {
+                                        BioInspiredUtils.log(Level.SEVERE, "Error receiving a plan to be forgotten '"
+                                                + planToBeForgotten.toASString() +"'\n\n: " + e);
+                                    }
+                                }
+                            } else {
+                                BioInspiredUtils.log(Level.SEVERE, "Error identifying the source of the plan '"
+                                        + planToBeForgotten.toASString() + "' to be forgotten.");
+                            }
+                        }
+                        if (!message.getSender().startsWith("\"") && !message.getSender().endsWith("\"")) {
                             message.setSender("\"" + message.getSender() + "\"");
                         }
                         hermes.getTS().getC().addMsg(message);
@@ -42,9 +69,8 @@ public class SendOutProcessor {
         }
     }
 
-    public static Message messageToRespond(Message receivedMessage, SendParserForceEnum sendParserForceEnum,
-                                           Hermes hermes) {
-        Term propCont = (Term) receivedMessage.getPropCont();
+    private static Iterator<Literal> getCandidateBeliefs(Object messageContent, Hermes hermes) {
+        Term propCont = (Term) messageContent;
         Literal content = null;
         if (propCont.isLiteral()) {
             content = Literal.parseLiteral(propCont.toString());
@@ -54,12 +80,19 @@ public class SendOutProcessor {
             predicateIndicator = new PredicateIndicator(content.getFunctor(), content.getArity());
         }
         Iterator<Literal> candidateBeliefs = hermes.getTS().getAg().getBB().getCandidateBeliefs(predicateIndicator);
+        return candidateBeliefs;
+    }
+
+    public static Message messageToRespond(Message receivedMessage, SendParserForceEnum sendParserForceEnum,
+                                           Hermes hermes) {
         Message messageToRespond = new Message(sendParserForceEnum.getForceToRespond(), receivedMessage.getReceiver(), receivedMessage.getSender(), null);
         if (SendParserForceEnum.askOne.name().equals(receivedMessage.getIlForce())) {
+            Iterator<Literal> candidateBeliefs = getCandidateBeliefs(receivedMessage.getPropCont(), hermes);
             Literal belief = candidateBeliefs.next();
             belief.setAnnots(null);
             messageToRespond.setPropCont(belief);
         } else if (SendParserForceEnum.askAll.name().equals(receivedMessage.getIlForce())) {
+            Iterator<Literal> candidateBeliefs = getCandidateBeliefs(receivedMessage.getPropCont(), hermes);
             ListTerm tail = new ListTermImpl();
             while (candidateBeliefs.hasNext()) {
                 Literal next = candidateBeliefs.next();
@@ -70,6 +103,20 @@ public class SendOutProcessor {
             messageToRespond.setPropCont(tail);
         } else if (SendParserForceEnum.askHow.name().equals(receivedMessage.getIlForce())) {
             // TODO: fazer o askHow.
+            final Trigger trigger = (Trigger) receivedMessage.getPropCont();
+            PlanLibrary pl = hermes.getTS().getAg().getPL();
+            List<Plan> plans = pl.getPlans();
+            List<Plan> plansListTrigger = plans.stream().filter(plan -> plan.getTrigger().equals(trigger)).collect(Collectors.toList());
+            ListTerm tail = new ListTermImpl();
+            for (Plan plan : plansListTrigger) {
+                try {
+                    tail.append(HermesUtils.convertPlanToTerm(plan));
+                } catch (ParseException e) {
+                    BioInspiredUtils.log(Level.SEVERE, "Error converting the plan '"
+                            + plan.getTrigger().toString() + "' to Term to respond a AskHow request.");
+                }
+            }
+            messageToRespond.setPropCont(tail);
         } else {
             BioInspiredUtils.log(Level.SEVERE, "Error identifying the force '" + receivedMessage.getIlForce()
                     + "' to respond the message received");
