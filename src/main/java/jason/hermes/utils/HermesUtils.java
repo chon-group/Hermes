@@ -7,7 +7,6 @@ import jason.asSemantics.Message;
 import jason.asSemantics.TransitionSystem;
 import jason.asSyntax.*;
 import jason.asSyntax.parser.ParseException;
-import jason.bb.BeliefBase;
 import jason.hermes.bioinspired.dto.AgentTransferConfirmationMessageDto;
 import jason.hermes.bioinspired.dto.AgentTransferContentMessageDto;
 import jason.hermes.bioinspired.dto.AgentTransferRequestMessageDto;
@@ -20,10 +19,13 @@ import java.io.*;
 import java.util.Base64;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 public class HermesUtils {
+
+        private static final Logger LOGGER = Logger.getLogger("HERMES UTILS");
 
     public static Hermes checkArchClass(AgArch agArch, String internalActionName) throws JasonException {
         Hermes hermes = null;
@@ -374,4 +376,13 @@ public class HermesUtils {
         }
         return deserializedObject;
     }
+
+    public static void log(Level level, String message) {
+        try {
+            LOGGER.log(level, message);
+        } catch (Exception | Error e) {
+            //ignore
+        }
+    }
+
 }

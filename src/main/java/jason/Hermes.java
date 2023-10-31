@@ -202,6 +202,14 @@ public class Hermes extends AgArch implements Observer {
                 BioInspiredUtils.log(Level.SEVERE, e.getMessage());
             }
         }
+    }
 
+    @Override
+    public void stop() {
+        for (CommunicationMiddleware communicationMiddleware : this.getCommunicationMiddlewareHashMap().values()) {
+            communicationMiddleware.disconnect();
+        }
+
+        super.stop();
     }
 }

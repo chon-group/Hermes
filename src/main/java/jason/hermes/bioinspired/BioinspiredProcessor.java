@@ -16,7 +16,6 @@ import jason.hermes.bioinspired.dto.AgentTransferResponseMessageDto;
 import jason.hermes.exception.ErrorCryogeningMASException;
 import jason.hermes.exception.ErrorReadingFileException;
 import jason.hermes.middlewares.CommunicationMiddleware;
-import jason.hermes.middlewares.ContextNetMiddleware;
 import jason.hermes.utils.BeliefUtils;
 import jason.hermes.utils.BioInspiredUtils;
 import jason.hermes.utils.FileUtils;
@@ -345,12 +344,7 @@ public class BioinspiredProcessor {
 
             if (BioinspiredProtocolsEnum.PREDATION.equals(bioinspiredData.getBioinspiredProtocol())
                     || BioinspiredProtocolsEnum.INQUILINISM.equals(bioinspiredData.getBioinspiredProtocol())) {
-                try {
-                    RuntimeServicesFactory.get().stopMAS();
-                } catch (Exception e) {
-                    BioInspiredUtils.log(Level.SEVERE, "Error stopping MAS execution");
-                    throw new RuntimeException(e);
-                }
+                stopMAS(1000);
             }
 
             bioinspiredData.setBioinspiredStage(BioinspiredStageEnum.FINISHED);
@@ -372,15 +366,7 @@ public class BioinspiredProcessor {
                         CommunicationMiddleware communicationMiddleware = agArch
                                 .getCommunicationMiddleware(connectionIdentifier);
                         if (communicationMiddleware.isConnected()) {
-                            if (communicationMiddleware instanceof ContextNetMiddleware) {
-                                communicationMiddleware.connect();
-                                communicationMiddleware.connect();
-                                communicationMiddleware.connect();
-                                communicationMiddleware.connect();
-                                communicationMiddleware.connect();
-                            } else {
-                                communicationMiddleware.connect();
-                            }
+                            communicationMiddleware.connect();
                             BioInspiredUtils.log(Level.INFO, "The Hermes transferred agent '"
                                     + agArch.getAgName() + "' automatically connected successfully");
                         } else {
@@ -392,7 +378,7 @@ public class BioinspiredProcessor {
             }
         };
 
-        timer.schedule(tarefa, 10000);
+        timer.schedule(tarefa, 5000);
     }
 
     public static void autoConnection(Hermes hermes) {
@@ -421,6 +407,21 @@ public class BioinspiredProcessor {
         };
 
         timer.schedule(tarefa, 1000);
+    }
+
+    public static void stopMAS(int timeInMillis) {
+        Timer timer = new Timer();
+        TimerTask tarefa = new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    RuntimeServicesFactory.get().stopMAS();
+                } catch (Exception e) {
+                    BioInspiredUtils.log(Level.SEVERE, "Error stopping MAS execution: " + e);
+                }
+            }
+        };
+        timer.schedule(tarefa, timeInMillis);
     }
 
     public static void autoLocalization(String agentName, List<Agent> agents, boolean reload) {
