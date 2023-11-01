@@ -233,6 +233,7 @@ public class ContextNetMiddleware implements CommunicationMiddleware, NodeConnec
         } else {
             if (reconnectionSuccess) {
                 HermesUtils.log(Level.INFO, "The Reconnection was done successfully.");
+                this.connected(this.connection);
             } else {
                 HermesUtils.log(Level.SEVERE, "Hermes tried to reconnect " + this.reconnectionAttempt +
                         " times without success for the connection with identifier " +

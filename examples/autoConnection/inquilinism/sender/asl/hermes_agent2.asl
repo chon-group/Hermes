@@ -8,10 +8,10 @@ day.
 /* Plans */
 
 +!start: day <-
-    .configureContextNetConnection("2", "192.168.0.103", 3273, "788b2b22-baa6-4c61-b1bb-01cff1f5f882");
+    .configureContextNetConnection("2", "169.254.7.146", 3273, "788b2b22-baa6-4c61-b1bb-01cff1f5f882");
     .connect("2");
     .print("Hello world!!!").
 
-+hello[source(X)]: true <-
-    .print("Another Hermes agent tell me Hello - Sender Hermes 2!");
-    -hello[source(X)].
++hellodois[source(X)]: true <-
+    .print("Another Hermes agent tell me Hellodois - Receiver!");
+    -hellodois[source(X)].

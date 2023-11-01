@@ -8,8 +8,8 @@ day.
 /* Plans */
 
 +!start: day <-
-    .configureContextNetConnection("1", "192.168.0.103", 3273, "788b2b22-baa6-4c61-b1bb-01cff1f5f880");
-    .configureContextNetConnection("4", "192.168.0.103", 3273, "788b2b22-baa6-4c61-b1bb-01cff1f5f884");
+    .configureContextNetConnection("1", "169.254.7.146", 3273, "788b2b22-baa6-4c61-b1bb-01cff1f5f880");
+    .configureContextNetConnection("4", "169.254.7.146", 3273, "788b2b22-baa6-4c61-b1bb-01cff1f5f884");
     .connect("1");
     .connect("4");
     .print("Hello world!!!").
@@ -18,8 +18,6 @@ day.
     .print("Another Hermes agent tell me Hello - Receiver!");
     -hello[source(X)].
 
-/*+contextNetConfiguration(X,Y,Z,A,B,C): true <-
-    .print("Configuration: ", X).
-
--contextNetConfiguration(D,E,F,G,H,I): true <-
-    .print("Removed Configuration: ", D).*/
++hellodois[source(X)]: true <-
+    .print("Another Hermes agent tell me Hellodois - Receiver!");
+    -hellodois[source(X)].
