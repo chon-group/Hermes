@@ -41,8 +41,7 @@ public class BioinspiredProcessor {
         if (args.length == 2) {
             boolean hasHermesAgent;
             List<String> nameOfAgentsToBeTransferred;
-            if (BioinspiredProtocolsEnum.MUTUALISM.equals(bioinspiredProtocol)
-                    || BioinspiredProtocolsEnum.CLONING.equals(bioinspiredProtocol)){
+            if (BioinspiredProtocolsEnum.MUTUALISM.equals(bioinspiredProtocol)){
                 nameOfAgentsToBeTransferred = BioInspiredUtils.getAgentsNameExceptCommunicatorAgentName();
                 hasHermesAgent = false;
             } else {
@@ -60,8 +59,7 @@ public class BioinspiredProcessor {
                 hasHermesAgent = false;
             } else {
                 connectionIdentifier = agentNameOrConnectionIdentifier;
-                if (BioinspiredProtocolsEnum.MUTUALISM.equals(bioinspiredProtocol)
-                        || BioinspiredProtocolsEnum.CLONING.equals(bioinspiredProtocol)){
+                if (BioinspiredProtocolsEnum.MUTUALISM.equals(bioinspiredProtocol)){
                     nameOfAgentsToBeTransferred = BioInspiredUtils.getAgentsNameExceptCommunicatorAgentName();
                     hasHermesAgent = false;
                 } else {
@@ -195,6 +193,9 @@ public class BioinspiredProcessor {
                     AslTransferenceModel aslTransferenceModel;
                     if (BioinspiredProtocolsEnum.INQUILINISM.equals(bioinspiredData.getBioinspiredProtocol())) {
                         aslTransferenceModel = AslFileGenerator.generateAslContentWithoutIntentions(
+                                localAgArch.getFirstAgArch());
+                    } else if (BioinspiredProtocolsEnum.CLONING.equals(bioinspiredData.getBioinspiredProtocol())) {
+                        aslTransferenceModel = AslFileGenerator.generateAslContentWithRandomUUID(
                                 localAgArch.getFirstAgArch());
                     } else {
                         aslTransferenceModel = AslFileGenerator.generateAslContent(

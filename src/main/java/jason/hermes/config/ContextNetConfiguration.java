@@ -5,8 +5,9 @@ import jason.hermes.sec.CommunicationSecurity;
 import jason.hermes.utils.BeliefUtils;
 import jason.hermes.utils.HermesUtils;
 
-public class ContextNetConfiguration extends Configuration{
+public class ContextNetConfiguration extends Configuration {
 
+    public static final String BELIEF_PREFIX = BeliefUtils.getPrefix(ContextNetConfiguration.class);
     private String gatewayIP;
     private int gatewayPort;
     private String myUUIDString;
@@ -45,11 +46,14 @@ public class ContextNetConfiguration extends Configuration{
         return myUUIDString;
     }
 
+    public void setMyUUIDString(String myUUIDString) {
+        this.myUUIDString = myUUIDString;
+    }
+
     @Override
     public Literal toBelief() {
         StringBuilder stringBuilder = new StringBuilder();
-        String classNameFirstCharacterLowerCase = BeliefUtils.getPrefix(this.getClass());
-        stringBuilder.append(classNameFirstCharacterLowerCase);
+        stringBuilder.append(BELIEF_PREFIX);
         stringBuilder.append("(");
         stringBuilder.append("\"").append(getConnectionIdentifier()).append("\"").append(BeliefUtils.BELIEF_SEPARATOR);
         stringBuilder.append("\"").append(getGatewayIP()).append("\"").append(BeliefUtils.BELIEF_SEPARATOR);

@@ -1,5 +1,6 @@
 package jason.hermes.bioinspired;
 
+import jason.Hermes;
 import jason.architecture.AgArch;
 import jason.asSemantics.Agent;
 import jason.asSemantics.Circumstance;
@@ -9,6 +10,9 @@ import jason.asSyntax.Literal;
 import jason.asSyntax.Plan;
 import jason.asSyntax.PlanBody;
 import jason.asSyntax.Trigger;
+import jason.hermes.config.ContextNetConfiguration;
+import jason.hermes.middlewares.CommunicationMiddleware;
+import jason.hermes.middlewares.ContextNetMiddleware;
 import jason.stdlib.cryogenic;
 
 import java.io.*;
@@ -63,6 +67,19 @@ public class AslFileGenerator {
 
         StringBuilder content = new StringBuilder();
         content.append(generateInitialBeliefs(agent) + NEXT_LINE);
+        content.append(generateInitialGoals(agent) + NEXT_LINE);
+        content.append(generatePlans(agent) + NEXT_LINE);
+
+        AslTransferenceModel aslTransferenceModel = new AslTransferenceModel(agArch.getAgName(),
+                content.toString().getBytes(), agArch.getClass().getName());
+        return aslTransferenceModel;
+    }
+
+    public static AslTransferenceModel generateAslContentWithRandomUUID(AgArch agArch) {
+        Agent agent = agArch.getTS().getAg();
+
+        StringBuilder content = new StringBuilder();
+        content.append(generateInitialBeliefsWithRandomUUID(agent) + NEXT_LINE);
         content.append(generateInitialGoals(agent) + NEXT_LINE);
         content.append(generatePlans(agent) + NEXT_LINE);
 
@@ -162,6 +179,47 @@ public class AslFileGenerator {
             //if (!beliefString.startsWith(BeliefUtils.MY_MAS_BELIEF_PREFIX)) {
                 beliefs.append(beliefString + END_SYMBOL + NEXT_LINE);
             //}
+        }
+
+        return beliefs.toString();
+    }
+
+    /**
+     * Captura as crenças do agente em tempo de execução.
+     *
+     * @param agent Agente.
+     * @return Declaração em String das crença do agente em tempo de execução.
+     */
+    private static String generateInitialBeliefsWithRandomUUID(Agent agent) {
+        StringBuilder beliefs = new StringBuilder();
+        Literal connectionBelief = null;
+        if (agent.getTS().getAgArch() instanceof Hermes) {
+            Hermes hermes = (Hermes) agent.getTS().getAgArch();
+            for (CommunicationMiddleware middleware : hermes.getCommunicationMiddlewareHashMap().values()) {
+                if (middleware instanceof ContextNetMiddleware) {
+                    ContextNetMiddleware contextNetMiddleware = (ContextNetMiddleware) middleware;
+                    ContextNetConfiguration contextNetConfiguration = (ContextNetConfiguration) contextNetMiddleware
+                            .getConfiguration();
+                    ContextNetConfiguration clone = contextNetConfiguration.clone();
+                    clone.setMyUUIDString(UUID.randomUUID().toString());
+                    connectionBelief = clone.toBelief();
+                }
+            }
+        }
+        beliefs.append("/* Initial beliefs and rules */" + NEXT_LINE);
+
+        Iterator<Literal> beliefsIterator = agent.getBB().iterator();
+
+        while (beliefsIterator.hasNext()) {
+            Literal literal = beliefsIterator.next();
+            String beliefString = literal.toString();
+            if (beliefString.startsWith(ContextNetConfiguration.BELIEF_PREFIX)) {
+                if (connectionBelief != null) {
+                    beliefs.append(connectionBelief.toString() + END_SYMBOL + NEXT_LINE);
+                }
+            } else {
+                beliefs.append(beliefString + END_SYMBOL + NEXT_LINE);
+            }
         }
 
         return beliefs.toString();
