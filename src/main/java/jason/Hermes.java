@@ -38,7 +38,7 @@ public class Hermes extends AgArch implements Observer {
     public Hermes() {
         super();
         this.communicationMiddlewareHashMap = new HashMap<>();
-        this.bioinspiredData = new BioinspiredData(DominanceDegrees.LOW_RANK);
+        this.bioinspiredData = new BioinspiredData(TrophicLevelEnum.PRODUCER);
         this.autoLocalization = false;
         this.moved = false;
     }
@@ -50,17 +50,17 @@ public class Hermes extends AgArch implements Observer {
         BeliefBase beliefBase = this.getTS().getAg().getBB();
 
         List<String> beliefByStartWithList = BeliefUtils.getBeliefsInStringByStartWith(beliefBase,
-                BeliefUtils.MY_DOMINANCE_DEGREE_PREFIX);
+                BeliefUtils.MY_TROPHIC_LEVEL_PREFIX);
 
         if (beliefByStartWithList.isEmpty()) {
-            BeliefUtils.addBelief(BeliefUtils.MY_DOMINANCE_DEGREE_VALUE, BeliefBase.ASelf,
-                    this.bioinspiredData.getMyDominanceDegree().name(), this.getTS().getAg());
+            BeliefUtils.addBelief(BeliefUtils.MY_TROPHIC_LEVEL_VALUE, BeliefBase.ASelf,
+                    this.bioinspiredData.getMyTrophicLevel().name(), this.getTS().getAg());
         } else {
             String source = HermesUtils.getParameterInString(BeliefBase.ASelf);
             List<String> beliefValue = BeliefUtils.getBeliefValue(beliefByStartWithList, source);
             String value = HermesUtils.treatString(beliefValue.get(0));
-            DominanceDegrees dominanceDegrees = DominanceDegrees.get(value);
-            this.bioinspiredData.setMyDominanceDegree(dominanceDegrees);
+            TrophicLevelEnum trophicLevelEnum = TrophicLevelEnum.get(value);
+            this.bioinspiredData.setMyTrophicLevel(trophicLevelEnum);
         }
 
         BeliefUtils.replaceAllBelief(BeliefUtils.MY_MAS_BELIEF_PREFIX, BeliefUtils.MY_MAS_BELIEF_VALUE, BeliefBase.ASelf,

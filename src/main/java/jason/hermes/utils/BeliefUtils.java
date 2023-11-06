@@ -15,7 +15,7 @@ public class BeliefUtils {
 
     public static final String MY_MAS_BELIEF_PREFIX = "myMAS";
 
-    public static final String MY_DOMINANCE_DEGREE_PREFIX = "myDominanceDegree";
+    public static final String MY_TROPHIC_LEVEL_PREFIX = "myTrophicLevel";
 
     public static final String VALUE_REPLACEMENT = "#";
 
@@ -23,7 +23,7 @@ public class BeliefUtils {
 
     public static String MY_MAS_BELIEF_VALUE = MY_MAS_BELIEF_PREFIX + BELIEF_VALUE;
 
-    public static String MY_DOMINANCE_DEGREE_VALUE = MY_DOMINANCE_DEGREE_PREFIX + BELIEF_VALUE;
+    public static String MY_TROPHIC_LEVEL_VALUE = MY_TROPHIC_LEVEL_PREFIX + BELIEF_VALUE;
 
     public static final String BELIEF_SEPARATOR = ",";
 

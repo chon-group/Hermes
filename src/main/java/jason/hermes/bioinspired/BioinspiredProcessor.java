@@ -37,7 +37,7 @@ public class BioinspiredProcessor {
     public static BioinspiredData getBioinspiredDataToStartTheTransference(BioinspiredProtocolsEnum bioinspiredProtocol,
                                                                            Term[] args,
                                                                            String connectionIdentifier,
-                                                                           DominanceDegrees dominanceDegrees) {
+                                                                           TrophicLevelEnum trophicLevelEnum) {
         if (args.length == 2) {
             boolean hasHermesAgent;
             List<String> nameOfAgentsToBeTransferred;
@@ -50,7 +50,7 @@ public class BioinspiredProcessor {
                 hasHermesAgent = true;
             }
             return new BioinspiredData(nameOfAgentsToBeTransferred, bioinspiredProtocol, hasHermesAgent,
-                    connectionIdentifier, BioinspiredRoleEnum.SENDER, BioinspiredStageEnum.TRANSFER_REQUEST, dominanceDegrees);
+                    connectionIdentifier, BioinspiredRoleEnum.SENDER, BioinspiredStageEnum.TRANSFER_REQUEST, trophicLevelEnum);
         } else if (args.length == 3){
             boolean hasHermesAgent;
             List<String> nameOfAgentsToBeTransferred = new ArrayList<>();
@@ -70,7 +70,7 @@ public class BioinspiredProcessor {
                 }
             }
             return new BioinspiredData(nameOfAgentsToBeTransferred, bioinspiredProtocol, hasHermesAgent,
-                    connectionIdentifier, BioinspiredRoleEnum.SENDER, BioinspiredStageEnum.TRANSFER_REQUEST, dominanceDegrees);
+                    connectionIdentifier, BioinspiredRoleEnum.SENDER, BioinspiredStageEnum.TRANSFER_REQUEST, trophicLevelEnum);
         } else {
             String agentName = HermesUtils.getParameterInString(args[2]);
             connectionIdentifier = HermesUtils.getParameterInString(args[3]);
@@ -78,28 +78,28 @@ public class BioinspiredProcessor {
             List<String> nameOfAgentsToBeTransferred = new ArrayList<>();
             nameOfAgentsToBeTransferred.add(agentName);
             return new BioinspiredData(nameOfAgentsToBeTransferred, bioinspiredProtocol, hasHermesAgent,
-                    connectionIdentifier, BioinspiredRoleEnum.SENDER, BioinspiredStageEnum.TRANSFER_REQUEST, dominanceDegrees);
+                    connectionIdentifier, BioinspiredRoleEnum.SENDER, BioinspiredStageEnum.TRANSFER_REQUEST, trophicLevelEnum);
         }
     }
 
     public static BioinspiredData getBioinspiredRole(AgentTransferRequestMessageDto agentTransferRequestMessageDto,
                                                      BioinspiredData bioinspiredData) {
         if (agentTransferRequestMessageDto != null) {
-            return getBioinspiredData(agentTransferRequestMessageDto, bioinspiredData.getMyDominanceDegree());
+            return getBioinspiredData(agentTransferRequestMessageDto, bioinspiredData.getMyTrophicLevel());
         }
 
         return bioinspiredData;
     }
 
     public static BioinspiredData getBioinspiredData(AgentTransferRequestMessageDto agentTransferRequestMessageDto,
-                                                     DominanceDegrees myDominanceDegree) {
+                                                     TrophicLevelEnum myTrophicLevelEnum) {
         // TODO: Refatorar depois de fazer o Mapper.
         return new BioinspiredData(agentTransferRequestMessageDto.getNameOfAgentsToBeTransferred(),
                 agentTransferRequestMessageDto.getBioinspiredProtocol(),
                 agentTransferRequestMessageDto.getSenderIdentification(),
                 agentTransferRequestMessageDto.isHasHermesAgentTransferred(),
-                BioinspiredRoleEnum.RECEIVED, BioinspiredStageEnum.RECEIVE_TRANSFER_REQUEST, myDominanceDegree,
-                agentTransferRequestMessageDto.getDominanceDegree());
+                BioinspiredRoleEnum.RECEIVED, BioinspiredStageEnum.RECEIVE_TRANSFER_REQUEST, myTrophicLevelEnum,
+                agentTransferRequestMessageDto.getTrophicLevel());
     }
 
     public static void updateBioinspiredStage(BioinspiredData bioinspiredData) {
@@ -149,8 +149,8 @@ public class BioinspiredProcessor {
         boolean canTransfer = true;
 
         if (BioinspiredProtocolsEnum.PREDATION.equals(bioinspiredData.getBioinspiredProtocol())) {
-            int comparison = DominanceDegrees.dominanceComparation(bioinspiredData.getOtherMASDominanceDegree(),
-                    bioinspiredData.getMyDominanceDegree());
+            int comparison = TrophicLevelEnum.trophicLevelComparation(bioinspiredData.getOtherMASTrophicLevel(),
+                    bioinspiredData.getMyTrophicLevel());
             return comparison > 0;
         }
 
@@ -235,7 +235,7 @@ public class BioinspiredProcessor {
                         bioinspiredData.getNameOfAgentsToBeTransferred(),
                         bioinspiredData.isHasHermesAgentTransferred(),
                         bioinspiredData.getBioinspiredProtocol(),
-                        bioinspiredData.getMyDominanceDegree());
+                        bioinspiredData.getMyTrophicLevel());
 
                 BioInspiredUtils.log(Level.INFO, "Sending the agent transfer request again.");
                 OutGoingMessage.sendMessageBioinspiredMessage(anotherAgentTransferRequestMessageDto,

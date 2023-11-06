@@ -25,38 +25,38 @@ public class BioinspiredData {
     private BioinspiredRoleEnum bioinspiredRole;
 
     private BioinspiredStageEnum bioinspiredStage;
-    private DominanceDegrees myDominanceDegree;
-    private DominanceDegrees otherMASDominanceDegree;
+    private TrophicLevelEnum myTrophicLevelEnum;
+    private TrophicLevelEnum otherMASTrophicLevelEnum;
 
-    public BioinspiredData(DominanceDegrees myDominanceDegree) {
-        this.myDominanceDegree = myDominanceDegree;
+    public BioinspiredData(TrophicLevelEnum myTrophicLevelEnum) {
+        this.myTrophicLevelEnum = myTrophicLevelEnum;
     }
 
     public BioinspiredData(List<String> nameOfAgentsToBeTransferred, BioinspiredProtocolsEnum bioinspiredProtocol,
                            boolean hasHermesAgentTransferred, String connectionIdentifier,
                            BioinspiredRoleEnum bioinspiredRole, BioinspiredStageEnum bioinspiredStage,
-                           DominanceDegrees myDominanceDegree) {
+                           TrophicLevelEnum myTrophicLevelEnum) {
         this.nameOfAgentsToBeTransferred = nameOfAgentsToBeTransferred;
         this.bioinspiredProtocol = bioinspiredProtocol;
         this.hasHermesAgentTransferred = hasHermesAgentTransferred;
         this.connectionIdentifier = connectionIdentifier;
         this.bioinspiredRole = bioinspiredRole;
         this.bioinspiredStage = bioinspiredStage;
-        this.myDominanceDegree = myDominanceDegree;
+        this.myTrophicLevelEnum = myTrophicLevelEnum;
     }
 
     public BioinspiredData(List<String> nameOfAgentsToBeTransferred, BioinspiredProtocolsEnum bioinspiredProtocol,
                            String receiverIdentification, boolean hasHermesAgentTransferred,
                            BioinspiredRoleEnum bioinspiredRole, BioinspiredStageEnum bioinspiredStage,
-                           DominanceDegrees myDominanceDegree, DominanceDegrees otherMASDominanceDegree) {
+                           TrophicLevelEnum myTrophicLevelEnum, TrophicLevelEnum otherMASTrophicLevelEnum) {
         this.nameOfAgentsToBeTransferred = nameOfAgentsToBeTransferred;
         this.bioinspiredProtocol = bioinspiredProtocol;
         this.receiverIdentification = receiverIdentification;
         this.hasHermesAgentTransferred = hasHermesAgentTransferred;
         this.bioinspiredRole = bioinspiredRole;
         this.bioinspiredStage = bioinspiredStage;
-        this.myDominanceDegree = myDominanceDegree;
-        this.otherMASDominanceDegree = otherMASDominanceDegree;
+        this.myTrophicLevelEnum = myTrophicLevelEnum;
+        this.otherMASTrophicLevelEnum = otherMASTrophicLevelEnum;
     }
 
     public void clean() {
@@ -70,7 +70,7 @@ public class BioinspiredData {
         this.connectionIdentifier = null;
         this.bioinspiredRole = null;
         this.bioinspiredStage = null;
-        this.otherMASDominanceDegree = null;
+        this.otherMASTrophicLevelEnum = null;
     }
 
     public boolean bioinspiredTransferenceActive() {
@@ -157,19 +157,19 @@ public class BioinspiredData {
         this.bioinspiredStage = bioinspiredStage;
     }
 
-    public DominanceDegrees getMyDominanceDegree() {
-        return myDominanceDegree;
+    public TrophicLevelEnum getMyTrophicLevel() {
+        return myTrophicLevelEnum;
     }
 
-    public void setMyDominanceDegree(DominanceDegrees myDominanceDegree) {
-        this.myDominanceDegree = myDominanceDegree;
+    public void setMyTrophicLevel(TrophicLevelEnum myTrophicLevelEnum) {
+        this.myTrophicLevelEnum = myTrophicLevelEnum;
     }
 
-    public DominanceDegrees getOtherMASDominanceDegree() {
-        return otherMASDominanceDegree;
+    public TrophicLevelEnum getOtherMASTrophicLevel() {
+        return otherMASTrophicLevelEnum;
     }
 
-    public void setOtherMASDominanceDegree(DominanceDegrees otherMASDominanceDegree) {
-        this.otherMASDominanceDegree = otherMASDominanceDegree;
+    public void setOtherMASTrophicLevel(TrophicLevelEnum otherMASTrophicLevelEnum) {
+        this.otherMASTrophicLevelEnum = otherMASTrophicLevelEnum;
     }
 }

@@ -6,6 +6,6 @@ MAS helloAgent {
         simple_agent agentArchClass jason.Hermes;
 
     aslSourcePath:
-        "examples/dominanceDegree/hello-agent/asl";
+        "examples/setTrophicLevel/hello-agent/asl";
 
 }

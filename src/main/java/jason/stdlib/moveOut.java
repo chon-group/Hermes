@@ -35,7 +35,7 @@ import jason.hermes.OutGoingMessage;
 import jason.hermes.bioinspired.BioinspiredData;
 import jason.hermes.bioinspired.BioinspiredProcessor;
 import jason.hermes.bioinspired.BioinspiredProtocolsEnum;
-import jason.hermes.bioinspired.DominanceDegrees;
+import jason.hermes.bioinspired.TrophicLevelEnum;
 import jason.hermes.bioinspired.dto.AgentTransferRequestMessageDto;
 import jason.hermes.middlewares.CommunicationMiddleware;
 import jason.hermes.utils.BioInspiredUtils;
@@ -229,9 +229,9 @@ public class moveOut extends DefaultInternalAction {
         BioInspiredUtils.log(Level.INFO,"The " + bioinspiredProtocol.name() + " protocol"
                 + " starts at " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss.SSS")));
 
-        DominanceDegrees dominanceDegrees = hermes.getBioinspiredData().getMyDominanceDegree();
+        TrophicLevelEnum trophicLevelEnum = hermes.getBioinspiredData().getMyTrophicLevel();
         BioinspiredData bioinspiredDataToStartTheTransference = BioinspiredProcessor
-                .getBioinspiredDataToStartTheTransference(bioinspiredProtocol, args, connectionIdentification, dominanceDegrees);
+                .getBioinspiredDataToStartTheTransference(bioinspiredProtocol, args, connectionIdentification, trophicLevelEnum);
         String myIdentification = hermes.getCommunicationMiddleware(
                 bioinspiredDataToStartTheTransference.getConnectionIdentifier()).getAgentIdentification();
         bioinspiredDataToStartTheTransference.setSenderIdentification(myIdentification);
@@ -247,7 +247,7 @@ public class moveOut extends DefaultInternalAction {
                 bioinspiredDataToStartTheTransference.getNameOfAgentsToBeTransferred(),
                 bioinspiredDataToStartTheTransference.isHasHermesAgentTransferred(),
                 bioinspiredDataToStartTheTransference.getBioinspiredProtocol(),
-                bioinspiredDataToStartTheTransference.getMyDominanceDegree());
+                bioinspiredDataToStartTheTransference.getMyTrophicLevel());
 
         BioInspiredUtils.log(Level.INFO, "Sending the agent transfer request.");
         OutGoingMessage.sendMessageBioinspiredMessage(agentTransferRequestMessageDto, communicationMiddleware, receiver);

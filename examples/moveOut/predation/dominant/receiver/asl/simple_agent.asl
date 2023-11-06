@@ -9,7 +9,7 @@ receiver.
 /* Plans */
 
 +!start: day <-
-    .dominanceDegree("Subdominant");
-    .configureContextNetConnection("1", "192.168.0.105", 3273, "788b2b22-baa6-4c61-b1bb-01cff1f5f880");
+    .setTrophicLevel("SECONDARY_CONSUMER");
+    .configureContextNetConnection("1", "192.168.1.107", 3273, "788b2b22-baa6-4c61-b1bb-01cff1f5f880");
     .connect("1");
     .print("Hello world!!!").

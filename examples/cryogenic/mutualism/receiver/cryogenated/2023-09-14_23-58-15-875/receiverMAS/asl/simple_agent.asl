@@ -6,7 +6,7 @@ kqml::clear_source_self([A|T],[A|NT])[hide_in_mind_inspector,source(self)] :- ((
 contextNetConfiguration("1","192.168.0.104","3273","788b2b22-baa6-4c61-b1bb-01cff1f5f880","true","NoSecurity")[source(self)].
 myMAS("receiverMAS")[source(self)].
 day[source(self)].
-myDominanceDegree("LOW_RANK")[source(self)].
+myTrophicLevel("PRODUCER")[source(self)].
 
 /* Initial goals */
 

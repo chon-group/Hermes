@@ -1,6 +1,5 @@
 /* Initial beliefs and rules */
 day.
-contextNetConfiguration("1","192.168.0.105","3273","788b2b22-baa6-4c61-b1bb-01cff1f5f880","false","NoSecurity").
 
 /* Initial goals */
 
@@ -10,6 +9,12 @@ contextNetConfiguration("1","192.168.0.105","3273","788b2b22-baa6-4c61-b1bb-01cf
 
 +!start: day <-
     //.configureContextNetConnection("1", "192.168.0.105", 3273, "788b2b22-baa6-4c61-b1bb-01cff1f5f880");
-    .connect("1");
-    .setTrophicLevel(2);
+    //.connect("1");
+    .setTrophicLevel("PRODUCERodbDA");
     .print("Hello world!!!").
+
++myTrophicLevel(X) : true <-
+    .print("The new trophic level is: ", X).
+
+-myTrophicLevel(Y) : true <-
+    .print("The trophic level removed was ", Y).

@@ -7,11 +7,11 @@ import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.Term;
 import jason.bb.BeliefBase;
-import jason.hermes.bioinspired.DominanceDegrees;
+import jason.hermes.bioinspired.TrophicLevelEnum;
 import jason.hermes.utils.BeliefUtils;
 import jason.hermes.utils.HermesUtils;
 
-public class dominanceDegree extends DefaultInternalAction {
+public class setTrophicLevel extends DefaultInternalAction {
 
     @Override
     public int getMinArgs() {
@@ -32,13 +32,13 @@ public class dominanceDegree extends DefaultInternalAction {
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
         this.checkArguments(args);
 
-        String dominanceDegree = HermesUtils.getParameterInString(args[0]);
-        DominanceDegrees dominanceDegrees = DominanceDegrees.get(dominanceDegree);
+        String trophicLevelParam = HermesUtils.getParameterInString(args[0]);
+        TrophicLevelEnum trophicLevelEnum = TrophicLevelEnum.get(trophicLevelParam);
         Hermes hermes = HermesUtils.checkArchClass(ts.getAgArch(), this.getClass().getName());
-        hermes.getBioinspiredData().setMyDominanceDegree(dominanceDegrees);
+        hermes.getBioinspiredData().setMyTrophicLevel(trophicLevelEnum);
 
-        BeliefUtils.replaceAllBelief(BeliefUtils.MY_DOMINANCE_DEGREE_PREFIX, BeliefUtils.MY_DOMINANCE_DEGREE_VALUE,
-                BeliefBase.ASelf, dominanceDegrees.name(), hermes.getTS().getAg());
+        BeliefUtils.replaceAllBelief(BeliefUtils.MY_TROPHIC_LEVEL_PREFIX, BeliefUtils.MY_TROPHIC_LEVEL_VALUE,
+                BeliefBase.ASelf, trophicLevelEnum.name(), hermes.getTS().getAg());
 
         return true;
     }

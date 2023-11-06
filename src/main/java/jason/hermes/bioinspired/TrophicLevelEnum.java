@@ -1,32 +1,32 @@
 package jason.hermes.bioinspired;
 
-public enum DominanceDegrees {
+public enum TrophicLevelEnum {
 
-    DOMINANT(2),
-    SUBDOMINANT(1),
-    LOW_RANK(0);
+    SECONDARY_CONSUMER(2),
+    PRIMARY_CONSUMER(1),
+    PRODUCER(0);
 
     private final int value;
 
-    DominanceDegrees(int value) {
+    TrophicLevelEnum(int value) {
         this.value = value;
     }
 
-    public static DominanceDegrees get(int value) {
-        if (value >= DOMINANT.getValue()) {
-            return DOMINANT;
+    public static TrophicLevelEnum get(int value) {
+        if (value >= SECONDARY_CONSUMER.getValue()) {
+            return SECONDARY_CONSUMER;
         }
 
-        for (DominanceDegrees degrees : values()) {
+        for (TrophicLevelEnum degrees : values()) {
             if (degrees.getValue() == value) {
                 return degrees;
             }
         }
 
-        return LOW_RANK;
+        return PRODUCER;
     }
 
-    public static DominanceDegrees get(String name) {
+    public static TrophicLevelEnum get(String name) {
         try {
             int value = Integer.parseInt(name);
             return get(value);
@@ -34,17 +34,17 @@ public enum DominanceDegrees {
             // ignorar.
         }
 
-        for (DominanceDegrees degrees : values()) {
+        for (TrophicLevelEnum degrees : values()) {
             if (degrees.name().equalsIgnoreCase(name)) {
                 return degrees;
             }
         }
 
-        return LOW_RANK;
+        return PRODUCER;
 
     }
 
-    public static int dominanceComparation(DominanceDegrees sender, DominanceDegrees receiver) {
+    public static int trophicLevelComparation(TrophicLevelEnum sender, TrophicLevelEnum receiver) {
         return sender.getValue() - receiver.getValue();
     }
 
