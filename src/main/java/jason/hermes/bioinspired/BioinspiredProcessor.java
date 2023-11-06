@@ -226,23 +226,7 @@ public class BioinspiredProcessor {
         } else {
             BioInspiredUtils.log(Level.INFO, "The Receiver MAS did not allow the agents transference with the protocol "
                     + BioinspiredProtocolsEnum.PREDATION + ".");
-            if (BioinspiredProtocolsEnum.PREDATION.equals(bioinspiredData.getBioinspiredProtocol())) {
-                BioInspiredUtils.log(Level.INFO, "So, changing to " + BioinspiredProtocolsEnum.INQUILINISM + " protocol.");
-                bioinspiredData.setBioinspiredProtocol(BioinspiredProtocolsEnum.INQUILINISM);
-                bioinspiredData.setBioinspiredStage(BioinspiredStageEnum.TRANSFER_REQUEST);
-                AgentTransferRequestMessageDto anotherAgentTransferRequestMessageDto = new AgentTransferRequestMessageDto(
-                        bioinspiredData.getSenderIdentification(),
-                        bioinspiredData.getNameOfAgentsToBeTransferred(),
-                        bioinspiredData.isHasHermesAgentTransferred(),
-                        bioinspiredData.getBioinspiredProtocol(),
-                        bioinspiredData.getMyTrophicLevel());
-
-                BioInspiredUtils.log(Level.INFO, "Sending the agent transfer request again.");
-                OutGoingMessage.sendMessageBioinspiredMessage(anotherAgentTransferRequestMessageDto,
-                        communicationMiddleware, bioinspiredData.getReceiverIdentification());
-            } else {
-                bioinspiredData.setBioinspiredStage(BioinspiredStageEnum.FINISHED);
-            }
+            bioinspiredData.setBioinspiredStage(BioinspiredStageEnum.FINISHED);
         }
 
     }
