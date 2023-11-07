@@ -39,44 +39,45 @@ public class BioinspiredProcessor {
                                                                            String connectionIdentifier,
                                                                            TrophicLevelEnum trophicLevelEnum) {
         if (args.length == 2) {
-            boolean hasHermesAgent;
             List<String> nameOfAgentsToBeTransferred;
             if (BioinspiredProtocolsEnum.MUTUALISM.equals(bioinspiredProtocol)){
                 nameOfAgentsToBeTransferred = BioInspiredUtils.getAgentsNameExceptCommunicatorAgentName();
-                hasHermesAgent = false;
             } else {
                 nameOfAgentsToBeTransferred = BioInspiredUtils.getAllAgentsName();
-                hasHermesAgent = true;
             }
-            return new BioinspiredData(nameOfAgentsToBeTransferred, bioinspiredProtocol, hasHermesAgent,
-                    connectionIdentifier, BioinspiredRoleEnum.SENDER, BioinspiredStageEnum.TRANSFER_REQUEST, trophicLevelEnum);
+            return new BioinspiredData(nameOfAgentsToBeTransferred, bioinspiredProtocol,
+                    BioInspiredUtils.hasHermesAgents(nameOfAgentsToBeTransferred),
+                    connectionIdentifier, BioinspiredRoleEnum.SENDER, BioinspiredStageEnum.TRANSFER_REQUEST,
+                    trophicLevelEnum, true);
         } else if (args.length == 3){
-            boolean hasHermesAgent;
+            boolean entireMAS = false;
             List<String> nameOfAgentsToBeTransferred = new ArrayList<>();
             String agentNameOrConnectionIdentifier = HermesUtils.getParameterInString(args[2]);
             if (BioInspiredUtils.verifyAgentExist(agentNameOrConnectionIdentifier)) {
                 nameOfAgentsToBeTransferred.add(agentNameOrConnectionIdentifier);
-                hasHermesAgent = false;
+                entireMAS = false;
             } else {
                 connectionIdentifier = agentNameOrConnectionIdentifier;
                 if (BioinspiredProtocolsEnum.MUTUALISM.equals(bioinspiredProtocol)){
                     nameOfAgentsToBeTransferred = BioInspiredUtils.getAgentsNameExceptCommunicatorAgentName();
-                    hasHermesAgent = false;
                 } else {
                     nameOfAgentsToBeTransferred = BioInspiredUtils.getAllAgentsName();
-                    hasHermesAgent = true;
                 }
+                entireMAS = true;
             }
-            return new BioinspiredData(nameOfAgentsToBeTransferred, bioinspiredProtocol, hasHermesAgent,
-                    connectionIdentifier, BioinspiredRoleEnum.SENDER, BioinspiredStageEnum.TRANSFER_REQUEST, trophicLevelEnum);
+            return new BioinspiredData(nameOfAgentsToBeTransferred, bioinspiredProtocol,
+                    BioInspiredUtils.hasHermesAgents(nameOfAgentsToBeTransferred),
+                    connectionIdentifier, BioinspiredRoleEnum.SENDER, BioinspiredStageEnum.TRANSFER_REQUEST,
+                    trophicLevelEnum, entireMAS);
         } else {
             String agentName = HermesUtils.getParameterInString(args[2]);
             connectionIdentifier = HermesUtils.getParameterInString(args[3]);
-            boolean hasHermesAgent = false;
             List<String> nameOfAgentsToBeTransferred = new ArrayList<>();
             nameOfAgentsToBeTransferred.add(agentName);
-            return new BioinspiredData(nameOfAgentsToBeTransferred, bioinspiredProtocol, hasHermesAgent,
-                    connectionIdentifier, BioinspiredRoleEnum.SENDER, BioinspiredStageEnum.TRANSFER_REQUEST, trophicLevelEnum);
+            return new BioinspiredData(nameOfAgentsToBeTransferred, bioinspiredProtocol,
+                    BioInspiredUtils.hasHermesAgents(nameOfAgentsToBeTransferred),
+                    connectionIdentifier, BioinspiredRoleEnum.SENDER, BioinspiredStageEnum.TRANSFER_REQUEST,
+                    trophicLevelEnum, false);
         }
     }
 
@@ -97,7 +98,7 @@ public class BioinspiredProcessor {
                 agentTransferRequestMessageDto.getSenderIdentification(),
                 agentTransferRequestMessageDto.isHasHermesAgentTransferred(),
                 BioinspiredRoleEnum.RECEIVED, BioinspiredStageEnum.RECEIVE_TRANSFER_REQUEST, myTrophicLevelEnum,
-                agentTransferRequestMessageDto.getTrophicLevel());
+                agentTransferRequestMessageDto.getTrophicLevelEnum(), agentTransferRequestMessageDto.isEntireMAS());
     }
 
     public static void updateBioinspiredStage(BioinspiredData bioinspiredData) {
@@ -195,8 +196,27 @@ public class BioinspiredProcessor {
                         aslTransferenceModel = AslFileGenerator.generateAslContentWithoutIntentions(
                                 localAgArch.getFirstAgArch());
                     } else if (BioinspiredProtocolsEnum.CLONING.equals(bioinspiredData.getBioinspiredProtocol())) {
-                        aslTransferenceModel = AslFileGenerator.generateAslContentWithRandomUUID(
-                                localAgArch.getFirstAgArch());
+                        if (bioinspiredData.isEntireMAS()) {
+                            if (localAgArch.getFirstAgArch() instanceof Hermes) {
+                                boolean isAgentSender = ((Hermes) localAgArch.getFirstAgArch())
+                                        .getCommunicationMiddlewareHashMap().values().stream().anyMatch(
+                                                communicationMiddleware2 -> communicationMiddleware2.getAgentIdentification()
+                                                        .equals(bioinspiredData.getSenderIdentification()));
+                                if (isAgentSender) {
+                                    aslTransferenceModel = AslFileGenerator.generateAslContent(
+                                            localAgArch.getFirstAgArch());
+                                } else {
+                                    aslTransferenceModel = AslFileGenerator.generateAslContentWithRandomUUID(
+                                            localAgArch.getFirstAgArch());
+                                }
+                            } else {
+                                aslTransferenceModel = AslFileGenerator.generateAslContentWithRandomUUID(
+                                        localAgArch.getFirstAgArch());
+                            }
+                        } else {
+                            aslTransferenceModel = AslFileGenerator.generateAslContentWithRandomUUID(
+                                    localAgArch.getFirstAgArch());
+                        }
                     } else {
                         aslTransferenceModel = AslFileGenerator.generateAslContent(
                                 localAgArch.getFirstAgArch());
@@ -291,6 +311,7 @@ public class BioinspiredProcessor {
 
         }
 
+        bioinspiredData.setNameOfAgentsInstantiated(nameOfAgentsInstantiated);
         bioinspiredData.setBioinspiredStage(BioinspiredStageEnum.CONFIRMATION_TRANSFER);
         AgentTransferConfirmationMessageDto agentTransferConfirmationMessageDto =
                 new AgentTransferConfirmationMessageDto(agentTransferSuccess, canKill);
@@ -298,11 +319,6 @@ public class BioinspiredProcessor {
         OutGoingMessage.sendMessageBioinspiredMessage(agentTransferConfirmationMessageDto,
                 communicationMiddleware,
                 bioinspiredData.getReceiverIdentification());
-
-        if (BioinspiredProtocolsEnum.PREDATION.equals(bioinspiredData.getBioinspiredProtocol())){
-            BioInspiredUtils.log(Level.INFO, "Dominating the MAS!");
-            BioInspiredUtils.killAgentsNotTransferred(ts, nameOfAgentsInstantiated);
-        }
 
     }
 

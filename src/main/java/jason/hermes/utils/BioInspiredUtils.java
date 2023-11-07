@@ -50,6 +50,18 @@ public class BioInspiredUtils {
         return  allAgentsName.contains(agentName);
     }
 
+    public static boolean hasHermesAgents(List<String> nameOfAgentsToBeTransferred) {
+        boolean hasHermesAgents = false;
+        for (String agentName : nameOfAgentsToBeTransferred) {
+            if (RunLocalMAS.getRunner().getAg(agentName).getFirstAgArch() instanceof Hermes) {
+                return true;
+            }
+        }
+
+
+        return hasHermesAgents;
+    }
+
     public static String getPath(String agentName) {
         String path = "";
         for (LocalAgArch localAgArch : RunLocalMAS.getRunner().getAgs().values()) {

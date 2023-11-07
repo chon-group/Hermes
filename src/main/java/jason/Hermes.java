@@ -8,10 +8,12 @@ import jason.bb.BeliefBase;
 import jason.hermes.InComingMessages;
 import jason.hermes.bioinspired.*;
 import jason.hermes.config.Configuration;
+import jason.hermes.config.ContextNetConfiguration;
 import jason.hermes.exception.ErrorCryogeningMASException;
 import jason.hermes.middlewares.CommunicationMiddleware;
 import jason.hermes.middlewares.CommunicationMiddlewareEnum;
 import jason.hermes.middlewares.CommunicationMiddlewareIdentifier;
+import jason.hermes.middlewares.ContextNetMiddleware;
 import jason.hermes.sendOut.SendOutProcessor;
 import jason.hermes.utils.BeliefUtils;
 import jason.hermes.utils.BioInspiredUtils;
@@ -182,9 +184,60 @@ public class Hermes extends AgArch implements Observer {
                         inComingMessages.getAgentTransferContentMessageDto(),
                         inComingMessages.getAgentTransferConfirmationMessageDto());
             } else {
-                if (BioinspiredRoleEnum.RECEIVED.equals(this.bioinspiredData.getBioinspiredRole())
-                        && this.bioinspiredData.isHasHermesAgentTransferred()) {
-                    BioinspiredProcessor.autoConnection(this.bioinspiredData.getHermesAgentsTransferred());
+                if (BioinspiredRoleEnum.RECEIVED.equals(this.bioinspiredData.getBioinspiredRole())) {
+                    if(this.bioinspiredData.isHasHermesAgentTransferred()) {
+                        if (this.bioinspiredData.isEntireMAS() &&
+                                BioinspiredProtocolsEnum.CLONING.equals(this.bioinspiredData.getBioinspiredProtocol())) {
+                            String receiverIdentification = this.bioinspiredData.getReceiverIdentification();
+                            List<Agent> hermesAgentsTransferred = this.bioinspiredData.getHermesAgentsTransferred();
+                            Agent agentCloned = hermesAgentsTransferred.stream().filter(agent -> (
+                                    (Hermes) agent.getTS().getAgArch()).getCommunicationMiddlewareHashMap().values()
+                                    .stream().anyMatch(communicationMiddleware -> communicationMiddleware
+                                            .getAgentIdentification().equals(receiverIdentification))).findFirst()
+                                    .orElse(null);
+                            if (agentCloned != null) {
+                                Hermes hermesAgentCloned = (Hermes) agentCloned.getTS().getAgArch();
+                                CommunicationMiddleware agentClonedCommunicationMiddleware = hermesAgentCloned
+                                        .getCommunicationMiddlewareHashMap().values().stream().filter(
+                                                communicationMiddleware -> communicationMiddleware
+                                                        .getAgentIdentification().equals(receiverIdentification))
+                                        .findFirst().orElse(null);
+                                if (agentClonedCommunicationMiddleware != null
+                                        && agentClonedCommunicationMiddleware instanceof ContextNetMiddleware) {
+                                    ContextNetConfiguration agentClonedConfiguration = (ContextNetConfiguration)
+                                            agentClonedCommunicationMiddleware.getConfiguration();
+                                    CommunicationMiddleware agentReceiverCommunicationMiddleware =
+                                            this.communicationMiddlewareHashMap.values().stream().filter(
+                                                    communicationMiddleware -> communicationMiddleware.getAgentIdentification()
+                                                            .equals(this.bioinspiredData.getSenderIdentification()))
+                                                    .findFirst().orElse(null);
+                                    if (agentReceiverCommunicationMiddleware != null
+                                            && agentReceiverCommunicationMiddleware instanceof ContextNetMiddleware) {
+                                        ContextNetConfiguration agentReceiverConfiguration = (ContextNetConfiguration)
+                                                agentReceiverCommunicationMiddleware.getConfiguration();
+                                        ContextNetConfiguration agentReceiverConfigurationClone = agentReceiverConfiguration.clone();
+                                        BeliefUtils.replaceBelief(agentReceiverConfigurationClone.toBelief(),
+                                                agentClonedConfiguration.toBelief(), agentCloned);
+                                        agentClonedCommunicationMiddleware.setConfiguration(agentReceiverConfigurationClone);
+                                        agentReceiverCommunicationMiddleware.disconnect();
+                                    }
+                                }
+                            }
+
+                        }
+                        BioinspiredProcessor.autoConnection(this.bioinspiredData.getHermesAgentsTransferred());
+                    }
+
+                    if (BioinspiredProtocolsEnum.PREDATION.equals(this.bioinspiredData.getBioinspiredProtocol())
+                        || (BioinspiredProtocolsEnum.CLONING.equals(this.bioinspiredData.getBioinspiredProtocol())
+                            && this.bioinspiredData.isEntireMAS())
+                    ){
+                        BioInspiredUtils.log(Level.INFO, "Dominating the MAS!");
+                        String logMessage = "The execution of the protocol ended at "
+                                + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss.SSS"));
+                        BioInspiredUtils.log(Level.INFO, logMessage);
+                        BioInspiredUtils.killAgentsNotTransferred(this.getTS(), this.bioinspiredData.getNameOfAgentsInstantiated());
+                    }
                 }
                 this.bioinspiredData.clean();
                 String logMessage = "The execution of the protocol ended at "

@@ -28,6 +28,10 @@ public class BioinspiredData {
     private TrophicLevelEnum myTrophicLevelEnum;
     private TrophicLevelEnum otherMASTrophicLevelEnum;
 
+    private List<String> nameOfAgentsInstantiated;
+
+    private boolean entireMAS;
+
     public BioinspiredData(TrophicLevelEnum myTrophicLevelEnum) {
         this.myTrophicLevelEnum = myTrophicLevelEnum;
     }
@@ -35,7 +39,7 @@ public class BioinspiredData {
     public BioinspiredData(List<String> nameOfAgentsToBeTransferred, BioinspiredProtocolsEnum bioinspiredProtocol,
                            boolean hasHermesAgentTransferred, String connectionIdentifier,
                            BioinspiredRoleEnum bioinspiredRole, BioinspiredStageEnum bioinspiredStage,
-                           TrophicLevelEnum myTrophicLevelEnum) {
+                           TrophicLevelEnum myTrophicLevelEnum, boolean entireMAS) {
         this.nameOfAgentsToBeTransferred = nameOfAgentsToBeTransferred;
         this.bioinspiredProtocol = bioinspiredProtocol;
         this.hasHermesAgentTransferred = hasHermesAgentTransferred;
@@ -43,12 +47,14 @@ public class BioinspiredData {
         this.bioinspiredRole = bioinspiredRole;
         this.bioinspiredStage = bioinspiredStage;
         this.myTrophicLevelEnum = myTrophicLevelEnum;
+        this.entireMAS = entireMAS;
     }
 
     public BioinspiredData(List<String> nameOfAgentsToBeTransferred, BioinspiredProtocolsEnum bioinspiredProtocol,
                            String receiverIdentification, boolean hasHermesAgentTransferred,
                            BioinspiredRoleEnum bioinspiredRole, BioinspiredStageEnum bioinspiredStage,
-                           TrophicLevelEnum myTrophicLevelEnum, TrophicLevelEnum otherMASTrophicLevelEnum) {
+                           TrophicLevelEnum myTrophicLevelEnum, TrophicLevelEnum otherMASTrophicLevelEnum,
+                           boolean entireMAS) {
         this.nameOfAgentsToBeTransferred = nameOfAgentsToBeTransferred;
         this.bioinspiredProtocol = bioinspiredProtocol;
         this.receiverIdentification = receiverIdentification;
@@ -57,6 +63,7 @@ public class BioinspiredData {
         this.bioinspiredStage = bioinspiredStage;
         this.myTrophicLevelEnum = myTrophicLevelEnum;
         this.otherMASTrophicLevelEnum = otherMASTrophicLevelEnum;
+        this.entireMAS = entireMAS;
     }
 
     public void clean() {
@@ -71,6 +78,8 @@ public class BioinspiredData {
         this.bioinspiredRole = null;
         this.bioinspiredStage = null;
         this.otherMASTrophicLevelEnum = null;
+        this.nameOfAgentsInstantiated = null;
+        this.entireMAS = false;
     }
 
     public boolean bioinspiredTransferenceActive() {
@@ -172,4 +181,17 @@ public class BioinspiredData {
     public void setOtherMASTrophicLevel(TrophicLevelEnum otherMASTrophicLevelEnum) {
         this.otherMASTrophicLevelEnum = otherMASTrophicLevelEnum;
     }
+
+    public List<String> getNameOfAgentsInstantiated() {
+        return nameOfAgentsInstantiated;
+    }
+
+    public void setNameOfAgentsInstantiated(List<String> nameOfAgentsInstantiated) {
+        this.nameOfAgentsInstantiated = nameOfAgentsInstantiated;
+    }
+
+    public boolean isEntireMAS() {
+        return entireMAS;
+    }
+
 }

@@ -18,16 +18,19 @@ public class AgentTransferRequestMessageDto extends AgentTransferMessageDto impl
 
     private TrophicLevelEnum trophicLevelEnum;
 
+    private boolean entireMAS;
+
     public AgentTransferRequestMessageDto(String senderIdentification,
                                           List<String> nameOfAgentsToBeTransferred,
                                           boolean hasHermesAgentTransferred,
                                           BioinspiredProtocolsEnum bioinspiredProtocol,
-                                          TrophicLevelEnum trophicLevelEnum) {
+                                          TrophicLevelEnum trophicLevelEnum, boolean entireMAS) {
         this.senderIdentification = senderIdentification;
         this.nameOfAgentsToBeTransferred = nameOfAgentsToBeTransferred;
         this.hasHermesAgentTransferred = hasHermesAgentTransferred;
         this.bioinspiredProtocol = bioinspiredProtocol;
         this.trophicLevelEnum = trophicLevelEnum;
+        this.entireMAS = entireMAS;
     }
 
     public String getSenderIdentification() {
@@ -46,8 +49,12 @@ public class AgentTransferRequestMessageDto extends AgentTransferMessageDto impl
         return bioinspiredProtocol;
     }
 
-    public TrophicLevelEnum getTrophicLevel() {
+    public TrophicLevelEnum getTrophicLevelEnum() {
         return trophicLevelEnum;
+    }
+
+    public boolean isEntireMAS() {
+        return entireMAS;
     }
 
 }

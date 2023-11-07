@@ -247,7 +247,8 @@ public class moveOut extends DefaultInternalAction {
                 bioinspiredDataToStartTheTransference.getNameOfAgentsToBeTransferred(),
                 bioinspiredDataToStartTheTransference.isHasHermesAgentTransferred(),
                 bioinspiredDataToStartTheTransference.getBioinspiredProtocol(),
-                bioinspiredDataToStartTheTransference.getMyTrophicLevel());
+                bioinspiredDataToStartTheTransference.getMyTrophicLevel(),
+                bioinspiredDataToStartTheTransference.isEntireMAS());
 
         BioInspiredUtils.log(Level.INFO, "Sending the agent transfer request.");
         OutGoingMessage.sendMessageBioinspiredMessage(agentTransferRequestMessageDto, communicationMiddleware, receiver);
