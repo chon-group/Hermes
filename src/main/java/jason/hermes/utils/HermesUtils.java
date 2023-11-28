@@ -25,7 +25,7 @@ import java.util.zip.GZIPOutputStream;
 
 public class HermesUtils {
 
-        private static final Logger LOGGER = Logger.getLogger("HERMES UTILS");
+    private static final Logger LOGGER = Logger.getLogger("HERMES UTILS");
 
     public static Hermes checkArchClass(AgArch agArch, String internalActionName) throws JasonException {
         Hermes hermes = null;
@@ -48,6 +48,21 @@ public class HermesUtils {
         }
         return hermes;
     }
+
+    public static boolean verifyAgentExist(String agentName) {
+        List<String> allAgentsName = BioInspiredUtils.getAllAgentsName();
+        return  allAgentsName.contains(agentName);
+    }
+
+    public static boolean verifyConnectionIdentifier(String connectionIdentifier, Hermes hermes) {
+        if (connectionIdentifier == null || connectionIdentifier.trim().isEmpty()) {
+            return false;
+        }
+
+        return hermes.getCommunicationMiddlewareHashMap().containsKey(connectionIdentifier);
+    }
+
+
 
     public static CommunicationSecurity getSecurityImplementation(String securityClassName) {
         // TODO: Verificar o que deve ser feito se não for possivel identificar a implementação de segurança passada.

@@ -183,6 +183,14 @@ public class moveOut extends DefaultInternalAction {
             throw JasonException.createWrongArgument(this,
                     "The protocol name parameter ('" + args[1] + "') must be an atom!");
         }
+    }
+
+    private void checkArguments(Term[] args, TransitionSystem ts) throws JasonException {
+        // verifica a quantidade de parametros.
+        this.checkArguments(args);
+
+        Hermes hermes = HermesUtils.checkArchClass(ts.getAgArch(), this.getClass().getName());
+
         // verifica o protocolo passado.
         String protocolName = HermesUtils.getParameterInString(args[1]).toUpperCase();
         BioinspiredProtocolsEnum bioInspiredProtocol = BioinspiredProtocolsEnum.getBioInspiredProtocol(protocolName);
@@ -193,32 +201,48 @@ public class moveOut extends DefaultInternalAction {
         }
 
         // Verifica se o protocolo é o Mutualismo para permitir a passagem de 4 argumentos.
-        if (args.length == getMaxArgs() && !BioinspiredProtocolsEnum.MUTUALISM.equals(bioInspiredProtocol)
+        if (args.length > getMinArgs() && !BioinspiredProtocolsEnum.MUTUALISM.equals(bioInspiredProtocol)
                 && !BioinspiredProtocolsEnum.CLONING.equals(bioInspiredProtocol)) {
             String msgError = "Error: The number of arguments passed was ('"
                     + args.length + "') with the protocol ('" + protocolName + "') but only the " +
                     BioinspiredProtocolsEnum.MUTUALISM.name() + " and " + BioinspiredProtocolsEnum.CLONING.name()
-                    + " protocols allow to pass " + getMaxArgs() + " args!";
+                    + " protocols allow to pass " + getMinArgs()+1 + " or more args!";
             BioInspiredUtils.log(Level.SEVERE, msgError);
             throw JasonException.createWrongArgument(this, msgError);
+        }
+        
+        if (args.length == getMinArgs() + 1) {
+            String thirdArg = HermesUtils.getParameterInString(args[2]);
+            if (!HermesUtils.verifyAgentExist(thirdArg) && !HermesUtils.verifyConnectionIdentifier(thirdArg, hermes)) {
+                String msgError = "Error: The third argument ('" + thirdArg + "') must be the name of an existing " +
+                        "agent in the MAS or an connection identifier.";
+                BioInspiredUtils.log(Level.SEVERE, msgError);
+                throw JasonException.createWrongArgument(this, msgError);
+            }
         }
 
         // Verifica se existe um agente com o nome passado.
         if (args.length == getMaxArgs()) {
             String agentName = HermesUtils.getParameterInString(args[2]);
-            if (!BioInspiredUtils.verifyAgentExist(agentName)) {
+            if (!HermesUtils.verifyAgentExist(agentName)) {
                 String msgError = "Error: Does not exists an agent named ('" + agentName + "') to be transfer!";
                 BioInspiredUtils.log(Level.SEVERE, msgError);
                 throw JasonException.createWrongArgument(this, msgError);
             }
+            String connectionIdentifier = HermesUtils.getParameterInString(args[3]);
+            if (!HermesUtils.verifyConnectionIdentifier(connectionIdentifier, hermes)) {
+                String msgError = "Error: Does not exists an connection identifier ('" + connectionIdentifier + "') in the Hermes connections configured!";
+                BioInspiredUtils.log(Level.SEVERE, msgError);
+                throw JasonException.createWrongArgument(this, msgError);
+            }
         }
+        
     }
-
 
 
     @Override
     public Object execute(final TransitionSystem ts, Unifier un, Term[] args) throws Exception {
-        checkArguments(args);
+        checkArguments(args, ts);
 
         String receiver = HermesUtils.getParameterInString(args[0]);
         String protocolName = HermesUtils.getParameterInString(args[1]).toUpperCase();

@@ -45,11 +45,6 @@ public class BioInspiredUtils {
         return nameAgents;
     }
 
-    public static boolean verifyAgentExist(String agentName) {
-        List<String> allAgentsName = getAllAgentsName();
-        return  allAgentsName.contains(agentName);
-    }
-
     public static boolean hasHermesAgents(List<String> nameOfAgentsToBeTransferred) {
         boolean hasHermesAgents = false;
         for (String agentName : nameOfAgentsToBeTransferred) {

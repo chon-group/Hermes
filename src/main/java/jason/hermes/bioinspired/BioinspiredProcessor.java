@@ -53,7 +53,7 @@ public class BioinspiredProcessor {
             boolean entireMAS = false;
             List<String> nameOfAgentsToBeTransferred = new ArrayList<>();
             String agentNameOrConnectionIdentifier = HermesUtils.getParameterInString(args[2]);
-            if (BioInspiredUtils.verifyAgentExist(agentNameOrConnectionIdentifier)) {
+            if (HermesUtils.verifyAgentExist(agentNameOrConnectionIdentifier)) {
                 nameOfAgentsToBeTransferred.add(agentNameOrConnectionIdentifier);
                 entireMAS = false;
             } else {
