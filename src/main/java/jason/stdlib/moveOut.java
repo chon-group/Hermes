@@ -275,9 +275,15 @@ public class moveOut extends DefaultInternalAction {
                 bioinspiredDataToStartTheTransference.isEntireMAS());
 
         BioInspiredUtils.log(Level.INFO, "Sending the agent transfer request.");
-        OutGoingMessage.sendMessageBioinspiredMessage(agentTransferRequestMessageDto, communicationMiddleware, receiver);
-
-        return true;
+        if (communicationMiddleware.isConnected()) {
+            OutGoingMessage.sendMessageBioinspiredMessage(agentTransferRequestMessageDto, communicationMiddleware, receiver);
+            return true;
+        } else {
+            String warningMessage = "The moveOut was executed with the connection identifier ('"
+                    + communicationMiddleware.getConfiguration().getConnectionIdentifier() + "'), but this connection is not online.";
+            BioInspiredUtils.log(Level.WARNING, warningMessage);
+            return false;
+        }
     }
 
 }
