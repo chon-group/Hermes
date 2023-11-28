@@ -29,6 +29,7 @@ import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.Message;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
+import jason.asSyntax.ListTerm;
 import jason.asSyntax.StringTerm;
 import jason.asSyntax.Term;
 import jason.hermes.OutGoingMessage;
@@ -206,28 +207,52 @@ public class moveOut extends DefaultInternalAction {
             String msgError = "Error: The number of arguments passed was ('"
                     + args.length + "') with the protocol ('" + protocolName + "') but only the " +
                     BioinspiredProtocolsEnum.MUTUALISM.name() + " and " + BioinspiredProtocolsEnum.CLONING.name()
-                    + " protocols allow to pass " + getMinArgs()+1 + " or more args!";
+                    + " protocols allow to pass " + args.length + " or more args!";
             BioInspiredUtils.log(Level.SEVERE, msgError);
             throw JasonException.createWrongArgument(this, msgError);
         }
-        
+
         if (args.length == getMinArgs() + 1) {
-            String thirdArg = HermesUtils.getParameterInString(args[2]);
-            if (!HermesUtils.verifyAgentExist(thirdArg) && !HermesUtils.verifyConnectionIdentifier(thirdArg, hermes)) {
-                String msgError = "Error: The third argument ('" + thirdArg + "') must be the name of an existing " +
-                        "agent in the MAS or an connection identifier.";
-                BioInspiredUtils.log(Level.SEVERE, msgError);
-                throw JasonException.createWrongArgument(this, msgError);
+            if (args[2].isList()) {
+                ListTerm thirdArgList = HermesUtils.getParameterInList(args[2], this);
+                HermesUtils.verifyAgentNameParameterList(args[2], thirdArgList, this);
+                if (HermesUtils.getAgentNamesInList(thirdArgList).containsAll(BioInspiredUtils.getAllHermesAgentsName())
+                        && BioinspiredProtocolsEnum.MUTUALISM.equals(bioInspiredProtocol)) {
+                    String msgError = "Error: The '" + BioinspiredProtocolsEnum.MUTUALISM.name() + "' protocol does " +
+                            "not allow sending all Hermes agents. At least one Hermes agent must stay in the Origin MAS!";
+                    BioInspiredUtils.log(Level.SEVERE, msgError);
+                    throw JasonException.createWrongArgument(this, msgError);
+                }
+            } else {
+                String thirdArg = HermesUtils.getParameterInString(args[2]);
+                if (!HermesUtils.verifyAgentExist(thirdArg) && !HermesUtils.verifyConnectionIdentifier(thirdArg, hermes)) {
+                    String msgError = "Error: The third argument ('" + thirdArg + "') must be the name of an existing " +
+                            "agent in the MAS or an connection identifier.";
+                    BioInspiredUtils.log(Level.SEVERE, msgError);
+                    throw JasonException.createWrongArgument(this, msgError);
+                }
             }
         }
 
         // Verifica se existe um agente com o nome passado.
         if (args.length == getMaxArgs()) {
-            String agentName = HermesUtils.getParameterInString(args[2]);
-            if (!HermesUtils.verifyAgentExist(agentName)) {
-                String msgError = "Error: Does not exists an agent named ('" + agentName + "') to be transfer!";
-                BioInspiredUtils.log(Level.SEVERE, msgError);
-                throw JasonException.createWrongArgument(this, msgError);
+            if (args[2].isList()) {
+                ListTerm thirdArgList = HermesUtils.getParameterInList(args[2], this);
+                HermesUtils.verifyAgentNameParameterList(args[2], thirdArgList, this);
+                if (HermesUtils.getAgentNamesInList(thirdArgList).containsAll(BioInspiredUtils.getAllHermesAgentsName())
+                        && BioinspiredProtocolsEnum.MUTUALISM.equals(bioInspiredProtocol)) {
+                    String msgError = "Error: The '" + BioinspiredProtocolsEnum.MUTUALISM.name() + "' protocol does " +
+                            "not allow sending all Hermes agents. At least one Hermes agent must stay in the Origin MAS!";
+                    BioInspiredUtils.log(Level.SEVERE, msgError);
+                    throw JasonException.createWrongArgument(this, msgError);
+                }
+            } else {
+                String agentName = HermesUtils.getParameterInString(args[2]);
+                if (!HermesUtils.verifyAgentExist(agentName)) {
+                    String msgError = "Error: Does not exists an agent named ('" + agentName + "') to be transfer!";
+                    BioInspiredUtils.log(Level.SEVERE, msgError);
+                    throw JasonException.createWrongArgument(this, msgError);
+                }
             }
             String connectionIdentifier = HermesUtils.getParameterInString(args[3]);
             if (!HermesUtils.verifyConnectionIdentifier(connectionIdentifier, hermes)) {

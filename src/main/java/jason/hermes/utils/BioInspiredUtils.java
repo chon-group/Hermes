@@ -31,7 +31,7 @@ public class BioInspiredUtils {
         return nameAgents;
     }
 
-    public static List<String> getAgentsNameExceptCommunicatorAgentName() {
+    public static List<String> getAgentsNameExceptHermesAgentName() {
         Map<String, LocalAgArch> agentsOfTheSMA = RunLocalMAS.getRunner().getAgs();
         List<String> nameAgents = new ArrayList<String>();
 
@@ -43,6 +43,12 @@ public class BioInspiredUtils {
             }
         }
         return nameAgents;
+    }
+
+    public static List<String> getAllHermesAgentsName() {
+        List<String> allAgentsName = BioInspiredUtils.getAllAgentsName();
+        allAgentsName.removeAll(BioInspiredUtils.getAgentsNameExceptHermesAgentName());
+        return allAgentsName;
     }
 
     public static boolean hasHermesAgents(List<String> nameOfAgentsToBeTransferred) {

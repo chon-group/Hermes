@@ -5,6 +5,7 @@ import jason.JasonException;
 import jason.asSemantics.Agent;
 import jason.asSemantics.TransitionSystem;
 import jason.asSyntax.Atom;
+import jason.asSyntax.ListTerm;
 import jason.asSyntax.Term;
 import jason.hermes.OutGoingMessage;
 import jason.hermes.bioinspired.criogenic.MasBuilderContent;
@@ -37,11 +38,11 @@ public class BioinspiredProcessor {
     public static BioinspiredData getBioinspiredDataToStartTheTransference(BioinspiredProtocolsEnum bioinspiredProtocol,
                                                                            Term[] args,
                                                                            String connectionIdentifier,
-                                                                           TrophicLevelEnum trophicLevelEnum) {
+                                                                           TrophicLevelEnum trophicLevelEnum) throws JasonException {
         if (args.length == 2) {
             List<String> nameOfAgentsToBeTransferred;
             if (BioinspiredProtocolsEnum.MUTUALISM.equals(bioinspiredProtocol)){
-                nameOfAgentsToBeTransferred = BioInspiredUtils.getAgentsNameExceptCommunicatorAgentName();
+                nameOfAgentsToBeTransferred = BioInspiredUtils.getAgentsNameExceptHermesAgentName();
             } else {
                 nameOfAgentsToBeTransferred = BioInspiredUtils.getAllAgentsName();
             }
@@ -52,32 +53,45 @@ public class BioinspiredProcessor {
         } else if (args.length == 3){
             boolean entireMAS = false;
             List<String> nameOfAgentsToBeTransferred = new ArrayList<>();
-            String agentNameOrConnectionIdentifier = HermesUtils.getParameterInString(args[2]);
-            if (HermesUtils.verifyAgentExist(agentNameOrConnectionIdentifier)) {
-                nameOfAgentsToBeTransferred.add(agentNameOrConnectionIdentifier);
-                entireMAS = false;
+            if (args[2].isList()) {
+                ListTerm agentNamesList = HermesUtils.getParameterInList(args[2]);
+                nameOfAgentsToBeTransferred.addAll(HermesUtils.getAgentNamesInList(agentNamesList));
+                entireMAS = nameOfAgentsToBeTransferred.size() == BioInspiredUtils.getAllAgentsName().size();
             } else {
-                connectionIdentifier = agentNameOrConnectionIdentifier;
-                if (BioinspiredProtocolsEnum.MUTUALISM.equals(bioinspiredProtocol)){
-                    nameOfAgentsToBeTransferred = BioInspiredUtils.getAgentsNameExceptCommunicatorAgentName();
+                String agentNameOrConnectionIdentifier = HermesUtils.getParameterInString(args[2]);
+                if (HermesUtils.verifyAgentExist(agentNameOrConnectionIdentifier)) {
+                    nameOfAgentsToBeTransferred.add(agentNameOrConnectionIdentifier);
+                    entireMAS = false;
                 } else {
-                    nameOfAgentsToBeTransferred = BioInspiredUtils.getAllAgentsName();
+                    connectionIdentifier = agentNameOrConnectionIdentifier;
+                    if (BioinspiredProtocolsEnum.MUTUALISM.equals(bioinspiredProtocol)) {
+                        nameOfAgentsToBeTransferred = BioInspiredUtils.getAgentsNameExceptHermesAgentName();
+                    } else {
+                        nameOfAgentsToBeTransferred = BioInspiredUtils.getAllAgentsName();
+                    }
+                    entireMAS = true;
                 }
-                entireMAS = true;
             }
             return new BioinspiredData(nameOfAgentsToBeTransferred, bioinspiredProtocol,
                     BioInspiredUtils.hasHermesAgents(nameOfAgentsToBeTransferred),
                     connectionIdentifier, BioinspiredRoleEnum.SENDER, BioinspiredStageEnum.TRANSFER_REQUEST,
                     trophicLevelEnum, entireMAS);
         } else {
-            String agentName = HermesUtils.getParameterInString(args[2]);
-            connectionIdentifier = HermesUtils.getParameterInString(args[3]);
+            boolean entireMAS = false;
             List<String> nameOfAgentsToBeTransferred = new ArrayList<>();
-            nameOfAgentsToBeTransferred.add(agentName);
+            if (args[2].isList()) {
+                ListTerm agentNamesList = HermesUtils.getParameterInList(args[2]);
+                nameOfAgentsToBeTransferred.addAll(HermesUtils.getAgentNamesInList(agentNamesList));
+                entireMAS = nameOfAgentsToBeTransferred.size() == BioInspiredUtils.getAllAgentsName().size();
+            } else {
+                String agentName = HermesUtils.getParameterInString(args[2]);
+                nameOfAgentsToBeTransferred.add(agentName);
+            }
+            connectionIdentifier = HermesUtils.getParameterInString(args[3]);
             return new BioinspiredData(nameOfAgentsToBeTransferred, bioinspiredProtocol,
                     BioInspiredUtils.hasHermesAgents(nameOfAgentsToBeTransferred),
                     connectionIdentifier, BioinspiredRoleEnum.SENDER, BioinspiredStageEnum.TRANSFER_REQUEST,
-                    trophicLevelEnum, false);
+                    trophicLevelEnum, entireMAS);
         }
     }
 

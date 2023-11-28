@@ -3,6 +3,7 @@ package jason.hermes.utils;
 import jason.Hermes;
 import jason.JasonException;
 import jason.architecture.AgArch;
+import jason.asSemantics.InternalAction;
 import jason.asSemantics.Message;
 import jason.asSemantics.TransitionSystem;
 import jason.asSyntax.*;
@@ -16,6 +17,7 @@ import jason.hermes.sec.NoSecurity;
 import jason.hermes.sec.SecurityImplementations;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.logging.Level;
@@ -62,7 +64,52 @@ public class HermesUtils {
         return hermes.getCommunicationMiddlewareHashMap().containsKey(connectionIdentifier);
     }
 
+    public static ListTerm getParameterInList(Term term) throws JasonException {
+        ListTerm listTerm;
+        try {
+            listTerm = ASSyntax.parseList(term.toString());
+        } catch (ParseException e) {
+            String msgError = "Error: When converting the list ('" + term.toString() + "').";
+            BioInspiredUtils.log(Level.SEVERE, msgError);
+            throw new JasonException(msgError, JasonException.WRONG_ARGS);
+        }
+        return listTerm;
+    }
 
+    public static ListTerm getParameterInList(Term term, InternalAction internalAction) throws JasonException {
+        ListTerm listTerm;
+        try {
+            listTerm = ASSyntax.parseList(term.toString());
+        } catch (ParseException e) {
+            String msgError = "Error: When converting the list received by argument ('" + term.toString()
+                    + "') to the internal action ('" + internalAction.getClass().getName() + "').";
+            BioInspiredUtils.log(Level.SEVERE, msgError);
+            throw JasonException.createWrongArgument(internalAction, msgError);
+        }
+        return listTerm;
+    }
+
+    public static List<String> getAgentNamesInList(ListTerm listTerm) {
+        List<String> agentNamesInList = new ArrayList<>();
+        for (Term term : listTerm) {
+            agentNamesInList.add(HermesUtils.getParameterInString(term));
+        }
+
+        return agentNamesInList;
+    }
+
+    public static void verifyAgentNameParameterList(Term term, ListTerm agentNameList, InternalAction internalAction)
+            throws JasonException {
+        for (Term thirdArgTerm : agentNameList) {
+            String thirdArg = HermesUtils.getParameterInString(thirdArgTerm);
+            if (!HermesUtils.verifyAgentExist(thirdArg)) {
+                String msgError = "Error: The argument is a list of agent names ('" + term.toString()
+                        + "'), and agent ('" + thirdArg + "') does not exist in MAS.";
+                BioInspiredUtils.log(Level.SEVERE, msgError);
+                throw JasonException.createWrongArgument(internalAction, msgError);
+            }
+        }
+    }
 
     public static CommunicationSecurity getSecurityImplementation(String securityClassName) {
         // TODO: Verificar o que deve ser feito se não for possivel identificar a implementação de segurança passada.
