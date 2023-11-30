@@ -11,6 +11,6 @@ agent1.
 +!start: day <-
     .print("Hello world!!!").
 
--myMAS(X)[source(Y)]: true <-
+-Hermes::myMAS(X)[source(Y)]: true <-
     .wait(500);
-    .send(simple_agent, tell, cryogenic).
+    .send(simple_agent, achieve, cryogenic).

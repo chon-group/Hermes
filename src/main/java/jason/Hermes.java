@@ -17,9 +17,11 @@ import jason.hermes.middlewares.ContextNetMiddleware;
 import jason.hermes.sendOut.SendOutProcessor;
 import jason.hermes.utils.BeliefUtils;
 import jason.hermes.utils.BioInspiredUtils;
+import jason.hermes.utils.FileUtils;
 import jason.hermes.utils.HermesUtils;
 import jason.infra.local.RunLocalMAS;
 
+import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -251,6 +253,9 @@ public class Hermes extends AgArch implements Observer {
         if (BioinspiredProcessor.checkCryogenicFile(aslSrc)) {
             try {
                 BioinspiredProcessor.cryogenate(aslSrc);
+                File masPath = FileUtils.getMasPath(this.getTS().getAg().getASLSrc());
+                File cryogenicFile = new File(masPath.getPath() + File.separator + FileUtils.CRYOGENIC_FILE);
+                FileUtils.deleteFile(cryogenicFile);
             } catch (ErrorCryogeningMASException e) {
                 BioInspiredUtils.log(Level.SEVERE, e.getMessage());
             }

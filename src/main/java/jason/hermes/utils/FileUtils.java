@@ -3,11 +3,12 @@ package jason.hermes.utils;
 import jason.hermes.exception.*;
 
 import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Locale;
 
 public class FileUtils {
 
@@ -20,6 +21,10 @@ public class FileUtils {
     private static final int FOLDER_MAX_ATTEMPT_TO_CREATE = 3;
     private static final int FILE_MAX_ATTEMPT_TO_DELETE = 3;
     public static final String NEW_LINE = "\n";
+
+    public static final String TIME_ZONE_CRYOGENATED_MAS = "America/Sao_Paulo";
+
+    public static final String DATE_FORMAT_CRYOGENATED_MAS = "yyyy-MM-dd_HH-mm-ss-SSS";
 
     public static File getMasPath(String agentASLSrc) {
         File masFolder = null;
@@ -41,18 +46,18 @@ public class FileUtils {
     }
 
     public static String getCryogenatedMasPath(String oldMasPath, String masName) {
-        String masBasePath = oldMasPath + File.separator + BASE_PATH + LocalDateTime
-                .now(ZoneId.of("America/Sao_Paulo"))
-                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss-SSS",
-                        new Locale("pt", "BR")));
-        String path = masBasePath + File.separator + masName;
+        Path oldMasPathPath = Paths.get(oldMasPath);
+
+        String masBasePath = oldMasPathPath.getParent().toString() + File.separator + BASE_PATH
+                + masName + File.separator;
+        String path = masBasePath + LocalDateTime.now(ZoneId.of(TIME_ZONE_CRYOGENATED_MAS))
+                .format(DateTimeFormatter.ofPattern(DATE_FORMAT_CRYOGENATED_MAS));
         File masPath = new File(path);
-        int i = 1;
         while(masPath.exists()) {
-            masPath = new File(masBasePath + File.separator + masName + i);
-            i++;
+            masPath = new File(masBasePath + LocalDateTime.now(ZoneId.of(TIME_ZONE_CRYOGENATED_MAS))
+                    .format(DateTimeFormatter.ofPattern(DATE_FORMAT_CRYOGENATED_MAS)));
         }
-        return path.toString();
+        return masPath.getPath();
     }
 
     public static boolean createFolder(File folder) {

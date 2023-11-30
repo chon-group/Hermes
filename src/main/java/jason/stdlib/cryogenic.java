@@ -5,7 +5,7 @@ import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.Term;
-import jason.hermes.bioinspired.BioinspiredProcessor;
+import jason.hermes.utils.FileUtils;
 
 import java.io.File;
 
@@ -30,9 +30,9 @@ public class cryogenic extends DefaultInternalAction {
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
         this.checkArguments(args);
 
-        File masFileCriogenated = BioinspiredProcessor.cryogenate(ts.getAg().getASLSrc());
-
-        return masFileCriogenated != null && masFileCriogenated.exists();
+        File masPath = FileUtils.getMasPath(ts.getAg().getASLSrc());
+        File cryogenicFile = new File(masPath.getPath() + File.separator + FileUtils.CRYOGENIC_FILE);
+        return FileUtils.createFile(cryogenicFile);
     }
 
 }

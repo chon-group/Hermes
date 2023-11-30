@@ -35,10 +35,11 @@ public class MasBuilderStructure {
 		super();
 	}
 	
-	public MasBuilderStructure(String masName, List<Agent> agents) {
+	public MasBuilderStructure(String masName, List<Agent> agents, String infrastruture) {
 		super();
 		this.masName = masName;
 		this.agents = agents;
+		this.infrastruture = infrastruture;
 	}
 
 

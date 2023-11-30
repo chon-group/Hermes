@@ -23,6 +23,7 @@ import jason.hermes.utils.FileUtils;
 import jason.hermes.utils.HermesUtils;
 import jason.infra.local.LocalAgArch;
 import jason.infra.local.RunLocalMAS;
+import jason.mas2j.ClassParameters;
 import jason.runtime.RuntimeServicesFactory;
 
 import java.io.File;
@@ -459,8 +460,9 @@ public class BioinspiredProcessor {
         String masName = RunLocalMAS.getRunner().getProject().getSocName();
         List<Agent> allMasAgents = RunLocalMAS.getRunner().getAgs().values().stream()
                 .map(localAgArch -> localAgArch.getTS().getAg()).collect(Collectors.toList());
+        ClassParameters infrastructure = RunLocalMAS.getRunner().getProject().getInfrastructure();
 
-        MasBuilderStructure mas = new MasBuilderStructure(masName, allMasAgents);
+        MasBuilderStructure mas = new MasBuilderStructure(masName, allMasAgents, infrastructure.getClassName());
         File masPath = FileUtils.getMasPath(aslSrc);
         File masFile = null;
         if (masPath != null) {
