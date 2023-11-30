@@ -53,6 +53,8 @@ public class ContextNetConfiguration extends Configuration {
     @Override
     public Literal toBelief() {
         StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(BeliefUtils.HERMES_NAMESPACE);
+        stringBuilder.append(BeliefUtils.NAMESPACE_SEPARATOR);
         stringBuilder.append(BELIEF_PREFIX);
         stringBuilder.append("(");
         stringBuilder.append("\"").append(getConnectionIdentifier()).append("\"").append(BeliefUtils.BELIEF_SEPARATOR);
@@ -62,7 +64,7 @@ public class ContextNetConfiguration extends Configuration {
         stringBuilder.append("\"").append(isConnected()).append("\"").append(BeliefUtils.BELIEF_SEPARATOR);
         stringBuilder.append("\"").append(getSecurity().getClass().getSimpleName()).append("\"");
         stringBuilder.append(")");
-        return Literal.parseLiteral(stringBuilder.toString());
+        return BeliefUtils.parseLiteralWithNamespace(stringBuilder.toString());
     }
 
     @Override

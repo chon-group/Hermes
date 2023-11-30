@@ -51,7 +51,7 @@ public class Hermes extends AgArch implements Observer {
 
         BeliefBase beliefBase = this.getTS().getAg().getBB();
 
-        List<String> beliefByStartWithList = BeliefUtils.getBeliefsInStringByStartWith(beliefBase,
+        List<String> beliefByStartWithList = BeliefUtils.getBeliefsInStringByFunction(beliefBase,
                 BeliefUtils.MY_TROPHIC_LEVEL_PREFIX);
 
         if (beliefByStartWithList.isEmpty()) {
@@ -71,13 +71,13 @@ public class Hermes extends AgArch implements Observer {
         for (CommunicationMiddlewareEnum communicationMiddlewareEnum : CommunicationMiddlewareEnum.values()) {
             String classNameFirstCharacterLowerCase = BeliefUtils.getPrefix(communicationMiddlewareEnum.getConfiguration()
                     .getClass());
-            List<String> communicationMiddlewareList = BeliefUtils.getBeliefsInStringByStartWith(beliefBase,
+            List<String> communicationMiddlewareList = BeliefUtils.getBeliefsInStringByFunction(beliefBase,
                     classNameFirstCharacterLowerCase);
             if (!communicationMiddlewareList.isEmpty()) {
                 boolean wasConnected = false;
                 for (String communicationMiddlewareEnumValue : communicationMiddlewareList) {
                     Configuration configurationByBelief = communicationMiddlewareEnum.getConfiguration().getByBelief(
-                            Literal.parseLiteral(communicationMiddlewareEnumValue));
+                            BeliefUtils.parseLiteralWithNamespace(communicationMiddlewareEnumValue));
                     this.addConnectionConfiguration(configurationByBelief);
                     if (configurationByBelief.isConnected()) {
                         wasConnected = true;
@@ -129,7 +129,7 @@ public class Hermes extends AgArch implements Observer {
         if (o instanceof Configuration) {
             Configuration configuration = (Configuration) o;
             String prefix = BeliefUtils.getPrefix(configuration.getClass());
-            List<Literal> beliefsByStartWith = BeliefUtils.getBeliefsByStartWith(this.getTS().getAg().getBB(), prefix);
+            List<Literal> beliefsByStartWith = BeliefUtils.getBeliefsByFunction(this.getTS().getAg().getBB(), prefix);
             for (Literal literal : beliefsByStartWith) {
                 Configuration byBelief = configuration.getByBelief(literal);
                 if (byBelief.getConnectionIdentifier().equals(configuration.getConnectionIdentifier())) {

@@ -1,9 +1,10 @@
 package jason.hermes.utils;
 
+import jason.Hermes;
 import jason.RevisionFailedException;
 import jason.asSemantics.Agent;
-import jason.asSyntax.Literal;
-import jason.asSyntax.Term;
+import jason.asSyntax.*;
+import jason.asSyntax.parser.ParseException;
 import jason.bb.BeliefBase;
 
 import java.util.ArrayList;
@@ -27,26 +28,28 @@ public class BeliefUtils {
 
     public static final String BELIEF_SEPARATOR = ",";
 
-    public static List<String> getBeliefsInStringByStartWith(BeliefBase beliefBase, String startAt) {
+    public static final String HERMES_NAMESPACE = Hermes.class.getSimpleName();
+
+    public static final String NAMESPACE_SEPARATOR = "::";
+
+    public static List<String> getBeliefsInStringByFunction(BeliefBase beliefBase, String function) {
         List<String> beliefs = new ArrayList<>();
         Iterator<Literal> beliefsIterator = beliefBase.iterator();
         while (beliefsIterator.hasNext()) {
             Literal literal = beliefsIterator.next();
-            String belief = literal.toString();
-            if (belief.startsWith(startAt)){
-                beliefs.add(belief);
+            if (literal.getFunctor().equals(function)){
+                beliefs.add(literal.toString());
             }
         }
         return beliefs;
     }
 
-    public static List<Literal> getBeliefsByStartWith(BeliefBase beliefBase, String startAt) {
+    public static List<Literal> getBeliefsByFunction(BeliefBase beliefBase, String function) {
         List<Literal> beliefs = new ArrayList<>();
         Iterator<Literal> beliefsIterator = beliefBase.iterator();
         while (beliefsIterator.hasNext()) {
             Literal literal = beliefsIterator.next();
-            String belief = literal.toString();
-            if (belief.startsWith(startAt)){
+            if (literal.getFunctor().equals(function)){
                 beliefs.add(literal);
             }
         }
@@ -78,9 +81,21 @@ public class BeliefUtils {
         Literal belief = Literal.parseLiteral(beliefValueConstantName.replace(
                 BeliefUtils.VALUE_REPLACEMENT,
                 value));
+        belief = ASSyntax.createLiteral(new Atom(HERMES_NAMESPACE), belief.getFunctor(), belief.getTermsArray());
         belief.addSource(beliefSource);
 
-        return belief;
+        return Literal.parseLiteral(belief.toString());
+    }
+
+    public static Literal parseLiteralWithNamespace(String belief) {
+        try {
+            return ASSyntax.parseLiteral(belief);
+        } catch (ParseException e) {
+            String errorMessage = "Error: When parsing the belief ('" + belief + "') from string to literal.";
+            BioInspiredUtils.log(Level.SEVERE, errorMessage);
+        }
+
+        return Literal.parseLiteral(belief);
     }
 
     public static void addBelief(Literal belief, Agent agent) {
@@ -98,14 +113,14 @@ public class BeliefUtils {
 
     public static void replaceAllBeliefBySource(String beliefConstantPrefix, String beliefValueConstantName, Term beliefSource,
                                                 String value, Agent agent) {
-        List<String> beliefWithPrefixList = BeliefUtils.getBeliefsInStringByStartWith(agent.getBB(), beliefConstantPrefix);
+        List<String> beliefWithPrefixList = BeliefUtils.getBeliefsInStringByFunction(agent.getBB(), beliefConstantPrefix);
         String source = HermesUtils.getParameterInString(beliefSource);
 
         List<String> beliefValueList = BeliefUtils.getBeliefValue(beliefWithPrefixList, source);
 
         if (!beliefValueList.isEmpty() && !beliefValueList.contains(value)) {
             for (String beliefValueString : beliefWithPrefixList) {
-                Literal beliefValueLiteral = Literal.parseLiteral(beliefValueString);
+                Literal beliefValueLiteral = BeliefUtils.parseLiteralWithNamespace(beliefValueString);
                 try {
                     agent.delBel(beliefValueLiteral);
                 } catch (RevisionFailedException e) {
@@ -120,12 +135,12 @@ public class BeliefUtils {
 
     public static void replaceAllBelief(String beliefConstantPrefix, String beliefValueConstantName, Term beliefSource,
                                         String value, Agent agent) {
-        List<String> beliefWithPrefixList = BeliefUtils.getBeliefsInStringByStartWith(agent.getBB(), beliefConstantPrefix);
+        List<String> beliefWithPrefixList = BeliefUtils.getBeliefsInStringByFunction(agent.getBB(), beliefConstantPrefix);
 
         if (!beliefWithPrefixList.isEmpty()) {
             for (String beliefValueString : beliefWithPrefixList) {
                 if (!beliefValueString.contains(value)) {
-                    Literal beliefValueLiteral = Literal.parseLiteral(beliefValueString);
+                    Literal beliefValueLiteral = BeliefUtils.parseLiteralWithNamespace(beliefValueString);
                     try {
                         agent.delBel(beliefValueLiteral);
                     } catch (RevisionFailedException e) {
@@ -139,43 +154,9 @@ public class BeliefUtils {
         addBelief(beliefValueConstantName, beliefSource, value, agent);
     }
 
-    public static void replaceAllBelief(Literal belief, Term source, Agent agent) {
-        String beliefString = belief.toString();
-        String sourceString = HermesUtils.getParameterInString(source);
-        int initialIndex = beliefString.indexOf("(");
-        String beliefPrefix = "";
-        if(initialIndex != 1) {
-            beliefPrefix = beliefString.substring(0, initialIndex);
-        }
-        if (!beliefPrefix.isEmpty()) {
-            List<String> beliefWithPrefixList = BeliefUtils.getBeliefsInStringByStartWith(agent.getBB(), beliefPrefix);
-
-            List<String> beliefValueList = BeliefUtils.getBeliefValue(beliefWithPrefixList, sourceString);
-
-            if (!beliefValueList.isEmpty()) {
-                for (String beliefValueString : beliefWithPrefixList) {
-                    if (!beliefValueString.equals(beliefString)) {
-                        Literal beliefValueLiteral = Literal.parseLiteral(beliefValueString);
-                        try {
-                            agent.delBel(beliefValueLiteral);
-                        } catch (RevisionFailedException e) {
-                            BioInspiredUtils.log(Level.SEVERE,
-                                    "Error: Tt was not possible to remove the belief: '" + beliefValueString + "'.\nCause: " + e);
-                        }
-                    }
-                }
-            }
-
-            if (!beliefWithPrefixList.contains(beliefString)) {
-                addBelief(belief, agent);
-            }
-        }
-
-    }
-
     public static void addBeliefIfAbsent(String beliefConstantPrefix, String beliefValueConstantName, Term beliefSource,
                                          String value, Agent agent) {
-        List<String> beliefWithPrefixList = BeliefUtils.getBeliefsInStringByStartWith(agent.getBB(), beliefConstantPrefix);
+        List<String> beliefWithPrefixList = BeliefUtils.getBeliefsInStringByFunction(agent.getBB(), beliefConstantPrefix);
         if (beliefWithPrefixList.isEmpty()) {
             addBelief(beliefValueConstantName, beliefSource, value, agent);
         }
