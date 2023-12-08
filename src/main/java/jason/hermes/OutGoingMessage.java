@@ -1,9 +1,9 @@
 package jason.hermes;
 
 import jason.asSemantics.Message;
-import jason.hermes.bioinspired.dto.AgentTransferMessageDto;
-import jason.hermes.middlewares.CommunicationMiddleware;
-import jason.hermes.utils.HermesUtils;
+import jason.hermes.capabilities.bioinspiredProtocols.dto.AgentTransferMessageDto;
+import jason.hermes.capabilities.manageConnections.middlewares.CommunicationMiddleware;
+import jason.hermes.utils.MessageUtils;
 
 public class OutGoingMessage {
 
@@ -15,7 +15,7 @@ public class OutGoingMessage {
     public static void sendMessageBioinspiredMessage(AgentTransferMessageDto agentTransferRequestMessageDto,
                                                      CommunicationMiddleware communicationMiddleware, String receiverIdentifier) {
 
-        String agentTransferRequestMessageDtoSerialized = HermesUtils.serializeMessage(agentTransferRequestMessageDto);
+        String agentTransferRequestMessageDtoSerialized = MessageUtils.serializeMessage(agentTransferRequestMessageDto);
 
         String messageEncrypted = communicationMiddleware.getCommunicationSecurity()
                 .encrypt(agentTransferRequestMessageDtoSerialized);

@@ -3,7 +3,10 @@ package jason.hermes.utils;
 import jason.Hermes;
 import jason.RevisionFailedException;
 import jason.asSemantics.Agent;
-import jason.asSyntax.*;
+import jason.asSyntax.ASSyntax;
+import jason.asSyntax.Atom;
+import jason.asSyntax.Literal;
+import jason.asSyntax.Term;
 import jason.asSyntax.parser.ParseException;
 import jason.bb.BeliefBase;
 
@@ -11,8 +14,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public class BeliefUtils {
+public abstract class BeliefUtils {
+
+    private static final Logger LOGGER = Logger.getLogger("HERMES_BELIEF_UTILS");
 
     public static final String MY_MAS_BELIEF_PREFIX = "myMAS";
 
@@ -92,29 +98,31 @@ public class BeliefUtils {
             return ASSyntax.parseLiteral(belief);
         } catch (ParseException e) {
             String errorMessage = "Error: When parsing the belief ('" + belief + "') from string to literal.";
-            BioInspiredUtils.log(Level.SEVERE, errorMessage);
+            BeliefUtils.log(Level.SEVERE, errorMessage);
         }
 
         return Literal.parseLiteral(belief);
     }
 
-    public static void addBelief(Literal belief, Agent agent) {
+    public static boolean addBelief(Literal belief, Agent agent) {
         try {
             agent.addBel(belief);
+            return true;
         } catch (RevisionFailedException e) {
-            BioInspiredUtils.log(Level.SEVERE,
+            BeliefUtils.log(Level.SEVERE,
                     "Error: Tt was not possible to add the belief: '" + belief + "'.\nCause: " + e);
+            return false;
         }
     }
-    public static void addBelief(String beliefValueConstantName, Term beliefSource, String value, Agent agent) {
+    public static boolean addBelief(String beliefValueConstantName, Term beliefSource, String value, Agent agent) {
         Literal belief = getBelief(beliefValueConstantName, beliefSource, value);
-        addBelief(belief, agent);
+        return addBelief(belief, agent);
     }
 
     public static void replaceAllBeliefBySource(String beliefConstantPrefix, String beliefValueConstantName, Term beliefSource,
                                                 String value, Agent agent) {
         List<String> beliefWithPrefixList = BeliefUtils.getBeliefsInStringByFunction(agent.getBB(), beliefConstantPrefix);
-        String source = HermesUtils.getParameterInString(beliefSource);
+        String source = HermesUtils.getTermInString(beliefSource);
 
         List<String> beliefValueList = BeliefUtils.getBeliefValue(beliefWithPrefixList, source);
 
@@ -124,7 +132,7 @@ public class BeliefUtils {
                 try {
                     agent.delBel(beliefValueLiteral);
                 } catch (RevisionFailedException e) {
-                    BioInspiredUtils.log(Level.SEVERE,
+                    BeliefUtils.log(Level.SEVERE,
                             "Error: Tt was not possible to remove the belief: '" + beliefValueString + "'.\nCause: " + e);
                 }
             }
@@ -133,7 +141,7 @@ public class BeliefUtils {
         addBelief(beliefValueConstantName, beliefSource, value, agent);
     }
 
-    public static void replaceAllBelief(String beliefConstantPrefix, String beliefValueConstantName, Term beliefSource,
+    public static boolean replaceAllBelief(String beliefConstantPrefix, String beliefValueConstantName, Term beliefSource,
                                         String value, Agent agent) {
         List<String> beliefWithPrefixList = BeliefUtils.getBeliefsInStringByFunction(agent.getBB(), beliefConstantPrefix);
 
@@ -144,14 +152,14 @@ public class BeliefUtils {
                     try {
                         agent.delBel(beliefValueLiteral);
                     } catch (RevisionFailedException e) {
-                        BioInspiredUtils.log(Level.SEVERE,
+                        BeliefUtils.log(Level.SEVERE,
                                 "Error: Tt was not possible to remove the belief: '" + beliefValueString + "'.\nCause: " + e);
                     }
                 }
             }
         }
 
-        addBelief(beliefValueConstantName, beliefSource, value, agent);
+        return addBelief(beliefValueConstantName, beliefSource, value, agent);
     }
 
     public static void addBeliefIfAbsent(String beliefConstantPrefix, String beliefValueConstantName, Term beliefSource,
@@ -167,7 +175,7 @@ public class BeliefUtils {
         try {
             agent.delBel(oldBelief);
         } catch (RevisionFailedException e) {
-            BioInspiredUtils.log(Level.SEVERE,
+            BeliefUtils.log(Level.SEVERE,
                     "Error: Tt was not possible to remove the belief: '" + oldBelief + "'.\nCause: " + e);
         }
 
@@ -178,6 +186,14 @@ public class BeliefUtils {
         String className = aClass.getSimpleName();
         char firstChar = Character.toLowerCase(className.charAt(0));
         return firstChar + className.substring(1);
+    }
+
+    public static void log(Level level, String message) {
+        try {
+            LOGGER.log(level, message);
+        } catch (Exception | Error e) {
+            //ignore
+        }
     }
 
 }

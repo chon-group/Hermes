@@ -1,14 +1,13 @@
 package jason.hermes;
 
 import jason.asSemantics.Message;
-import jason.hermes.bioinspired.BioinspiredData;
-import jason.hermes.bioinspired.dto.AgentTransferConfirmationMessageDto;
-import jason.hermes.bioinspired.dto.AgentTransferContentMessageDto;
-import jason.hermes.bioinspired.dto.AgentTransferRequestMessageDto;
-import jason.hermes.bioinspired.dto.AgentTransferResponseMessageDto;
-import jason.hermes.middlewares.CommunicationMiddleware;
-import jason.hermes.utils.BioInspiredUtils;
-import jason.hermes.utils.HermesUtils;
+import jason.hermes.capabilities.bioinspiredProtocols.BioinspiredData;
+import jason.hermes.capabilities.bioinspiredProtocols.dto.AgentTransferConfirmationMessageDto;
+import jason.hermes.capabilities.bioinspiredProtocols.dto.AgentTransferContentMessageDto;
+import jason.hermes.capabilities.bioinspiredProtocols.dto.AgentTransferRequestMessageDto;
+import jason.hermes.capabilities.bioinspiredProtocols.dto.AgentTransferResponseMessageDto;
+import jason.hermes.capabilities.manageConnections.middlewares.CommunicationMiddleware;
+import jason.hermes.utils.MessageUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,7 +18,7 @@ import java.util.logging.Logger;
 
 public class InComingMessages {
 
-    private static final Logger LOGGER = Logger.getLogger("IN COMING MESSAGES");
+    private static final Logger LOGGER = Logger.getLogger("IN_COMING_MESSAGES");
     private Map<String, List<Message>> messages;
 
     private AgentTransferRequestMessageDto agentTransferRequestMessageDto;
@@ -64,52 +63,52 @@ public class InComingMessages {
         for (String receivedEncryptedMessage : receivedEncryptedMessages) {
             Object decryptedObjectMessage = communicationMiddleware.getCommunicationSecurity()
                     .decrypt(receivedEncryptedMessage);
-            log(Level.FINE, "New message received.");
+            InComingMessages.log(Level.FINE, "New message received.");
 
-            Message decryptedMessage = HermesUtils.getJasonMessage(decryptedObjectMessage);
+            Message decryptedMessage = MessageUtils.getJasonMessage(decryptedObjectMessage);
             if (decryptedMessage != null) {
                 this.addMessage(connectionIdentifier, decryptedMessage);
                 continue;
             }
 
-            AgentTransferRequestMessageDto agentTransferRequestMessageDto = HermesUtils
+            AgentTransferRequestMessageDto agentTransferRequestMessageDto = MessageUtils
                     .getAgentTransferRequestMessage(decryptedObjectMessage);
             if (agentTransferRequestMessageDto != null &&
                     (this.bioinspiredConnectionIdentifier == null || connectionIdentifier.equals(this.bioinspiredConnectionIdentifier))) {
                 this.agentTransferRequestMessageDto = agentTransferRequestMessageDto;
-                BioInspiredUtils.log(Level.INFO, "Received an agent transfer request!");
+                InComingMessages.log(Level.INFO, "Received an agent transfer request!");
                 this.bioinspiredConnectionIdentifier = connectionIdentifier;
                 continue;
             }
 
-            AgentTransferResponseMessageDto agentTransferResponseMessageDto = HermesUtils
+            AgentTransferResponseMessageDto agentTransferResponseMessageDto = MessageUtils
                     .getAgentTransferResponseMessage(decryptedObjectMessage);
             if (agentTransferResponseMessageDto != null && connectionIdentifier.equals(this.bioinspiredConnectionIdentifier)) {
                 this.agentTransferResponseMessageDto = agentTransferResponseMessageDto;
-                BioInspiredUtils.log(Level.INFO, "The response to the transfer of agents was: "
+                InComingMessages.log(Level.INFO, "The response to the transfer of agents was: "
                         + agentTransferResponseMessageDto.isCanBeTransferred());
                 continue;
             }
 
-            AgentTransferContentMessageDto agentTransferContentMessageDto = HermesUtils
+            AgentTransferContentMessageDto agentTransferContentMessageDto = MessageUtils
                     .getAgentTransferContentMessage(decryptedObjectMessage);
             if (agentTransferContentMessageDto != null && connectionIdentifier.equals(this.bioinspiredConnectionIdentifier)) {
                 this.agentTransferContentMessageDto = agentTransferContentMessageDto;
-                BioInspiredUtils.log(Level.INFO, "Received the agents content");
+                InComingMessages.log(Level.INFO, "Received the agents content");
                 continue;
             }
 
-            AgentTransferConfirmationMessageDto agentTransferConfirmationMessageDto = HermesUtils
+            AgentTransferConfirmationMessageDto agentTransferConfirmationMessageDto = MessageUtils
                     .getAgentTransferConfirmationMessage(decryptedObjectMessage);
             if (agentTransferConfirmationMessageDto != null && connectionIdentifier.equals(this.bioinspiredConnectionIdentifier)) {
                 this.agentTransferConfirmationMessageDto = agentTransferConfirmationMessageDto;
-                BioInspiredUtils.log(Level.INFO, "The agent transfer confirmation was: "
+                InComingMessages.log(Level.INFO, "The agent transfer confirmation was: "
                         + agentTransferConfirmationMessageDto.isAgentTransferSuccess());
                 continue;
             }
 
             // TODO: verificar oque fazer se não for uma mensagem Jason e nem uma mensagem dos Bioinspired protocols.
-            log(Level.INFO, "Unable to classify the received message: " + decryptedObjectMessage);
+            InComingMessages.log(Level.INFO, "Unable to classify the received message: " + decryptedObjectMessage);
 
         }
         communicationMiddleware.cleanReceivedMessages();

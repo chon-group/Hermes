@@ -33,12 +33,13 @@ import jason.asSyntax.ListTerm;
 import jason.asSyntax.StringTerm;
 import jason.asSyntax.Term;
 import jason.hermes.OutGoingMessage;
-import jason.hermes.bioinspired.BioinspiredData;
-import jason.hermes.bioinspired.BioinspiredProcessor;
-import jason.hermes.bioinspired.BioinspiredProtocolsEnum;
-import jason.hermes.bioinspired.TrophicLevelEnum;
-import jason.hermes.bioinspired.dto.AgentTransferRequestMessageDto;
-import jason.hermes.middlewares.CommunicationMiddleware;
+import jason.hermes.capabilities.bioinspiredProtocols.BioinspiredData;
+import jason.hermes.capabilities.bioinspiredProtocols.BioinspiredProcessor;
+import jason.hermes.capabilities.bioinspiredProtocols.dto.AgentTransferRequestMessageDto;
+import jason.hermes.capabilities.bioinspiredProtocols.enums.BioinspiredProtocolsEnum;
+import jason.hermes.capabilities.bioinspiredProtocols.mapper.BioinspiredDataToAgentTransferMessageDto;
+import jason.hermes.capabilities.manageConnections.middlewares.CommunicationMiddleware;
+import jason.hermes.utils.ArgsUtils;
 import jason.hermes.utils.BioInspiredUtils;
 import jason.hermes.utils.HermesUtils;
 
@@ -193,7 +194,7 @@ public class moveOut extends DefaultInternalAction {
         Hermes hermes = HermesUtils.checkArchClass(ts.getAgArch(), this.getClass().getName());
 
         // verifica o protocolo passado.
-        String protocolName = HermesUtils.getParameterInString(args[1]).toUpperCase();
+        String protocolName = ArgsUtils.getInString(args[1]).toUpperCase();
         BioinspiredProtocolsEnum bioInspiredProtocol = BioinspiredProtocolsEnum.getBioInspiredProtocol(protocolName);
         if (bioInspiredProtocol == null) {
             String msgError = "Error: The bioinspired protocol ('" + protocolName + "') does not exists!";
@@ -214,7 +215,7 @@ public class moveOut extends DefaultInternalAction {
 
         if (args.length == getMinArgs() + 1) {
             if (args[2].isList()) {
-                ListTerm thirdArgList = HermesUtils.getParameterInList(args[2], this);
+                ListTerm thirdArgList = ArgsUtils.getInListTerm(args[2], this);
                 HermesUtils.verifyAgentNameParameterList(args[2], thirdArgList, this);
                 if (HermesUtils.getAgentNamesInList(thirdArgList).containsAll(BioInspiredUtils.getAllHermesAgentsName())
                         && BioinspiredProtocolsEnum.MUTUALISM.equals(bioInspiredProtocol)) {
@@ -224,7 +225,7 @@ public class moveOut extends DefaultInternalAction {
                     throw JasonException.createWrongArgument(this, msgError);
                 }
             } else {
-                String thirdArg = HermesUtils.getParameterInString(args[2]);
+                String thirdArg = ArgsUtils.getInString(args[2]);
                 if (!HermesUtils.verifyAgentExist(thirdArg) && !HermesUtils.verifyConnectionIdentifier(thirdArg, hermes)) {
                     String msgError = "Error: The third argument ('" + thirdArg + "') must be the name of an existing " +
                             "agent in the MAS or an connection identifier.";
@@ -237,7 +238,7 @@ public class moveOut extends DefaultInternalAction {
         // Verifica se existe um agente com o nome passado.
         if (args.length == getMaxArgs()) {
             if (args[2].isList()) {
-                ListTerm thirdArgList = HermesUtils.getParameterInList(args[2], this);
+                ListTerm thirdArgList = ArgsUtils.getInListTerm(args[2], this);
                 HermesUtils.verifyAgentNameParameterList(args[2], thirdArgList, this);
                 if (HermesUtils.getAgentNamesInList(thirdArgList).containsAll(BioInspiredUtils.getAllHermesAgentsName())
                         && BioinspiredProtocolsEnum.MUTUALISM.equals(bioInspiredProtocol)) {
@@ -247,14 +248,14 @@ public class moveOut extends DefaultInternalAction {
                     throw JasonException.createWrongArgument(this, msgError);
                 }
             } else {
-                String agentName = HermesUtils.getParameterInString(args[2]);
+                String agentName = ArgsUtils.getInString(args[2]);
                 if (!HermesUtils.verifyAgentExist(agentName)) {
                     String msgError = "Error: Does not exists an agent named ('" + agentName + "') to be transfer!";
                     BioInspiredUtils.log(Level.SEVERE, msgError);
                     throw JasonException.createWrongArgument(this, msgError);
                 }
             }
-            String connectionIdentifier = HermesUtils.getParameterInString(args[3]);
+            String connectionIdentifier = ArgsUtils.getInString(args[3]);
             if (!HermesUtils.verifyConnectionIdentifier(connectionIdentifier, hermes)) {
                 String msgError = "Error: Does not exists an connection identifier ('" + connectionIdentifier + "') in the Hermes connections configured!";
                 BioInspiredUtils.log(Level.SEVERE, msgError);
@@ -269,39 +270,24 @@ public class moveOut extends DefaultInternalAction {
     public Object execute(final TransitionSystem ts, Unifier un, Term[] args) throws Exception {
         checkArguments(args, ts);
 
-        String receiver = HermesUtils.getParameterInString(args[0]);
-        String protocolName = HermesUtils.getParameterInString(args[1]).toUpperCase();
-        BioinspiredProtocolsEnum bioinspiredProtocol = BioinspiredProtocolsEnum.getBioInspiredProtocol(protocolName);
         Hermes hermes = HermesUtils.checkArchClass(ts.getAgArch(), this.getClass().getName());
-        String connectionIdentification = hermes.getFirstConnectionAvailable();
 
-        BioInspiredUtils.log(Level.INFO,"The " + bioinspiredProtocol.name() + " protocol"
+        BioinspiredData bioinspiredData = BioinspiredProcessor.getBioinspiredDataByArgs(args, hermes);
+        hermes.setBioinspiredData(bioinspiredData);
+
+        BioInspiredUtils.log(Level.INFO,"The " + bioinspiredData.getBioinspiredProtocol().name() + " protocol"
                 + " starts at " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss.SSS")));
 
-        TrophicLevelEnum trophicLevelEnum = hermes.getBioinspiredData().getMyTrophicLevel();
-        BioinspiredData bioinspiredDataToStartTheTransference = BioinspiredProcessor
-                .getBioinspiredDataToStartTheTransference(bioinspiredProtocol, args, connectionIdentification, trophicLevelEnum);
-        String myIdentification = hermes.getCommunicationMiddleware(
-                bioinspiredDataToStartTheTransference.getConnectionIdentifier()).getAgentIdentification();
-        bioinspiredDataToStartTheTransference.setSenderIdentification(myIdentification);
-        bioinspiredDataToStartTheTransference.setReceiverIdentification(receiver);
-        hermes.setBioinspiredData(bioinspiredDataToStartTheTransference);
-
         CommunicationMiddleware communicationMiddleware = hermes.getCommunicationMiddleware(
-                bioinspiredDataToStartTheTransference.getConnectionIdentifier());
+                bioinspiredData.getConnectionIdentifier());
 
-        // TODO: Fazer um Mapper.
-        AgentTransferRequestMessageDto agentTransferRequestMessageDto = new AgentTransferRequestMessageDto(
-                bioinspiredDataToStartTheTransference.getSenderIdentification(),
-                bioinspiredDataToStartTheTransference.getNameOfAgentsToBeTransferred(),
-                bioinspiredDataToStartTheTransference.isHasHermesAgentTransferred(),
-                bioinspiredDataToStartTheTransference.getBioinspiredProtocol(),
-                bioinspiredDataToStartTheTransference.getMyTrophicLevel(),
-                bioinspiredDataToStartTheTransference.isEntireMAS());
+        AgentTransferRequestMessageDto agentTransferRequestMessageDto = BioinspiredDataToAgentTransferMessageDto
+                .mapperToAgentTransferRequestMessageDto(bioinspiredData);
 
         BioInspiredUtils.log(Level.INFO, "Sending the agent transfer request.");
         if (communicationMiddleware.isConnected()) {
-            OutGoingMessage.sendMessageBioinspiredMessage(agentTransferRequestMessageDto, communicationMiddleware, receiver);
+            OutGoingMessage.sendMessageBioinspiredMessage(agentTransferRequestMessageDto, communicationMiddleware,
+                    bioinspiredData.getReceiverIdentification());
             return true;
         } else {
             String warningMessage = "The moveOut was executed with the connection identifier ('"

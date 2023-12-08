@@ -3,7 +3,7 @@ package jason.hermes.utils;
 import jason.Hermes;
 import jason.architecture.AgArch;
 import jason.asSemantics.TransitionSystem;
-import jason.hermes.bioinspired.AslFileGenerator;
+import jason.hermes.utils.aslFiles.AslFileGeneratorUtils;
 import jason.infra.local.LocalAgArch;
 import jason.infra.local.RunLocalMAS;
 import jason.mas2j.ClassParameters;
@@ -18,9 +18,9 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class BioInspiredUtils {
+public abstract class BioInspiredUtils {
 
-    private static final Logger LOGGER = Logger.getLogger("BIOINSPIRED PROTOCOL");
+    private static final Logger LOGGER = Logger.getLogger("BIOINSPIRED_PROTOCOL");
     public static List<String> getAllAgentsName() {
         Map<String, LocalAgArch> agentsOfTheSMA = RunLocalMAS.getRunner().getAgs();
         List<String> nameAgents = new ArrayList<String>();
@@ -67,10 +67,10 @@ public class BioInspiredUtils {
         String path = "";
         for (LocalAgArch localAgArch : RunLocalMAS.getRunner().getAgs().values()) {
             path = localAgArch.getTS().getAg().getASLSrc();
-            path = path.substring(0, path.length() - (localAgArch.getAgName() + AslFileGenerator.ASL_EXTENSION).length());
+            path = path.substring(0, path.length() - (localAgArch.getAgName() + AslFileGeneratorUtils.ASL_EXTENSION).length());
             break;
         }
-        path += agentName + AslFileGenerator.ASL_EXTENSION;
+        path += agentName + AslFileGeneratorUtils.ASL_EXTENSION;
         return path;
     }
 

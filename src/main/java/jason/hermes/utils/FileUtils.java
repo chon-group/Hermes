@@ -10,7 +10,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-public class FileUtils {
+public abstract class FileUtils {
 
     public static final String BASE_PATH = "cryogenated" + File.separator;
 

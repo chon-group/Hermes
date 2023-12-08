@@ -1,41 +1,28 @@
 package jason;
 
 import jason.architecture.AgArch;
-import jason.asSemantics.Agent;
 import jason.asSemantics.Message;
 import jason.asSyntax.Literal;
-import jason.bb.BeliefBase;
 import jason.hermes.InComingMessages;
-import jason.hermes.bioinspired.*;
-import jason.hermes.config.Configuration;
-import jason.hermes.config.ContextNetConfiguration;
-import jason.hermes.exception.ErrorCryogeningMASException;
-import jason.hermes.middlewares.CommunicationMiddleware;
-import jason.hermes.middlewares.CommunicationMiddlewareEnum;
-import jason.hermes.middlewares.CommunicationMiddlewareIdentifier;
-import jason.hermes.middlewares.ContextNetMiddleware;
-import jason.hermes.sendOut.SendOutProcessor;
+import jason.hermes.capabilities.autoLocalization.AutoLocalizationProcessor;
+import jason.hermes.capabilities.bioinspiredProtocols.BioinspiredData;
+import jason.hermes.capabilities.bioinspiredProtocols.BioinspiredProcessor;
+import jason.hermes.capabilities.cryogenate.CryogenicProcessor;
+import jason.hermes.capabilities.manageConnections.autoconnection.AutoConnectionProcessor;
+import jason.hermes.capabilities.manageConnections.configuration.Configuration;
+import jason.hermes.capabilities.manageConnections.middlewares.CommunicationMiddleware;
+import jason.hermes.capabilities.manageConnections.middlewares.identifier.CommunicationMiddlewareIdentifier;
+import jason.hermes.capabilities.manageTrophicLevel.TrophicLevelEnum;
+import jason.hermes.capabilities.manageTrophicLevel.TrophicLevelProcessor;
+import jason.hermes.capabilities.socialSkillsWithOutside.SendOutProcessor;
 import jason.hermes.utils.BeliefUtils;
-import jason.hermes.utils.BioInspiredUtils;
-import jason.hermes.utils.FileUtils;
-import jason.hermes.utils.HermesUtils;
-import jason.infra.local.RunLocalMAS;
 
-import java.io.File;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.stream.Collectors;
 
 public class Hermes extends AgArch implements Observer {
 
     private final HashMap<String, CommunicationMiddleware> communicationMiddlewareHashMap;
-
     private BioinspiredData bioinspiredData;
-
-    private boolean autoLocalization;
-
     private boolean moved;
 
 
@@ -43,7 +30,6 @@ public class Hermes extends AgArch implements Observer {
         super();
         this.communicationMiddlewareHashMap = new HashMap<>();
         this.bioinspiredData = new BioinspiredData(TrophicLevelEnum.PRODUCER);
-        this.autoLocalization = false;
         this.moved = false;
     }
 
@@ -51,46 +37,11 @@ public class Hermes extends AgArch implements Observer {
     public void init() throws Exception {
         super.init();
 
-        BeliefBase beliefBase = this.getTS().getAg().getBB();
+        TrophicLevelProcessor.initTrophicLevel(this.getTS().getAg(), this.bioinspiredData);
 
-        List<String> beliefByStartWithList = BeliefUtils.getBeliefsInStringByFunction(beliefBase,
-                BeliefUtils.MY_TROPHIC_LEVEL_PREFIX);
+        AutoLocalizationProcessor.initAutoLocalization(this.getTS().getAg());
 
-        if (beliefByStartWithList.isEmpty()) {
-            BeliefUtils.addBelief(BeliefUtils.MY_TROPHIC_LEVEL_VALUE, BeliefBase.ASelf,
-                    this.bioinspiredData.getMyTrophicLevel().name(), this.getTS().getAg());
-        } else {
-            String source = HermesUtils.getParameterInString(BeliefBase.ASelf);
-            List<String> beliefValue = BeliefUtils.getBeliefValue(beliefByStartWithList, source);
-            String value = HermesUtils.treatString(beliefValue.get(0));
-            TrophicLevelEnum trophicLevelEnum = TrophicLevelEnum.get(value);
-            this.bioinspiredData.setMyTrophicLevel(trophicLevelEnum);
-        }
-
-        BeliefUtils.replaceAllBelief(BeliefUtils.MY_MAS_BELIEF_PREFIX, BeliefUtils.MY_MAS_BELIEF_VALUE, BeliefBase.ASelf,
-                RunLocalMAS.getRunner().getProject().getSocName(), this.getTS().getAg());
-
-        for (CommunicationMiddlewareEnum communicationMiddlewareEnum : CommunicationMiddlewareEnum.values()) {
-            String classNameFirstCharacterLowerCase = BeliefUtils.getPrefix(communicationMiddlewareEnum.getConfiguration()
-                    .getClass());
-            List<String> communicationMiddlewareList = BeliefUtils.getBeliefsInStringByFunction(beliefBase,
-                    classNameFirstCharacterLowerCase);
-            if (!communicationMiddlewareList.isEmpty()) {
-                boolean wasConnected = false;
-                for (String communicationMiddlewareEnumValue : communicationMiddlewareList) {
-                    Configuration configurationByBelief = communicationMiddlewareEnum.getConfiguration().getByBelief(
-                            BeliefUtils.parseLiteralWithNamespace(communicationMiddlewareEnumValue));
-                    this.addConnectionConfiguration(configurationByBelief);
-                    if (configurationByBelief.isConnected()) {
-                        wasConnected = true;
-                    }
-                }
-                if (wasConnected) {
-                    BioinspiredProcessor.autoConnection(this);
-                }
-            }
-        }
-
+        AutoConnectionProcessor.initAutoConnection(this);
     }
 
     public CommunicationMiddleware getCommunicationMiddleware(String connectionIdentifier) {
@@ -153,113 +104,17 @@ public class Hermes extends AgArch implements Observer {
     public void checkMail() {
         super.checkMail();
 
-        if (!this.autoLocalization) {
-            List<Agent> agentsOfTheMAS = RunLocalMAS.getRunner().getAgs().values().stream()
-                    .map(localAgArch -> localAgArch.getTS().getAg()).collect(Collectors.toList());
-            BioinspiredProcessor.autoLocalization(this.getAgName(), agentsOfTheMAS, false);
-        }
+        AutoLocalizationProcessor.updateOtherAgentsLocalization(this);
 
         InComingMessages inComingMessages = new InComingMessages(this.bioinspiredData, this.communicationMiddlewareHashMap);
 
         Map<String, List<Message>> allReceivedMessages = inComingMessages.getMessages();
 
-        SendOutProcessor.process(allReceivedMessages, this);
+        SendOutProcessor.processMessages(allReceivedMessages, this);
 
-        if (!this.bioinspiredData.bioinspiredTransferenceActive()) {
-            this.bioinspiredData = BioinspiredProcessor.getBioinspiredRole(
-                    inComingMessages.getAgentTransferRequestMessageDto(),
-                    this.bioinspiredData);
-        }
+        BioinspiredProcessor.processMessages(this, inComingMessages);
 
-        if (this.bioinspiredData.bioinspiredTransferenceActive()) {
-            if (this.bioinspiredData.getSenderIdentification() == null) {
-                this.bioinspiredData.setConnectionIdentifier(inComingMessages.getBioinspiredConnectionIdentifier());
-                String myIdentification = this.communicationMiddlewareHashMap.get(inComingMessages.getBioinspiredConnectionIdentifier()).getAgentIdentification();
-                this.bioinspiredData.setSenderIdentification(myIdentification);
-            }
-            BioinspiredProcessor.updateBioinspiredStage(this.bioinspiredData);
-            if (!BioinspiredStageEnum.FINISHED.equals(this.bioinspiredData.getBioinspiredStage())) {
-                BioinspiredProcessor.receiveBioinspiredMessage(this.getTS(), this.bioinspiredData,
-                        this.getCommunicationMiddleware(this.bioinspiredData.getConnectionIdentifier()),
-                        inComingMessages.getAgentTransferRequestMessageDto(),
-                        inComingMessages.getAgentTransferResponseMessageDto(),
-                        inComingMessages.getAgentTransferContentMessageDto(),
-                        inComingMessages.getAgentTransferConfirmationMessageDto());
-            } else {
-                if (BioinspiredRoleEnum.RECEIVED.equals(this.bioinspiredData.getBioinspiredRole())) {
-                    if(this.bioinspiredData.isHasHermesAgentTransferred()) {
-                        if (this.bioinspiredData.isEntireMAS() &&
-                                BioinspiredProtocolsEnum.CLONING.equals(this.bioinspiredData.getBioinspiredProtocol())) {
-                            String receiverIdentification = this.bioinspiredData.getReceiverIdentification();
-                            List<Agent> hermesAgentsTransferred = this.bioinspiredData.getHermesAgentsTransferred();
-                            Agent agentCloned = hermesAgentsTransferred.stream().filter(agent -> (
-                                    (Hermes) agent.getTS().getAgArch()).getCommunicationMiddlewareHashMap().values()
-                                    .stream().anyMatch(communicationMiddleware -> communicationMiddleware
-                                            .getAgentIdentification().equals(receiverIdentification))).findFirst()
-                                    .orElse(null);
-                            if (agentCloned != null) {
-                                Hermes hermesAgentCloned = (Hermes) agentCloned.getTS().getAgArch();
-                                CommunicationMiddleware agentClonedCommunicationMiddleware = hermesAgentCloned
-                                        .getCommunicationMiddlewareHashMap().values().stream().filter(
-                                                communicationMiddleware -> communicationMiddleware
-                                                        .getAgentIdentification().equals(receiverIdentification))
-                                        .findFirst().orElse(null);
-                                if (agentClonedCommunicationMiddleware != null
-                                        && agentClonedCommunicationMiddleware instanceof ContextNetMiddleware) {
-                                    ContextNetConfiguration agentClonedConfiguration = (ContextNetConfiguration)
-                                            agentClonedCommunicationMiddleware.getConfiguration();
-                                    CommunicationMiddleware agentReceiverCommunicationMiddleware =
-                                            this.communicationMiddlewareHashMap.values().stream().filter(
-                                                    communicationMiddleware -> communicationMiddleware.getAgentIdentification()
-                                                            .equals(this.bioinspiredData.getSenderIdentification()))
-                                                    .findFirst().orElse(null);
-                                    if (agentReceiverCommunicationMiddleware != null
-                                            && agentReceiverCommunicationMiddleware instanceof ContextNetMiddleware) {
-                                        ContextNetConfiguration agentReceiverConfiguration = (ContextNetConfiguration)
-                                                agentReceiverCommunicationMiddleware.getConfiguration();
-                                        ContextNetConfiguration agentReceiverConfigurationClone = agentReceiverConfiguration.clone();
-                                        BeliefUtils.replaceBelief(agentReceiverConfigurationClone.toBelief(),
-                                                agentClonedConfiguration.toBelief(), agentCloned);
-                                        agentClonedCommunicationMiddleware.setConfiguration(agentReceiverConfigurationClone);
-                                        agentReceiverCommunicationMiddleware.disconnect();
-                                    }
-                                }
-                            }
-
-                        }
-                        BioinspiredProcessor.autoConnection(this.bioinspiredData.getHermesAgentsTransferred());
-                    }
-
-                    if (BioinspiredProtocolsEnum.PREDATION.equals(this.bioinspiredData.getBioinspiredProtocol())
-                        || (BioinspiredProtocolsEnum.CLONING.equals(this.bioinspiredData.getBioinspiredProtocol())
-                            && this.bioinspiredData.isEntireMAS())
-                    ){
-                        BioInspiredUtils.log(Level.INFO, "Dominating the MAS!");
-                        String logMessage = "The execution of the protocol ended at "
-                                + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss.SSS"));
-                        BioInspiredUtils.log(Level.INFO, logMessage);
-                        BioInspiredUtils.killAgentsNotTransferred(this.getTS(), this.bioinspiredData.getNameOfAgentsInstantiated());
-                    }
-                }
-                this.bioinspiredData.clean();
-                String logMessage = "The execution of the protocol ended at "
-                        + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss.SSS"));
-                BioInspiredUtils.log(Level.INFO, logMessage);
-
-            }
-        }
-
-        String aslSrc = this.getTS().getAg().getASLSrc();
-        if (BioinspiredProcessor.checkCryogenicFile(aslSrc)) {
-            try {
-                BioinspiredProcessor.cryogenate(aslSrc);
-                File masPath = FileUtils.getMasPath(this.getTS().getAg().getASLSrc());
-                File cryogenicFile = new File(masPath.getPath() + File.separator + FileUtils.CRYOGENIC_FILE);
-                FileUtils.deleteFile(cryogenicFile);
-            } catch (ErrorCryogeningMASException e) {
-                BioInspiredUtils.log(Level.SEVERE, e.getMessage());
-            }
-        }
+        CryogenicProcessor.checkIfMASMustBeCryogenated(this.getTS());
     }
 
     @Override

@@ -7,7 +7,8 @@ import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.Term;
 import jason.bb.BeliefBase;
-import jason.hermes.bioinspired.TrophicLevelEnum;
+import jason.hermes.capabilities.manageTrophicLevel.TrophicLevelEnum;
+import jason.hermes.utils.ArgsUtils;
 import jason.hermes.utils.BeliefUtils;
 import jason.hermes.utils.HermesUtils;
 
@@ -32,15 +33,14 @@ public class setTrophicLevel extends DefaultInternalAction {
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
         this.checkArguments(args);
 
-        String trophicLevelParam = HermesUtils.getParameterInString(args[0]);
-        TrophicLevelEnum trophicLevelEnum = TrophicLevelEnum.get(trophicLevelParam);
+        String trophicLevelParam = ArgsUtils.getInString(args[0]);
         Hermes hermes = HermesUtils.checkArchClass(ts.getAgArch(), this.getClass().getName());
+
+        TrophicLevelEnum trophicLevelEnum = TrophicLevelEnum.get(trophicLevelParam);
         hermes.getBioinspiredData().setMyTrophicLevel(trophicLevelEnum);
 
-        BeliefUtils.replaceAllBelief(BeliefUtils.MY_TROPHIC_LEVEL_PREFIX, BeliefUtils.MY_TROPHIC_LEVEL_VALUE,
+        return BeliefUtils.replaceAllBelief(BeliefUtils.MY_TROPHIC_LEVEL_PREFIX, BeliefUtils.MY_TROPHIC_LEVEL_VALUE,
                 BeliefBase.ASelf, trophicLevelEnum.name(), hermes.getTS().getAg());
-
-        return true;
     }
 
 }

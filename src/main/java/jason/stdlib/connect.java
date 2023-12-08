@@ -6,8 +6,11 @@ import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.Term;
+import jason.hermes.capabilities.manageConnections.middlewares.CommunicationMiddleware;
+import jason.hermes.utils.ArgsUtils;
 import jason.hermes.utils.HermesUtils;
-import jason.hermes.middlewares.CommunicationMiddleware;
+
+import java.util.logging.Level;
 
 public class connect extends DefaultInternalAction {
 
@@ -26,15 +29,30 @@ public class connect extends DefaultInternalAction {
         super.checkArguments(args);
     }
 
-    @Override
-    public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
+    private void checkArguments(Term[] args, TransitionSystem ts) throws JasonException {
         this.checkArguments(args);
 
-        String configurationIdentifier = HermesUtils.getParameterInString(args[0]);
+        String configurationIdentifier = ArgsUtils.getInString(args[0]);
         Hermes hermes = HermesUtils.checkArchClass(ts.getAgArch(), this.getClass().getName());
+
+        if (!HermesUtils.verifyConnectionIdentifier(configurationIdentifier, hermes)) {
+            String msgError = "Error: Does not exists an connection identifier ('" + configurationIdentifier + "') in the Hermes connections configured!";
+            HermesUtils.log(Level.SEVERE, msgError);
+            throw JasonException.createWrongArgument(this, msgError);
+        }
+
+    }
+
+    @Override
+    public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
+        this.checkArguments(args, ts);
+
+        String configurationIdentifier = ArgsUtils.getInString(args[0]);
+        Hermes hermes = HermesUtils.checkArchClass(ts.getAgArch(), this.getClass().getName());
+
         CommunicationMiddleware communicationMiddleware = hermes.getCommunicationMiddleware(configurationIdentifier);
         communicationMiddleware.connect();
 
-        return true;
+        return communicationMiddleware.isConnected();
     }
 }

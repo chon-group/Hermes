@@ -34,8 +34,9 @@ import jason.asSyntax.ListTerm;
 import jason.asSyntax.StringTerm;
 import jason.asSyntax.Term;
 import jason.hermes.OutGoingMessage;
-import jason.hermes.middlewares.CommunicationMiddleware;
-import jason.hermes.sendOut.SendParserForceEnum;
+import jason.hermes.capabilities.manageConnections.middlewares.CommunicationMiddleware;
+import jason.hermes.capabilities.socialSkillsWithOutside.SendParserForceEnum;
+import jason.hermes.utils.ArgsUtils;
 import jason.hermes.utils.HermesUtils;
 
 /**
@@ -176,24 +177,24 @@ public class sendOut extends DefaultInternalAction {
         this.checkArguments(args);
 
         final Term to   = args[0];
-        String force = HermesUtils.getParameterInString(args[1]);
+        String force = ArgsUtils.getInString(args[1]);
         Term contentTerm = args[2];
         Hermes hermes = HermesUtils.checkArchClass(ts.getAgArch(), this.getClass().getName());
 
         String connectionIdentification = hermes.getFirstConnectionAvailable();
         if (args.length == getMaxArgs()) {
-            connectionIdentification = HermesUtils.getParameterInString(args[3]);
+            connectionIdentification = ArgsUtils.getInString(args[3]);
         }
 
         CommunicationMiddleware communicationMiddleware = hermes.getCommunicationMiddleware(connectionIdentification);
         String senderAgentIdentification = communicationMiddleware.getAgentIdentification();
 
         if (SendParserForceEnum.tellHow.name().equals(force)){
-            contentTerm = HermesUtils.treatContentTerm(contentTerm, ts);
+            contentTerm = ArgsUtils.getAsPlanTerm(contentTerm, ts);
         } else if (SendParserForceEnum.askHow.name().equals(force)) {
-            contentTerm = HermesUtils.treatContentTermAsTrigger(contentTerm);
+            contentTerm = ArgsUtils.getAsTriggerTerm(contentTerm);
         } else if (SendParserForceEnum.untellHow.name().equals(force)) {
-            contentTerm = HermesUtils.treatContentTermForUntellHow(contentTerm, ts, senderAgentIdentification);
+            contentTerm = ArgsUtils.getAsPlanTermForUntellHow(contentTerm, ts, senderAgentIdentification);
         }
 
         // create a message to be sent
