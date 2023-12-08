@@ -15,7 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-public class SendOutProcessor {
+public abstract class SendOutProcessor {
 
     private static final Logger LOGGER = Logger.getLogger("HERMES_SEND_OUT_PROCESSOR");
 
@@ -26,40 +26,14 @@ public class SendOutProcessor {
                 SendParserForceEnum sendParserForceEnum = SendParserForceEnum.get(message.getIlForce());
                 if (sendParserForceEnum != null) {
                     if (sendParserForceEnum.isHasToRespond()) {
-                        Message messageToRespond = messageToRespond(message, sendParserForceEnum, hermes);
+                        Message messageToRespond = SendOutProcessor.messageToRespond(message, sendParserForceEnum, hermes);
                         CommunicationMiddleware communicationMiddleware = hermes
                                 .getCommunicationMiddleware(connectionIdentifier);
                         OutGoingMessage.sendMessage(messageToRespond, communicationMiddleware);
                     } else {
-                        if (SendParserForceEnum.untellHow.name().equals(message.getIlForce())) {
-                            Plan planToBeForgotten = (Plan) message.getPropCont();
-                            Term sourceTerm = null;
-                            if (planToBeForgotten.getLabel().hasSource()) {
-                                sourceTerm = planToBeForgotten.getLabel().getSources().get(0);
-                            }
-                            if (sourceTerm != null) {
-                                Atom source = new Atom(sourceTerm.toString());
-                                Plan plan1 = hermes.getTS().getAg().getPL().getPlans().stream().filter(plan ->
-                                        plan.getTrigger().equals(planToBeForgotten.getTrigger())
-                                                && plan.getLabel().getSources().contains(source)).findFirst()
-                                        .orElse(null);
-                                if (plan1 != null) {
-                                    String planInString = HermesUtils.treatPlanStringFormat(plan1.toASString());
-                                    try {
-                                        message.setPropCont(ASSyntax.parseTerm(planInString));
-                                    } catch (ParseException e) {
-                                        SendOutProcessor.log(Level.SEVERE, "Error receiving a plan to be forgotten '"
-                                                + planToBeForgotten.toASString() +"'\n\n: " + e);
-                                    }
-                                }
-                            } else {
-                                SendOutProcessor.log(Level.SEVERE, "Error identifying the source of the plan '"
-                                        + planToBeForgotten.toASString() + "' to be forgotten.");
-                            }
-                        }
-                        if (!message.getSender().startsWith("\"") && !message.getSender().endsWith("\"")) {
-                            message.setSender("\"" + message.getSender() + "\"");
-                        }
+                        SendOutProcessor.treatPlanForUnTellHow(message, hermes);
+                        SendOutProcessor.formatSenderOfMessage(message);
+
                         hermes.getTS().getC().addMsg(message);
                     }
                 } else {
@@ -85,7 +59,7 @@ public class SendOutProcessor {
         return candidateBeliefs;
     }
 
-    public static Message messageToRespond(Message receivedMessage, SendParserForceEnum sendParserForceEnum,
+    private static Message messageToRespond(Message receivedMessage, SendParserForceEnum sendParserForceEnum,
                                            Hermes hermes) {
         Message messageToRespond = new Message(sendParserForceEnum.getForceToRespond(), receivedMessage.getReceiver(), receivedMessage.getSender(), null);
         if (SendParserForceEnum.askOne.name().equals(receivedMessage.getIlForce())) {
@@ -125,6 +99,41 @@ public class SendOutProcessor {
         messageToRespond.setInReplyTo(receivedMessage.getMsgId());
 
         return messageToRespond;
+    }
+
+    private static void treatPlanForUnTellHow(Message message, Hermes hermes) {
+        if (SendParserForceEnum.untellHow.name().equals(message.getIlForce())) {
+            Plan planToBeForgotten = (Plan) message.getPropCont();
+            Term sourceTerm = null;
+            if (planToBeForgotten.getLabel().hasSource()) {
+                sourceTerm = planToBeForgotten.getLabel().getSources().get(0);
+            }
+            if (sourceTerm != null) {
+                Atom source = new Atom(sourceTerm.toString());
+                Plan plan1 = hermes.getTS().getAg().getPL().getPlans().stream().filter(plan ->
+                                plan.getTrigger().equals(planToBeForgotten.getTrigger())
+                                        && plan.getLabel().getSources().contains(source)).findFirst()
+                        .orElse(null);
+                if (plan1 != null) {
+                    String planInString = HermesUtils.treatPlanStringFormat(plan1.toASString());
+                    try {
+                        message.setPropCont(ASSyntax.parseTerm(planInString));
+                    } catch (ParseException e) {
+                        SendOutProcessor.log(Level.SEVERE, "Error receiving a plan to be forgotten '"
+                                + planToBeForgotten.toASString() +"'\n\n: " + e);
+                    }
+                }
+            } else {
+                SendOutProcessor.log(Level.SEVERE, "Error identifying the source of the plan '"
+                        + planToBeForgotten.toASString() + "' to be forgotten.");
+            }
+        }
+    }
+
+    private static void formatSenderOfMessage(Message message) {
+        if (!message.getSender().startsWith("\"") && !message.getSender().endsWith("\"")) {
+            message.setSender("\"" + message.getSender() + "\"");
+        }
     }
 
     public static void log(Level level, String message) {
