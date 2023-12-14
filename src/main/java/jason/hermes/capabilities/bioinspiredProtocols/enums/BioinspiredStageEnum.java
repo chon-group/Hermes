@@ -2,23 +2,31 @@ package jason.hermes.capabilities.bioinspiredProtocols.enums;
 
 public enum BioinspiredStageEnum {
 
-    TRANSFER_REQUEST,
+    FINISHED(null, null),
+    CONFIRMATION_TRANSFER(FINISHED, FINISHED),
+    RECEIVE_CONFIRMATION_TRANSFER(FINISHED, FINISHED),
+    CONTENT_TRANSFER(RECEIVE_CONFIRMATION_TRANSFER, FINISHED),
+    RECEIVE_RESPONSE_TO_TRANSFER(CONTENT_TRANSFER, FINISHED),
+    RECEIVE_CONTENT_TRANSFER(CONFIRMATION_TRANSFER, FINISHED),
+    RESPONSE_TO_TRANSFER(RECEIVE_CONTENT_TRANSFER, FINISHED),
+    RECEIVE_TRANSFER_REQUEST(RESPONSE_TO_TRANSFER, FINISHED),
+    TRANSFER_REQUEST(RECEIVE_RESPONSE_TO_TRANSFER, FINISHED);
 
-    RECEIVE_TRANSFER_REQUEST,
+    private final BioinspiredStageEnum nextStage;
 
-    RESPONSE_TO_TRANSFER,
+    private final BioinspiredStageEnum nextStageIfHasAnError;
 
-    RECEIVE_RESPONSE_TO_TRANSFER,
+    BioinspiredStageEnum(BioinspiredStageEnum nextStage, BioinspiredStageEnum nextStageIfHasAnError) {
+        this.nextStage = nextStage;
+        this.nextStageIfHasAnError = nextStageIfHasAnError;
+    }
 
-    CONTENT_TRANSFER,
+    public BioinspiredStageEnum getNextStage() {
+        return nextStage;
+    }
 
-    RECEIVE_CONTENT_TRANSFER,
-
-    CONFIRMATION_TRANSFER,
-
-    RECEIVE_CONFIRMATION_TRANSFER,
-
-    FINISHED;
-
+    public BioinspiredStageEnum getNextStageIfHasAnError() {
+        return nextStageIfHasAnError;
+    }
 
 }

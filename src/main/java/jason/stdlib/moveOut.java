@@ -33,11 +33,11 @@ import jason.asSyntax.ListTerm;
 import jason.asSyntax.StringTerm;
 import jason.asSyntax.Term;
 import jason.hermes.OutGoingMessage;
+import jason.hermes.capabilities.bioinspiredProtocols.BioinspiredArgsHandle;
 import jason.hermes.capabilities.bioinspiredProtocols.BioinspiredData;
-import jason.hermes.capabilities.bioinspiredProtocols.BioinspiredProcessor;
 import jason.hermes.capabilities.bioinspiredProtocols.dto.AgentTransferRequestMessageDto;
 import jason.hermes.capabilities.bioinspiredProtocols.enums.BioinspiredProtocolsEnum;
-import jason.hermes.capabilities.bioinspiredProtocols.mapper.BioinspiredDataToAgentTransferMessageDto;
+import jason.hermes.capabilities.bioinspiredProtocols.mapper.BioinspiredDataMapper;
 import jason.hermes.capabilities.manageConnections.middlewares.CommunicationMiddleware;
 import jason.hermes.utils.ArgsUtils;
 import jason.hermes.utils.BioInspiredUtils;
@@ -272,7 +272,7 @@ public class moveOut extends DefaultInternalAction {
 
         Hermes hermes = HermesUtils.checkArchClass(ts.getAgArch(), this.getClass().getName());
 
-        BioinspiredData bioinspiredData = BioinspiredProcessor.getBioinspiredDataByArgs(args, hermes);
+        BioinspiredData bioinspiredData = BioinspiredArgsHandle.getBioinspiredDataByArgs(args, hermes);
         hermes.setBioinspiredData(bioinspiredData);
 
         BioInspiredUtils.log(Level.INFO,"The " + bioinspiredData.getBioinspiredProtocol().name() + " protocol"
@@ -281,7 +281,7 @@ public class moveOut extends DefaultInternalAction {
         CommunicationMiddleware communicationMiddleware = hermes.getCommunicationMiddleware(
                 bioinspiredData.getConnectionIdentifier());
 
-        AgentTransferRequestMessageDto agentTransferRequestMessageDto = BioinspiredDataToAgentTransferMessageDto
+        AgentTransferRequestMessageDto agentTransferRequestMessageDto = BioinspiredDataMapper
                 .mapperToAgentTransferRequestMessageDto(bioinspiredData);
 
         BioInspiredUtils.log(Level.INFO, "Sending the agent transfer request.");
