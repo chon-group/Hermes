@@ -25,7 +25,7 @@ public abstract class Mas2jBuilderFile {
 						for (Agent agent : mas2jBuilderStructure.getAgents()) {
 							try {
 								AslTransferenceModel aslTransferenceModel = AslFileGeneratorUtils
-										.generateAslContentWithoutCryogenicIntention(agent.getTS().getAgArch());
+										.generateAslContent(agent.getTS().getAgArch());
 								AslFileGeneratorUtils.createAslFile(agentFolder.getPath() + File.separator
 										+ aslTransferenceModel.getName() + AslFileGeneratorUtils.ASL_EXTENSION,
 										aslTransferenceModel);
