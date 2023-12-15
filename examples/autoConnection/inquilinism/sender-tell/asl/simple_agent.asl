@@ -1,5 +1,6 @@
 /* Initial beliefs and rules */
 day.
+{include("examples/contextnetAgent.asl")}
 
 /* Initial goals */
 
@@ -7,10 +8,10 @@ day.
 
 /* Plans */
 
-+!start: day <-
-    .configureContextNetConnection("1", "169.254.7.146", 3273, "788b2b22-baa6-4c61-b1bb-01cff1f5f889");
++!start: contextnetServer(IP, PORT) <-
+    .configureContextNetConnection("1", IP, PORT, "788b2b22-baa6-4c61-b1bb-01cff1f5f889");
     .connect("1");
-    .print("Hello world - tell - Inquilinism!!!");
+    .print("Hello world - autoConnection - tell - Inquilinism!!!");
     !!enviar;
     !enviardois;
     .stopMAS.

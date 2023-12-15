@@ -1,0 +1,12 @@
+MAS senderMAS {
+
+    infrastructure: Centralised
+
+    agents:
+        simple_agent agentArchClass jason.Hermes;
+        agent1;
+        agent2;
+
+    aslSourcePath:
+        "examples/moveOut/mutualism/specifingAgent/sender/asl";
+}

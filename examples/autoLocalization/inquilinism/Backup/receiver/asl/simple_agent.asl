@@ -1,5 +1,6 @@
 /* Initial beliefs and rules */
 day.
+{include("examples/contextnetAgent.asl")}
 
 /* Initial goals */
 
@@ -7,7 +8,7 @@ day.
 
 /* Plans */
 
-+!start: day <-
-    .configureContextNetConnection("1", "169.254.7.146", 3273, "788b2b22-baa6-4c61-b1bb-01cff1f5f880");
++!start: contextnetServer(IP, PORT) <-
+    .configureContextNetConnection("1", IP, PORT, "788b2b22-baa6-4c61-b1bb-01cff1f5f880");
     .connect("1");
-    .print("Hello world!!!").
+    .print("Hello world - autoLocalization - inquilinism!!!").

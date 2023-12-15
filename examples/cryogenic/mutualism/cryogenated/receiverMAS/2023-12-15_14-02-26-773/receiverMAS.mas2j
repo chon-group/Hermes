@@ -1,0 +1,9 @@
+MAS receiverMAS {
+	infrastructure: Centralised
+	agents:
+		simple_agent agentArchClass jason.Hermes;
+		agent2 agentArchClass jason.infra.local.LocalAgArch;
+		agent1 agentArchClass jason.infra.local.LocalAgArch;
+	aslSourcePath:
+		"examples/cryogenic/mutualism/cryogenated/receiverMAS/2023-12-15_14-02-26-773/asl";
+}

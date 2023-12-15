@@ -1,6 +1,7 @@
 /* Initial beliefs and rules */
 day.
 receiver.
+{include("examples/contextnetAgent.asl")}
 
 /* Initial goals */
 
@@ -8,8 +9,8 @@ receiver.
 
 /* Plans */
 
-+!start: day <-
++!start: contextnetServer(IP, PORT) <-
     .setTrophicLevel("SECONDARY_CONSUMER");
-    .configureContextNetConnection("1", "192.168.0.105", 3273, "788b2b22-baa6-4c61-b1bb-01cff1f5f880");
+    .configureContextNetConnection("1", IP, PORT, "788b2b22-baa6-4c61-b1bb-01cff1f5f880");
     .connect("1");
-    .print("Hello world!!!").
+    .print("Hello world - autoConnection - predation - notDominant!!!").

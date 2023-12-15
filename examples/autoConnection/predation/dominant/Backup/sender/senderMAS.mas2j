@@ -8,5 +8,5 @@ MAS senderMAS {
         agent2;
 
     aslSourcePath:
-        "examples/autoConnection/predation/dominant/sender/asl";
+        "examples/autoConnection/predation/sender/asl";
 }

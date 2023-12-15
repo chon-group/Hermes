@@ -1,6 +1,7 @@
 /* Initial beliefs and rules */
 day.
-contextNetConfiguration("1","192.168.0.105","3273","788b2b22-baa6-4c61-b1bb-01cff1f5f880","false","NoSecurity").
+{include("examples/contextnetAgent.asl")}
+Hermes::contextNetConfiguration("1","192.168.1.121",3273,"788b2b22-baa6-4c61-b1bb-01cff1f5f880","true","NoSecurity").
 
 /* Initial goals */
 
@@ -8,8 +9,5 @@ contextNetConfiguration("1","192.168.0.105","3273","788b2b22-baa6-4c61-b1bb-01cf
 
 /* Plans */
 
-+!start: day <-
-    //.configureContextNetConnection("1", "192.168.0.105", 3273, "788b2b22-baa6-4c61-b1bb-01cff1f5f880");
-    .connect("1");
-    .setTrophicLevel(2);
-    .print("Hello world!!!").
++!start: contextnetServer(IP, PORT) <-
+    .print("Hello world - autoConnection!!!").

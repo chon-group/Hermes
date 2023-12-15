@@ -5,6 +5,7 @@ beautiful(false).
 beautiful(medium).
 beautiful(high).
 beautiful(low).
+{include("examples/contextnetAgent.asl")}
 
 /* Initial goals */
 
@@ -12,7 +13,7 @@ beautiful(low).
 
 /* Plans */
 
-+!start: day <-
-    .configureContextNetConnection("1", "192.168.0.106", 3273, "788b2b22-baa6-4c61-b1bb-01cff1f5f880");
++!start: contextnetServer(IP, PORT) <-
+    .configureContextNetConnection("1", IP, PORT, "788b2b22-baa6-4c61-b1bb-01cff1f5f880");
     .connect("1");
-    .print("Hello world!!!").
+    .print("Hello world - askAll!!!").

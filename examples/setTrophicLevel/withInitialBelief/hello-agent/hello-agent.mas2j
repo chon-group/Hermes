@@ -1,0 +1,11 @@
+MAS helloAgent {
+
+    infrastructure: Centralised
+
+    agents:
+        simple_agent agentArchClass jason.Hermes;
+
+    aslSourcePath:
+        "examples/setTrophicLevel/withInitialBelief/hello-agent/asl";
+
+}

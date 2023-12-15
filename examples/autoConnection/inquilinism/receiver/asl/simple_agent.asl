@@ -1,5 +1,6 @@
 /* Initial beliefs and rules */
 day.
+{include("examples/contextnetAgent.asl")}
 
 /* Initial goals */
 
@@ -7,12 +8,12 @@ day.
 
 /* Plans */
 
-+!start: day <-
-    .configureContextNetConnection("1", "169.254.7.146", 3273, "788b2b22-baa6-4c61-b1bb-01cff1f5f880");
-    .configureContextNetConnection("4", "169.254.7.146", 3273, "788b2b22-baa6-4c61-b1bb-01cff1f5f884");
++!start: contextnetServer(IP, PORT) <-
+    .configureContextNetConnection("1", IP, PORT, "788b2b22-baa6-4c61-b1bb-01cff1f5f880");
+    .configureContextNetConnection("4", IP, PORT, "788b2b22-baa6-4c61-b1bb-01cff1f5f884");
     .connect("1");
     .connect("4");
-    .print("Hello world!!!").
+    .print("Hello world - autoConnection - inquilinism!!!").
 
 +hello[source(X)]: true <-
     .print("Another Hermes agent tell me Hello - Receiver!");
