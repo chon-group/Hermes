@@ -17,9 +17,8 @@ import jason.hermes.capabilities.bioinspiredProtocols.receivers.AgentTransferCon
 import jason.hermes.capabilities.bioinspiredProtocols.receivers.AgentTransferRequestMessageReceiverProcessor;
 import jason.hermes.capabilities.bioinspiredProtocols.receivers.AgentTransferResponseMessageReceiverProcessor;
 import jason.hermes.capabilities.manageConnections.autoconnection.AutoConnectionProcessor;
-import jason.hermes.capabilities.manageConnections.configuration.ContextNetConfiguration;
+import jason.hermes.capabilities.manageConnections.configuration.Configuration;
 import jason.hermes.capabilities.manageConnections.middlewares.CommunicationMiddleware;
-import jason.hermes.capabilities.manageConnections.middlewares.ContextNetMiddleware;
 import jason.hermes.capabilities.manageTrophicLevel.TrophicLevelEnum;
 import jason.hermes.utils.BeliefUtils;
 import jason.hermes.utils.BioInspiredUtils;
@@ -74,20 +73,16 @@ public abstract class BioinspiredProcessor {
                                                 communicationMiddleware -> communicationMiddleware
                                                         .getAgentIdentification().equals(receiverIdentification))
                                         .findFirst().orElse(null);
-                                if (agentClonedCommunicationMiddleware != null
-                                        && agentClonedCommunicationMiddleware instanceof ContextNetMiddleware) {
-                                    ContextNetConfiguration agentClonedConfiguration = (ContextNetConfiguration)
-                                            agentClonedCommunicationMiddleware.getConfiguration();
+                                if (agentClonedCommunicationMiddleware != null) {
+                                    Configuration agentClonedConfiguration = agentClonedCommunicationMiddleware.getConfiguration();
                                     CommunicationMiddleware agentReceiverCommunicationMiddleware =
                                             hermes.getCommunicationMiddlewareHashMap().values().stream().filter(
                                                             communicationMiddleware -> communicationMiddleware.getAgentIdentification()
                                                                     .equals(hermes.getBioinspiredData().getSenderIdentification()))
                                                     .findFirst().orElse(null);
-                                    if (agentReceiverCommunicationMiddleware != null
-                                            && agentReceiverCommunicationMiddleware instanceof ContextNetMiddleware) {
-                                        ContextNetConfiguration agentReceiverConfiguration = (ContextNetConfiguration)
-                                                agentReceiverCommunicationMiddleware.getConfiguration();
-                                        ContextNetConfiguration agentReceiverConfigurationClone = agentReceiverConfiguration.clone();
+                                    if (agentReceiverCommunicationMiddleware != null) {
+                                        Configuration agentReceiverConfiguration = agentReceiverCommunicationMiddleware.getConfiguration();
+                                        Configuration agentReceiverConfigurationClone = agentReceiverConfiguration.clone();
                                         BeliefUtils.replaceBelief(agentReceiverConfigurationClone.toBelief(),
                                                 agentClonedConfiguration.toBelief(), agentCloned);
                                         agentClonedCommunicationMiddleware.setConfiguration(agentReceiverConfigurationClone);
@@ -105,9 +100,6 @@ public abstract class BioinspiredProcessor {
                             && hermes.getBioinspiredData().isEntireMAS())
                     ){
                         BioInspiredUtils.log(Level.INFO, "Dominating the MAS!");
-                        String logMessage = "The execution of the protocol ended at "
-                                + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss.SSS"));
-                        BioInspiredUtils.log(Level.INFO, logMessage);
                         BioInspiredUtils.killAgentsNotTransferred(hermes.getTS(), hermes.getBioinspiredData().getNameOfAgentsInstantiated());
                     }
                 }

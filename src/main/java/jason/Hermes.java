@@ -120,7 +120,9 @@ public class Hermes extends AgArch implements Observer {
     @Override
     public void stop() {
         for (CommunicationMiddleware communicationMiddleware : this.getCommunicationMiddlewareHashMap().values()) {
-            communicationMiddleware.disconnect();
+            if (communicationMiddleware.isConnected()) {
+                communicationMiddleware.disconnect();
+            }
         }
 
         super.stop();

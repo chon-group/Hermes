@@ -16,6 +16,7 @@ import jason.hermes.capabilities.manageConnections.middlewares.ContextNetMiddlew
 import jason.stdlib.cryogenic;
 
 import java.io.*;
+import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -175,7 +176,9 @@ public abstract class AslFileGeneratorUtils {
                     ContextNetConfiguration contextNetConfiguration = (ContextNetConfiguration) contextNetMiddleware
                             .getConfiguration();
                     ContextNetConfiguration clone = contextNetConfiguration.clone();
-                    clone.setMyUUIDString(UUID.randomUUID().toString());
+                    ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
+                    buffer.putLong(new Date().getTime());
+                    clone.setMyUUIDString(UUID.nameUUIDFromBytes(buffer.array()).toString());
                     connectionBelief = clone.toBelief();
                 }
             }
@@ -187,7 +190,7 @@ public abstract class AslFileGeneratorUtils {
         while (beliefsIterator.hasNext()) {
             Literal literal = beliefsIterator.next();
             String beliefString = literal.toString();
-            if (beliefString.startsWith(ContextNetConfiguration.BELIEF_PREFIX)) {
+            if (literal.getFunctor().equals(ContextNetConfiguration.BELIEF_PREFIX)) {
                 if (connectionBelief != null) {
                     beliefs.append(connectionBelief.toString() + END_SYMBOL + NEXT_LINE);
                 }
