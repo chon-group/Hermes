@@ -133,7 +133,8 @@ public class sendOut extends DefaultInternalAction {
         if (to.isString()) {
             rec = ((StringTerm) to).getString();
         } else {
-            rec = to.toString();
+      //      rec = to.toString();
+            rec = to.toString().replaceAll("^\"|\"$", "");
         }
         if (rec.equals("self")) {
             rec = ts.getUserAgArch().getAgName();
