@@ -1,11 +1,11 @@
-package jason.hermes.utils;
+package group.chon.agent.hermes.core.utils;
 
 import jason.asSemantics.Message;
 import jason.asSyntax.parser.ParseException;
-import jason.hermes.capabilities.bioinspiredProtocols.dto.AgentTransferConfirmationMessageDto;
-import jason.hermes.capabilities.bioinspiredProtocols.dto.AgentTransferContentMessageDto;
-import jason.hermes.capabilities.bioinspiredProtocols.dto.AgentTransferRequestMessageDto;
-import jason.hermes.capabilities.bioinspiredProtocols.dto.AgentTransferResponseMessageDto;
+import group.chon.agent.hermes.core.capabilities.bioinspiredProtocols.dto.AgentTransferConfirmationMessageDto;
+import group.chon.agent.hermes.core.capabilities.bioinspiredProtocols.dto.AgentTransferContentMessageDto;
+import group.chon.agent.hermes.core.capabilities.bioinspiredProtocols.dto.AgentTransferRequestMessageDto;
+import group.chon.agent.hermes.core.capabilities.bioinspiredProtocols.dto.AgentTransferResponseMessageDto;
 
 import java.io.*;
 import java.util.Base64;

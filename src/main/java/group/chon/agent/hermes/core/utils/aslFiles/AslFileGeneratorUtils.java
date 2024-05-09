@@ -1,4 +1,4 @@
-package jason.hermes.utils.aslFiles;
+package group.chon.agent.hermes.core.utils.aslFiles;
 
 import group.chon.agent.hermes.Hermes;
 import jason.architecture.AgArch;
@@ -10,9 +10,9 @@ import jason.asSyntax.Literal;
 import jason.asSyntax.Plan;
 import jason.asSyntax.PlanBody;
 import jason.asSyntax.Trigger;
-import jason.hermes.capabilities.manageConnections.configuration.ContextNetConfiguration;
-import jason.hermes.capabilities.manageConnections.middlewares.CommunicationMiddleware;
-import jason.hermes.capabilities.manageConnections.middlewares.ContextNetMiddleware;
+import group.chon.agent.hermes.core.capabilities.manageConnections.configuration.ContextNetConfiguration;
+import group.chon.agent.hermes.core.capabilities.manageConnections.middlewares.CommunicationMiddleware;
+import group.chon.agent.hermes.core.capabilities.manageConnections.middlewares.ContextNetMiddleware;
 import group.chon.agent.hermes.jasonStdLib.cryogenic;
 
 import java.io.*;

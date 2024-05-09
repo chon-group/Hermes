@@ -1,4 +1,4 @@
-package jason.hermes.capabilities.manageConnections.middlewares.dto;
+package group.chon.agent.hermes.core.capabilities.manageConnections.middlewares.dto;
 
 import jason.infra.local.RunLocalMAS;
 

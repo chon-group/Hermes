@@ -1,12 +1,12 @@
-package jason.hermes.capabilities.manageConnections.configuration;
+package group.chon.agent.hermes.core.capabilities.manageConnections.configuration;
 
 import jason.asSyntax.Literal;
 import jason.asSyntax.Term;
-import jason.hermes.capabilities.manageConnections.sec.CommunicationSecurity;
-import jason.hermes.capabilities.manageConnections.sec.NoSecurity;
-import jason.hermes.utils.ArgsUtils;
-import jason.hermes.utils.BeliefUtils;
-import jason.hermes.utils.HermesUtils;
+import group.chon.agent.hermes.core.capabilities.manageConnections.sec.CommunicationSecurity;
+import group.chon.agent.hermes.core.capabilities.manageConnections.sec.NoSecurity;
+import group.chon.agent.hermes.core.utils.ArgsUtils;
+import group.chon.agent.hermes.core.utils.BeliefUtils;
+import group.chon.agent.hermes.core.utils.HermesUtils;
 
 public class ContextNetConfiguration extends Configuration {
 

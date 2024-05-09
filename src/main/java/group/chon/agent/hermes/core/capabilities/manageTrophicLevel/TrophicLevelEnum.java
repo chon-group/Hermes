@@ -1,4 +1,4 @@
-package jason.hermes.capabilities.manageTrophicLevel;
+package group.chon.agent.hermes.core.capabilities.manageTrophicLevel;
 
 public enum TrophicLevelEnum {
 

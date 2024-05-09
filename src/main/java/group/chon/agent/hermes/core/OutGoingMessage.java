@@ -1,9 +1,9 @@
 package group.chon.agent.hermes.core;
 
 import jason.asSemantics.Message;
-import jason.hermes.capabilities.bioinspiredProtocols.dto.AgentTransferMessageDto;
-import jason.hermes.capabilities.manageConnections.middlewares.CommunicationMiddleware;
-import jason.hermes.utils.MessageUtils;
+import group.chon.agent.hermes.core.capabilities.bioinspiredProtocols.dto.AgentTransferMessageDto;
+import group.chon.agent.hermes.core.capabilities.manageConnections.middlewares.CommunicationMiddleware;
+import group.chon.agent.hermes.core.utils.MessageUtils;
 
 public class OutGoingMessage {
 

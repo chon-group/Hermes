@@ -1,6 +1,6 @@
-package jason.hermes.capabilities.bioinspiredProtocols.dto;
+package group.chon.agent.hermes.core.capabilities.bioinspiredProtocols.dto;
 
-import jason.hermes.utils.aslFiles.AslTransferenceModel;
+import group.chon.agent.hermes.core.utils.aslFiles.AslTransferenceModel;
 
 import java.io.Serializable;
 import java.util.HashMap;

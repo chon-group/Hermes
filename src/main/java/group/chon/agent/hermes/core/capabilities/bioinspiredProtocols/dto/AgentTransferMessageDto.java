@@ -1,4 +1,4 @@
-package jason.hermes.capabilities.bioinspiredProtocols.dto;
+package group.chon.agent.hermes.core.capabilities.bioinspiredProtocols.dto;
 
 import java.io.Serializable;
 

@@ -1,4 +1,4 @@
-package jason.hermes.capabilities.manageConnections.configuration;
+package group.chon.agent.hermes.core.capabilities.manageConnections.configuration;
 
 import jason.asSyntax.Literal;
 

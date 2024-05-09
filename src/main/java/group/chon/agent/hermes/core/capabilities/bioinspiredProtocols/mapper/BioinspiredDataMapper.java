@@ -1,10 +1,10 @@
-package jason.hermes.capabilities.bioinspiredProtocols.mapper;
+package group.chon.agent.hermes.core.capabilities.bioinspiredProtocols.mapper;
 
-import jason.hermes.capabilities.bioinspiredProtocols.BioinspiredData;
-import jason.hermes.capabilities.bioinspiredProtocols.dto.AgentTransferRequestMessageDto;
-import jason.hermes.capabilities.bioinspiredProtocols.enums.BioinspiredRoleEnum;
-import jason.hermes.capabilities.bioinspiredProtocols.enums.BioinspiredStageEnum;
-import jason.hermes.capabilities.manageTrophicLevel.TrophicLevelEnum;
+import group.chon.agent.hermes.core.capabilities.bioinspiredProtocols.BioinspiredData;
+import group.chon.agent.hermes.core.capabilities.bioinspiredProtocols.dto.AgentTransferRequestMessageDto;
+import group.chon.agent.hermes.core.capabilities.bioinspiredProtocols.enums.BioinspiredRoleEnum;
+import group.chon.agent.hermes.core.capabilities.bioinspiredProtocols.enums.BioinspiredStageEnum;
+import group.chon.agent.hermes.core.capabilities.manageTrophicLevel.TrophicLevelEnum;
 
 public abstract class BioinspiredDataMapper {
 

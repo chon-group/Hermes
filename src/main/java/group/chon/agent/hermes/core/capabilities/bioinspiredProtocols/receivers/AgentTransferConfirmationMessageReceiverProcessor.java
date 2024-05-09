@@ -1,11 +1,11 @@
-package jason.hermes.capabilities.bioinspiredProtocols.receivers;
+package group.chon.agent.hermes.core.capabilities.bioinspiredProtocols.receivers;
 
 import jason.asSemantics.TransitionSystem;
-import jason.hermes.capabilities.bioinspiredProtocols.BioinspiredData;
-import jason.hermes.capabilities.bioinspiredProtocols.BioinspiredProcessor;
-import jason.hermes.capabilities.bioinspiredProtocols.dto.AgentTransferConfirmationMessageDto;
-import jason.hermes.capabilities.bioinspiredProtocols.enums.BioinspiredProtocolsEnum;
-import jason.hermes.utils.BioInspiredUtils;
+import group.chon.agent.hermes.core.capabilities.bioinspiredProtocols.BioinspiredData;
+import group.chon.agent.hermes.core.capabilities.bioinspiredProtocols.BioinspiredProcessor;
+import group.chon.agent.hermes.core.capabilities.bioinspiredProtocols.dto.AgentTransferConfirmationMessageDto;
+import group.chon.agent.hermes.core.capabilities.bioinspiredProtocols.enums.BioinspiredProtocolsEnum;
+import group.chon.agent.hermes.core.utils.BioInspiredUtils;
 
 import java.util.logging.Level;
 

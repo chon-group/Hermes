@@ -1,8 +1,8 @@
-package jason.hermes.capabilities.manageConnections.middlewares.identifier;
+package group.chon.agent.hermes.core.capabilities.manageConnections.middlewares.identifier;
 
-import jason.hermes.capabilities.manageConnections.configuration.Configuration;
-import jason.hermes.capabilities.manageConnections.middlewares.CommunicationMiddleware;
-import jason.hermes.capabilities.manageConnections.middlewares.CommunicationMiddlewareEnum;
+import group.chon.agent.hermes.core.capabilities.manageConnections.configuration.Configuration;
+import group.chon.agent.hermes.core.capabilities.manageConnections.middlewares.CommunicationMiddleware;
+import group.chon.agent.hermes.core.capabilities.manageConnections.middlewares.CommunicationMiddlewareEnum;
 
 public abstract class CommunicationMiddlewareIdentifier {
 

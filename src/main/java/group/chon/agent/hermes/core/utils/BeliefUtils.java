@@ -1,4 +1,4 @@
-package jason.hermes.utils;
+package group.chon.agent.hermes.core.utils;
 
 import group.chon.agent.hermes.Hermes;
 import jason.RevisionFailedException;

@@ -1,12 +1,12 @@
-package jason.hermes.capabilities.bioinspiredProtocols.receivers;
+package group.chon.agent.hermes.core.capabilities.bioinspiredProtocols.receivers;
 
-import jason.hermes.OutGoingMessage;
-import jason.hermes.capabilities.bioinspiredProtocols.BioinspiredData;
-import jason.hermes.capabilities.bioinspiredProtocols.BioinspiredProcessor;
-import jason.hermes.capabilities.bioinspiredProtocols.dto.AgentTransferRequestMessageDto;
-import jason.hermes.capabilities.bioinspiredProtocols.dto.AgentTransferResponseMessageDto;
-import jason.hermes.capabilities.manageConnections.middlewares.CommunicationMiddleware;
-import jason.hermes.utils.BioInspiredUtils;
+import group.chon.agent.hermes.core.OutGoingMessage;
+import group.chon.agent.hermes.core.capabilities.bioinspiredProtocols.BioinspiredData;
+import group.chon.agent.hermes.core.capabilities.bioinspiredProtocols.BioinspiredProcessor;
+import group.chon.agent.hermes.core.capabilities.bioinspiredProtocols.dto.AgentTransferRequestMessageDto;
+import group.chon.agent.hermes.core.capabilities.bioinspiredProtocols.dto.AgentTransferResponseMessageDto;
+import group.chon.agent.hermes.core.capabilities.manageConnections.middlewares.CommunicationMiddleware;
+import group.chon.agent.hermes.core.utils.BioInspiredUtils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

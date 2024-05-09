@@ -1,12 +1,12 @@
-package jason.hermes.capabilities.socialSkillsWithOutside;
+package group.chon.agent.hermes.core.capabilities.socialSkillsWithOutside;
 
 import group.chon.agent.hermes.Hermes;
 import jason.asSemantics.Message;
 import jason.asSyntax.*;
 import jason.asSyntax.parser.ParseException;
-import jason.hermes.OutGoingMessage;
-import jason.hermes.capabilities.manageConnections.middlewares.CommunicationMiddleware;
-import jason.hermes.utils.HermesUtils;
+import group.chon.agent.hermes.core.OutGoingMessage;
+import group.chon.agent.hermes.core.capabilities.manageConnections.middlewares.CommunicationMiddleware;
+import group.chon.agent.hermes.core.utils.HermesUtils;
 
 import java.util.Iterator;
 import java.util.List;

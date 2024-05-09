@@ -1,4 +1,4 @@
-package jason.hermes.utils;
+package group.chon.agent.hermes.core.utils;
 
 import group.chon.agent.hermes.Hermes;
 import jason.JasonException;
@@ -9,9 +9,9 @@ import jason.asSyntax.ListTerm;
 import jason.asSyntax.Plan;
 import jason.asSyntax.Term;
 import jason.asSyntax.parser.ParseException;
-import jason.hermes.capabilities.manageConnections.sec.CommunicationSecurity;
-import jason.hermes.capabilities.manageConnections.sec.CommunicationSecurityEnum;
-import jason.hermes.capabilities.manageConnections.sec.NoSecurity;
+import group.chon.agent.hermes.core.capabilities.manageConnections.sec.CommunicationSecurity;
+import group.chon.agent.hermes.core.capabilities.manageConnections.sec.CommunicationSecurityEnum;
+import group.chon.agent.hermes.core.capabilities.manageConnections.sec.NoSecurity;
 
 import java.util.ArrayList;
 import java.util.List;

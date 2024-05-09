@@ -1,9 +1,9 @@
-package jason.hermes.utils;
+package group.chon.agent.hermes.core.utils;
 
 import group.chon.agent.hermes.Hermes;
 import jason.architecture.AgArch;
 import jason.asSemantics.TransitionSystem;
-import jason.hermes.utils.aslFiles.AslFileGeneratorUtils;
+import group.chon.agent.hermes.core.utils.aslFiles.AslFileGeneratorUtils;
 import jason.infra.local.LocalAgArch;
 import jason.infra.local.RunLocalMAS;
 import jason.mas2j.ClassParameters;

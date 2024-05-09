@@ -1,6 +1,6 @@
-package jason.hermes.utils;
+package group.chon.agent.hermes.core.utils;
 
-import jason.hermes.exception.*;
+import group.chon.agent.hermes.core.exception.*;
 
 import java.io.*;
 import java.nio.file.Path;

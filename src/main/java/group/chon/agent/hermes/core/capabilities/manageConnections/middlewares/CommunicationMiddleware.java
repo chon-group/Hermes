@@ -1,7 +1,8 @@
-package jason.hermes.capabilities.manageConnections.middlewares;
+package group.chon.agent.hermes.core.capabilities.manageConnections.middlewares;
 
-import jason.hermes.capabilities.manageConnections.configuration.Configuration;
-import jason.hermes.capabilities.manageConnections.sec.CommunicationSecurity;
+
+import group.chon.agent.hermes.core.capabilities.manageConnections.configuration.Configuration;
+import group.chon.agent.hermes.core.capabilities.manageConnections.sec.CommunicationSecurity;
 
 import java.util.List;
 

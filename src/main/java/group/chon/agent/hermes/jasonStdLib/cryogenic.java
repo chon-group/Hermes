@@ -5,7 +5,7 @@ import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.Term;
-import jason.hermes.utils.FileUtils;
+import group.chon.agent.hermes.core.utils.FileUtils;
 
 import java.io.File;
 

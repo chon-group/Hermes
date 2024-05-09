@@ -1,4 +1,4 @@
-package jason.hermes.exception;
+package group.chon.agent.hermes.core.exception;
 
 public class ErrorClosingFileReaderException extends RuntimeException{
 

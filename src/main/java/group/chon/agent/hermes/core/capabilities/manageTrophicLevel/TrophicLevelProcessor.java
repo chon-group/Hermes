@@ -1,10 +1,10 @@
-package jason.hermes.capabilities.manageTrophicLevel;
+package group.chon.agent.hermes.core.capabilities.manageTrophicLevel;
 
 import jason.asSemantics.Agent;
 import jason.bb.BeliefBase;
-import jason.hermes.capabilities.bioinspiredProtocols.BioinspiredData;
-import jason.hermes.utils.BeliefUtils;
-import jason.hermes.utils.HermesUtils;
+import group.chon.agent.hermes.core.capabilities.bioinspiredProtocols.BioinspiredData;
+import group.chon.agent.hermes.core.utils.BeliefUtils;
+import group.chon.agent.hermes.core.utils.HermesUtils;
 
 import java.util.List;
 

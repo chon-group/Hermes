@@ -1,12 +1,12 @@
-package jason.hermes.capabilities.manageConnections.autoconnection;
+package group.chon.agent.hermes.core.capabilities.manageConnections.autoconnection;
 
 import group.chon.agent.hermes.Hermes;
 import jason.asSemantics.Agent;
 import jason.bb.BeliefBase;
-import jason.hermes.capabilities.manageConnections.configuration.Configuration;
-import jason.hermes.capabilities.manageConnections.middlewares.CommunicationMiddleware;
-import jason.hermes.capabilities.manageConnections.middlewares.CommunicationMiddlewareEnum;
-import jason.hermes.utils.BeliefUtils;
+import group.chon.agent.hermes.core.capabilities.manageConnections.configuration.Configuration;
+import group.chon.agent.hermes.core.capabilities.manageConnections.middlewares.CommunicationMiddleware;
+import group.chon.agent.hermes.core.capabilities.manageConnections.middlewares.CommunicationMiddlewareEnum;
+import group.chon.agent.hermes.core.utils.BeliefUtils;
 
 import java.util.ArrayList;
 import java.util.List;

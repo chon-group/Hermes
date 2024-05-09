@@ -1,12 +1,12 @@
-package jason.hermes.capabilities.cryogenate;
+package group.chon.agent.hermes.core.capabilities.cryogenate;
 
 import jason.asSemantics.Agent;
-import jason.hermes.exception.ErrorCreatingFileException;
-import jason.hermes.exception.ErrorCreatingFolderException;
-import jason.hermes.exception.ErrorWritingFileContentException;
-import jason.hermes.utils.FileUtils;
-import jason.hermes.utils.aslFiles.AslFileGeneratorUtils;
-import jason.hermes.utils.aslFiles.AslTransferenceModel;
+import group.chon.agent.hermes.core.exception.ErrorCreatingFileException;
+import group.chon.agent.hermes.core.exception.ErrorCreatingFolderException;
+import group.chon.agent.hermes.core.exception.ErrorWritingFileContentException;
+import group.chon.agent.hermes.core.utils.FileUtils;
+import group.chon.agent.hermes.core.utils.aslFiles.AslFileGeneratorUtils;
+import group.chon.agent.hermes.core.utils.aslFiles.AslTransferenceModel;
 
 import java.io.File;
 

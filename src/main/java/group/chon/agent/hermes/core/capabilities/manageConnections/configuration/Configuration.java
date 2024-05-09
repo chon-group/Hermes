@@ -1,7 +1,7 @@
-package jason.hermes.capabilities.manageConnections.configuration;
+package group.chon.agent.hermes.core.capabilities.manageConnections.configuration;
 
 import jason.asSyntax.Term;
-import jason.hermes.capabilities.manageConnections.sec.CommunicationSecurity;
+import group.chon.agent.hermes.core.capabilities.manageConnections.sec.CommunicationSecurity;
 
 import java.util.Observable;
 

@@ -1,7 +1,7 @@
-package jason.hermes.capabilities.bioinspiredProtocols.dto;
+package group.chon.agent.hermes.core.capabilities.bioinspiredProtocols.dto;
 
-import jason.hermes.capabilities.bioinspiredProtocols.enums.BioinspiredProtocolsEnum;
-import jason.hermes.capabilities.manageTrophicLevel.TrophicLevelEnum;
+import group.chon.agent.hermes.core.capabilities.bioinspiredProtocols.enums.BioinspiredProtocolsEnum;
+import group.chon.agent.hermes.core.capabilities.manageTrophicLevel.TrophicLevelEnum;
 
 import java.io.Serializable;
 import java.util.List;

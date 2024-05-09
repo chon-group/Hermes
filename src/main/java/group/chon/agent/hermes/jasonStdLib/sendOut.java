@@ -33,11 +33,11 @@ import jason.asSyntax.ASSyntax;
 import jason.asSyntax.ListTerm;
 import jason.asSyntax.StringTerm;
 import jason.asSyntax.Term;
-import jason.hermes.OutGoingMessage;
-import jason.hermes.capabilities.manageConnections.middlewares.CommunicationMiddleware;
-import jason.hermes.capabilities.socialSkillsWithOutside.SendParserForceEnum;
-import jason.hermes.utils.ArgsUtils;
-import jason.hermes.utils.HermesUtils;
+import group.chon.agent.hermes.core.OutGoingMessage;
+import group.chon.agent.hermes.core.capabilities.manageConnections.middlewares.CommunicationMiddleware;
+import group.chon.agent.hermes.core.capabilities.socialSkillsWithOutside.SendParserForceEnum;
+import group.chon.agent.hermes.core.utils.ArgsUtils;
+import group.chon.agent.hermes.core.utils.HermesUtils;
 import jason.stdlib.broadcast;
 import jason.stdlib.my_name;
 

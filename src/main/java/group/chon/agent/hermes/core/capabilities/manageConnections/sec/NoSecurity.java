@@ -1,4 +1,4 @@
-package jason.hermes.capabilities.manageConnections.sec;
+package group.chon.agent.hermes.core.capabilities.manageConnections.sec;
 
 public class NoSecurity implements CommunicationSecurity {
 

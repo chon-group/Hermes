@@ -1,10 +1,10 @@
-package jason.hermes.capabilities.autoLocalization;
+package group.chon.agent.hermes.core.capabilities.autoLocalization;
 
 import group.chon.agent.hermes.Hermes;
 import jason.asSemantics.Agent;
 import jason.asSyntax.Atom;
 import jason.bb.BeliefBase;
-import jason.hermes.utils.BeliefUtils;
+import group.chon.agent.hermes.core.utils.BeliefUtils;
 import jason.infra.local.RunLocalMAS;
 
 import java.util.List;

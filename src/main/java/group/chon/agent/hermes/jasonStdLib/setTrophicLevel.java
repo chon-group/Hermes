@@ -7,10 +7,10 @@ import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.Term;
 import jason.bb.BeliefBase;
-import jason.hermes.capabilities.manageTrophicLevel.TrophicLevelEnum;
-import jason.hermes.utils.ArgsUtils;
-import jason.hermes.utils.BeliefUtils;
-import jason.hermes.utils.HermesUtils;
+import group.chon.agent.hermes.core.capabilities.manageTrophicLevel.TrophicLevelEnum;
+import group.chon.agent.hermes.core.utils.ArgsUtils;
+import group.chon.agent.hermes.core.utils.BeliefUtils;
+import group.chon.agent.hermes.core.utils.HermesUtils;
 
 public class setTrophicLevel extends DefaultInternalAction {
 

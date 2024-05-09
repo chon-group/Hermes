@@ -1,23 +1,21 @@
 package group.chon.agent.hermes;
 
-import jason.architecture.AgArch;
-import jason.asSemantics.Message;
-import jason.asSyntax.Literal;
-import jason.hermes.InComingMessages;
 import group.chon.agent.hermes.core.capabilities.autoLocalization.AutoLocalizationProcessor;
-import group.chon.agent.hermes.core.capabilities.bioinspiredProtocols.BioinspiredData;
-import group.chon.agent.hermes.core.capabilities.bioinspiredProtocols.BioinspiredProcessor;
 import group.chon.agent.hermes.core.capabilities.cryogenate.CryogenicProcessor;
 import group.chon.agent.hermes.core.capabilities.manageConnections.autoconnection.AutoConnectionProcessor;
 import group.chon.agent.hermes.core.capabilities.manageConnections.configuration.Configuration;
-import group.chon.agent.hermes.core.capabilities.manageConnections.middlewares.CommunicationMiddleware;
 import group.chon.agent.hermes.core.capabilities.manageConnections.middlewares.identifier.CommunicationMiddlewareIdentifier;
 import group.chon.agent.hermes.core.capabilities.manageTrophicLevel.TrophicLevelEnum;
 import group.chon.agent.hermes.core.capabilities.manageTrophicLevel.TrophicLevelProcessor;
 import group.chon.agent.hermes.core.capabilities.socialSkillsWithOutside.SendOutProcessor;
 import group.chon.agent.hermes.core.utils.BeliefUtils;
-
+import jason.architecture.AgArch;
+import jason.asSemantics.Message;
+import jason.asSyntax.Literal;
 import java.util.*;
+import group.chon.agent.hermes.core.*;
+import group.chon.agent.hermes.core.capabilities.manageConnections.middlewares.*;
+import group.chon.agent.hermes.core.capabilities.bioinspiredProtocols.*;
 
 public class Hermes extends AgArch implements Observer {
 

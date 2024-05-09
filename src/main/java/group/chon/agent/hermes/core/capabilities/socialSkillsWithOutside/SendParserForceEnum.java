@@ -1,4 +1,4 @@
-package jason.hermes.capabilities.socialSkillsWithOutside;
+package group.chon.agent.hermes.core.capabilities.socialSkillsWithOutside;
 
 public enum SendParserForceEnum {
 

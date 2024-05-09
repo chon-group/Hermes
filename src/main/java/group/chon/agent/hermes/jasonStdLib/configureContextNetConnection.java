@@ -6,9 +6,9 @@ import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.Term;
-import jason.hermes.capabilities.manageConnections.configuration.ContextNetConfiguration;
-import jason.hermes.utils.BeliefUtils;
-import jason.hermes.utils.HermesUtils;
+import group.chon.agent.hermes.core.capabilities.manageConnections.configuration.ContextNetConfiguration;
+import group.chon.agent.hermes.core.utils.BeliefUtils;
+import group.chon.agent.hermes.core.utils.HermesUtils;
 
 public class configureContextNetConnection extends DefaultInternalAction {
 

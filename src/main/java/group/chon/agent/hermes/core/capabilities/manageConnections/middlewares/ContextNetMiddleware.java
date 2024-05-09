@@ -1,10 +1,10 @@
-package jason.hermes.capabilities.manageConnections.middlewares;
+package group.chon.agent.hermes.core.capabilities.manageConnections.middlewares;
 
-import jason.hermes.capabilities.manageConnections.configuration.Configuration;
-import jason.hermes.capabilities.manageConnections.configuration.ContextNetConfiguration;
-import jason.hermes.capabilities.manageConnections.middlewares.dto.ConnectionMessageEntity;
-import jason.hermes.capabilities.manageConnections.sec.CommunicationSecurity;
-import jason.hermes.utils.HermesUtils;
+import group.chon.agent.hermes.core.capabilities.manageConnections.configuration.Configuration;
+import group.chon.agent.hermes.core.capabilities.manageConnections.configuration.ContextNetConfiguration;
+import group.chon.agent.hermes.core.capabilities.manageConnections.middlewares.dto.ConnectionMessageEntity;
+import group.chon.agent.hermes.core.capabilities.manageConnections.sec.CommunicationSecurity;
+import group.chon.agent.hermes.core.utils.HermesUtils;
 import lac.cnclib.net.NodeConnection;
 import lac.cnclib.net.NodeConnectionListener;
 import lac.cnclib.net.mrudp.MrUdpNodeConnection;

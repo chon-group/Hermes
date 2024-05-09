@@ -1,10 +1,10 @@
-package jason.hermes.capabilities.cryogenate;
+package group.chon.agent.hermes.core.capabilities.cryogenate;
 
 import jason.asSemantics.Agent;
 import jason.asSemantics.TransitionSystem;
-import jason.hermes.exception.ErrorCryogeningMASException;
-import jason.hermes.exception.ErrorReadingFileException;
-import jason.hermes.utils.FileUtils;
+import group.chon.agent.hermes.core.exception.ErrorCryogeningMASException;
+import group.chon.agent.hermes.core.exception.ErrorReadingFileException;
+import group.chon.agent.hermes.core.utils.FileUtils;
 import jason.infra.local.RunLocalMAS;
 import jason.mas2j.ClassParameters;
 import jason.runtime.RuntimeServicesFactory;

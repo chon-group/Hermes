@@ -1,4 +1,4 @@
-package jason.hermes.utils;
+package group.chon.agent.hermes.core.utils;
 
 import jason.JasonException;
 import jason.asSemantics.InternalAction;

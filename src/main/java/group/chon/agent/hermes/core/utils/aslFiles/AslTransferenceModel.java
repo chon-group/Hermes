@@ -1,4 +1,4 @@
-package jason.hermes.utils.aslFiles;
+package group.chon.agent.hermes.core.utils.aslFiles;
 
 import java.io.Serializable;
 

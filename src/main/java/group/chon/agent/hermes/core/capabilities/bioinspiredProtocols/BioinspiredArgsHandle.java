@@ -1,16 +1,16 @@
-package jason.hermes.capabilities.bioinspiredProtocols;
+package group.chon.agent.hermes.core.capabilities.bioinspiredProtocols;
 
 import group.chon.agent.hermes.Hermes;
 import jason.JasonException;
 import jason.asSyntax.ListTerm;
 import jason.asSyntax.Term;
-import jason.hermes.capabilities.bioinspiredProtocols.enums.BioinspiredProtocolsEnum;
-import jason.hermes.capabilities.bioinspiredProtocols.enums.BioinspiredRoleEnum;
-import jason.hermes.capabilities.bioinspiredProtocols.enums.BioinspiredStageEnum;
-import jason.hermes.capabilities.manageTrophicLevel.TrophicLevelEnum;
-import jason.hermes.utils.ArgsUtils;
-import jason.hermes.utils.BioInspiredUtils;
-import jason.hermes.utils.HermesUtils;
+import group.chon.agent.hermes.core.capabilities.bioinspiredProtocols.enums.BioinspiredProtocolsEnum;
+import group.chon.agent.hermes.core.capabilities.bioinspiredProtocols.enums.BioinspiredRoleEnum;
+import group.chon.agent.hermes.core.capabilities.bioinspiredProtocols.enums.BioinspiredStageEnum;
+import group.chon.agent.hermes.core.capabilities.manageTrophicLevel.TrophicLevelEnum;
+import group.chon.agent.hermes.core.utils.ArgsUtils;
+import group.chon.agent.hermes.core.utils.BioInspiredUtils;
+import group.chon.agent.hermes.core.utils.HermesUtils;
 
 import java.util.ArrayList;
 import java.util.List;

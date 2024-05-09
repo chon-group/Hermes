@@ -1,11 +1,11 @@
-package jason.hermes.capabilities.bioinspiredProtocols;
+package group.chon.agent.hermes.core.capabilities.bioinspiredProtocols;
 
 import jason.asSemantics.Agent;
-import jason.hermes.capabilities.bioinspiredProtocols.enums.BioinspiredProtocolsEnum;
-import jason.hermes.capabilities.bioinspiredProtocols.enums.BioinspiredRoleEnum;
-import jason.hermes.capabilities.bioinspiredProtocols.enums.BioinspiredStageEnum;
-import jason.hermes.capabilities.manageTrophicLevel.TrophicLevelEnum;
-import jason.hermes.utils.aslFiles.AslTransferenceModel;
+import group.chon.agent.hermes.core.capabilities.bioinspiredProtocols.enums.BioinspiredProtocolsEnum;
+import group.chon.agent.hermes.core.capabilities.bioinspiredProtocols.enums.BioinspiredRoleEnum;
+import group.chon.agent.hermes.core.capabilities.bioinspiredProtocols.enums.BioinspiredStageEnum;
+import group.chon.agent.hermes.core.capabilities.manageTrophicLevel.TrophicLevelEnum;
+import group.chon.agent.hermes.core.utils.aslFiles.AslTransferenceModel;
 
 import java.util.List;
 

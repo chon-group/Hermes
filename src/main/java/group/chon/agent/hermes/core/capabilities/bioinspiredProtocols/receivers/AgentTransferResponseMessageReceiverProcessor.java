@@ -1,16 +1,16 @@
-package jason.hermes.capabilities.bioinspiredProtocols.receivers;
+package group.chon.agent.hermes.core.capabilities.bioinspiredProtocols.receivers;
 
 import group.chon.agent.hermes.Hermes;
 import jason.asSemantics.Agent;
-import jason.hermes.OutGoingMessage;
-import jason.hermes.capabilities.bioinspiredProtocols.BioinspiredData;
-import jason.hermes.capabilities.bioinspiredProtocols.dto.AgentTransferContentMessageDto;
-import jason.hermes.capabilities.bioinspiredProtocols.dto.AgentTransferResponseMessageDto;
-import jason.hermes.capabilities.bioinspiredProtocols.enums.BioinspiredProtocolsEnum;
-import jason.hermes.capabilities.manageConnections.middlewares.CommunicationMiddleware;
-import jason.hermes.utils.BioInspiredUtils;
-import jason.hermes.utils.aslFiles.AslFileGeneratorUtils;
-import jason.hermes.utils.aslFiles.AslTransferenceModel;
+import group.chon.agent.hermes.core.OutGoingMessage;
+import group.chon.agent.hermes.core.capabilities.bioinspiredProtocols.BioinspiredData;
+import group.chon.agent.hermes.core.capabilities.bioinspiredProtocols.dto.AgentTransferContentMessageDto;
+import group.chon.agent.hermes.core.capabilities.bioinspiredProtocols.dto.AgentTransferResponseMessageDto;
+import group.chon.agent.hermes.core.capabilities.bioinspiredProtocols.enums.BioinspiredProtocolsEnum;
+import group.chon.agent.hermes.core.capabilities.manageConnections.middlewares.CommunicationMiddleware;
+import group.chon.agent.hermes.core.utils.BioInspiredUtils;
+import group.chon.agent.hermes.core.utils.aslFiles.AslFileGeneratorUtils;
+import group.chon.agent.hermes.core.utils.aslFiles.AslTransferenceModel;
 import jason.infra.local.LocalAgArch;
 import jason.infra.local.RunLocalMAS;
 

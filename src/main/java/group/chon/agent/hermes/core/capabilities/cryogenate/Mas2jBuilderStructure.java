@@ -1,4 +1,4 @@
-package jason.hermes.capabilities.cryogenate;
+package group.chon.agent.hermes.core.capabilities.cryogenate;
 
 
 import jason.asSemantics.Agent;

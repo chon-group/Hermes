@@ -1,13 +1,13 @@
 package group.chon.agent.hermes.core;
 
 import jason.asSemantics.Message;
-import jason.hermes.capabilities.bioinspiredProtocols.BioinspiredData;
-import jason.hermes.capabilities.bioinspiredProtocols.dto.AgentTransferConfirmationMessageDto;
-import jason.hermes.capabilities.bioinspiredProtocols.dto.AgentTransferContentMessageDto;
-import jason.hermes.capabilities.bioinspiredProtocols.dto.AgentTransferRequestMessageDto;
-import jason.hermes.capabilities.bioinspiredProtocols.dto.AgentTransferResponseMessageDto;
-import jason.hermes.capabilities.manageConnections.middlewares.CommunicationMiddleware;
-import jason.hermes.utils.MessageUtils;
+import group.chon.agent.hermes.core.capabilities.bioinspiredProtocols.BioinspiredData;
+import group.chon.agent.hermes.core.capabilities.bioinspiredProtocols.dto.AgentTransferConfirmationMessageDto;
+import group.chon.agent.hermes.core.capabilities.bioinspiredProtocols.dto.AgentTransferContentMessageDto;
+import group.chon.agent.hermes.core.capabilities.bioinspiredProtocols.dto.AgentTransferRequestMessageDto;
+import group.chon.agent.hermes.core.capabilities.bioinspiredProtocols.dto.AgentTransferResponseMessageDto;
+import group.chon.agent.hermes.core.capabilities.manageConnections.middlewares.CommunicationMiddleware;
+import group.chon.agent.hermes.core.utils.MessageUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
