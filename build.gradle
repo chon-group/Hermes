@@ -3,8 +3,19 @@ plugins {
     id 'maven-publish'
 }
 
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = 'com.github.chon-group'
+            artifactId = 'Hermes'
+            version = '0.9.2'
+            from components.java
+        }
+    }
+}
+
 group 'com.github.chon-group'
-version '0.9.1'
+version '0.9.2'
 
 java {
     toolchain {
