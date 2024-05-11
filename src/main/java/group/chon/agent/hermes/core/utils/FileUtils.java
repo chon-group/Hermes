@@ -29,8 +29,9 @@ public abstract class FileUtils {
     public static File getMasPath(String agentASLSrc) {
         File masFolder = null;
         File file = new File(treatFilePath(agentASLSrc));
+        file = new File(file.getAbsolutePath());
 
-        while (file != null && file.exists()) {
+        while (file != null && file.exists() && masFolder == null) {
             File[] files = file.listFiles();
             if (files != null && files.length > 0) {
                 for (File listFile : files) {
