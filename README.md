@@ -1,4 +1,6 @@
 # Hermes
+[![](https://jitpack.io/v/chon-group/Hermes.svg)](https://jitpack.io/#chon-group/Hermes)
+
 Repositorio criado para o desenvolvimento da arquitetura de agentes Hermes capaz de se comunicar e transferir agentes entre diferentes SMA.
 
 Os agentes Hermes foram criados generalizando as funcionalidades apresentadas pelos agentes *Comunicadores* como **comunicação** e **mobilidade** de agentes.
