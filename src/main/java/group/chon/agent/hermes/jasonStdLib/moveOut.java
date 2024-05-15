@@ -143,10 +143,10 @@ public class moveOut extends DefaultInternalAction {
             rec = to.toString();
         }
         if (rec.equals("self")) {
-            rec = ts.getUserAgArch().getAgName();
+            rec = ts.getAgArch().getAgName();
         }
         //m.setReceiver(rec);
-        //ts.getUserAgArch().sendMsg(m);
+        //ts.getAgArch().sendMsg(m);
     }
 
     @Override

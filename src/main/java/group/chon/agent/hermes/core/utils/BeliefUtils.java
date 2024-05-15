@@ -34,7 +34,7 @@ public abstract class BeliefUtils {
 
     public static final String BELIEF_SEPARATOR = ",";
 
-    public static final String HERMES_NAMESPACE = Hermes.class.getSimpleName();
+    public static final String HERMES_NAMESPACE = Hermes.class.getSimpleName().toLowerCase();
 
     public static final String NAMESPACE_SEPARATOR = "::";
 

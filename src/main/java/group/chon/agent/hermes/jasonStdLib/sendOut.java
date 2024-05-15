@@ -137,7 +137,7 @@ public class sendOut extends DefaultInternalAction {
             rec = to.toString().replaceAll("^\"|\"$", "");
         }
         if (rec.equals("self")) {
-            rec = ts.getUserAgArch().getAgName();
+            rec = ts.getAgArch().getAgName();
         }
         m.setReceiver(rec);
         OutGoingMessage.sendMessage(m, communicationMiddleware);
