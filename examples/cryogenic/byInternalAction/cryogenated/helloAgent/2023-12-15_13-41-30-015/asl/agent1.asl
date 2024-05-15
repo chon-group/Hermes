@@ -6,7 +6,7 @@ kqml::clear_source_self([A|T],[A|NT])[hide_in_mind_inspector,source(self)] :- ((
 hello[source(simple_agent)].
 agent1[source(self)].
 day[source(self)].
-Hermes::myMAS("helloAgent")[source(simple_agent)].
+hermes::myMAS("helloAgent")[source(simple_agent)].
 
 /* Initial goals */
 !start[source(self)].

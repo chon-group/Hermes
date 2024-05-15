@@ -9,10 +9,10 @@ day.
 /* Plans */
 
 +!start: contextnetServer(IP, PORT) <-
-    .configureContextNetConnection("1", IP, PORT, "788b2b22-baa6-4c61-b1bb-01cff1f5f880");
-    .configureContextNetConnection("4", IP, PORT, "788b2b22-baa6-4c61-b1bb-01cff1f5f884");
-    .connect("1");
-    .connect("4");
+    .hermes.configureContextNetConnection("1", IP, PORT, "788b2b22-baa6-4c61-b1bb-01cff1f5f880");
+    .hermes.configureContextNetConnection("4", IP, PORT, "788b2b22-baa6-4c61-b1bb-01cff1f5f884");
+    .hermes.connect("1");
+    .hermes.connect("4");
     .print("Hello world - autoConnection - inquilinism!!!").
 
 +hello[source(X)]: true <-

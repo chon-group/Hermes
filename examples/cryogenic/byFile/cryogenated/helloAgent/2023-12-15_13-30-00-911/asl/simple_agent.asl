@@ -11,6 +11,6 @@ Hermes::myTrophicLevel("SECONDARY_CONSUMER")[source(self)].
 /* Initial goals */
 
 /* Plans */
-@p__11[source(self),url("file:examples/cryogenic/byFile/hello-agent/asl/simple_agent.asl")] +!start : contextnetServer(IP,PORT) <- .configureContextNetConnection("1",IP,PORT,"788b2b22-baa6-4c61-b1bb-01cff1f5f880"); .connect("1"); .setTrophicLevel(2); -day; .print("Hello world - cryogenic - byFile!!!"); .send(agent1,tell,hello).
+@p__11[source(self),url("file:examples/cryogenic/byFile/hello-agent/asl/simple_agent.asl")] +!start : contextnetServer(IP,PORT) <- .hermes.configureContextNetConnection("1",IP,PORT,"788b2b22-baa6-4c61-b1bb-01cff1f5f880"); .hermes.connect("1"); .hermes.setTrophicLevel(2); -day; .print("Hello world - cryogenic - byFile!!!"); .send(agent1,tell,hello).
 @p__12[source(self),url("file:examples/cryogenic/byFile/hello-agent/asl/simple_agent.asl")] -!start <- .print("was cryogenated!!!").
 

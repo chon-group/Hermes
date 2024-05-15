@@ -9,9 +9,9 @@ day.
 /* Plans */
 
 +!start: contextnetServer(IP, PORT) & day <-
-    .configureContextNetConnection("1", IP, PORT, "788b2b22-baa6-4c61-b1bb-01cff1f5f880");
-    .connect("1");
-    .setTrophicLevel(2);
+    .hermes.configureContextNetConnection("1", IP, PORT, "788b2b22-baa6-4c61-b1bb-01cff1f5f880");
+    .hermes.connect("1");
+    .hermes.setTrophicLevel(2);
     -day;
     .print("Hello world - cryogenic - byInternalAction!!!");
     .send(agent1, tell, hello);
@@ -24,4 +24,4 @@ day.
 +!doCryogenic : true <-
     .print("Preparing for cryonics!!!");
     .wait(500);
-    .cryogenic.
+    .hermes.cryogenic.

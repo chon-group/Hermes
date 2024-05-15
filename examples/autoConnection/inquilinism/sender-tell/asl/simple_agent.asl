@@ -17,24 +17,24 @@ day.
     .stopMAS.
 
 +!enviar : true <-
-    .sendOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", tell, hello);
+    .hermes.sendOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", tell, hello);
     .print("Mensagem 1 enviada");
     .wait(500);
-    .sendOut("788b2b22-baa6-4c61-b1bb-01cff1f5f881", tell, hello);
+    .hermes.sendOut("788b2b22-baa6-4c61-b1bb-01cff1f5f881", tell, hello);
     .print("Mensagem 1 enviada");
     .wait(500);
-    .sendOut("788b2b22-baa6-4c61-b1bb-01cff1f5f881", tell, hello);
+    .hermes.sendOut("788b2b22-baa6-4c61-b1bb-01cff1f5f881", tell, hello);
     .print("Mensagem 1 enviada");
     .wait(500).
 
 
 +!enviardois : true <-
-    .sendOut("788b2b22-baa6-4c61-b1bb-01cff1f5f884", tell, hellodois);
+    .hermes.sendOut("788b2b22-baa6-4c61-b1bb-01cff1f5f884", tell, hellodois);
     .print("Mensagem 2 enviada");
     .wait(500);
-    .sendOut("788b2b22-baa6-4c61-b1bb-01cff1f5f882", tell, hellodois);
+    .hermes.sendOut("788b2b22-baa6-4c61-b1bb-01cff1f5f882", tell, hellodois);
     .print("Mensagem 2 enviada");
     .wait(500);
-    .sendOut("788b2b22-baa6-4c61-b1bb-01cff1f5f882", tell, hellodois);
+    .hermes.sendOut("788b2b22-baa6-4c61-b1bb-01cff1f5f882", tell, hellodois);
     .print("Mensagem 2 enviada");
     .wait(500).

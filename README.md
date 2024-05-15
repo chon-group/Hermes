@@ -55,11 +55,11 @@ OBS: O primeiro parâmetro sempre deve ser o <span style="color:blue">***IDENTIF
 No exemplo abaixo é possível observar a configuração de uma nova rede **ContextNet**.
 
 ```
-.configureContextNetConnection(IDENTIFICADOR_DA_CONEXÃO, IP_DO_GATEWAY, PORT_DO_GATEWAY, UUID_DO_AGENTE);
+.hermes.configureContextNetConnection(IDENTIFICADOR_DA_CONEXÃO, IP_DO_GATEWAY, PORT_DO_GATEWAY, UUID_DO_AGENTE);
 ```
 
 ```
-.configureContextNetConnection("1", "192.168.15.102", 5500, "788b2b22-baa6-4c61-b1bb-01cff1f5f880");
+.hermes.configureContextNetConnection("1", "192.168.15.102", 5500, "788b2b22-baa6-4c61-b1bb-01cff1f5f880");
 ```
 
 ### Conexão e desconexão da rede
@@ -73,21 +73,21 @@ A ação interna de conexão segue o seguinte padrão: .<span style="color:green
 No exemplo abaixo é possível observar como o agente Hermes se conecta em uma nova rede.
 
 ```
-.connect(IDENTIFICADOR_DA_CONEXÃO);
+.hermes.connect(IDENTIFICADOR_DA_CONEXÃO);
 ```
 
 ```
-.connect("1");
+.hermes.connect("1");
 ```
 
 Para realizar a **desconexão** de uma rede, o agente **Hermes** possui uma ação interna que segue o mesmo padrão da ação interna de conexão:
 
 ```
-.disconnect(IDENTIFICADOR_DA_CONEXÃO);
+.hermes.disconnect(IDENTIFICADOR_DA_CONEXÃO);
 ```
 
 ```
-.disconnect("1");
+.hermes.disconnect("1");
 ```
 
 ### Autoconexão
@@ -132,17 +132,17 @@ A ação interna para a comunicação com diferentes SMA é a **sendOut** e segu
 No exemplo abaixo é possível observar como um agente envia uma crença para um agente de outro SMA.
 
 ```
-.sendOut(IDENTIFICADOR_DO_AGENTE_DE_DESTINO, FORÇA_ILOCUCIONÁRIA, CONTEÚDO_DA_MENSAGEM);
+.hermes.sendOut(IDENTIFICADOR_DO_AGENTE_DE_DESTINO, FORÇA_ILOCUCIONÁRIA, CONTEÚDO_DA_MENSAGEM);
 ```
 
 ```
-.sendOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", tell, hello);
+.hermes.sendOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", tell, hello);
 ```
 
 OBS: É possível também passar como **último** parâmetro o <span style="color:blue">***IDENTIFICADOR_DA_CONEXÃO***</span> para obrigar o agente utilizar uma conexão específica para realizar a comunicação. Caso esse paramêtro não seja preenchido (como no exemplo anterior) a arquitetura de agentes realizar a comunicação com a primeira conexão ativa que estiver disponível.
 
 ```
-.sendOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", tell, hello, "1");
+.hermes.sendOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", tell, hello, "1");
 ```
 
 ### untell
@@ -150,7 +150,7 @@ OBS: É possível também passar como **último** parâmetro o <span style="colo
 No exemplo abaixo é possível observar como um agente envia para um agente de outro SMA deixar de acreditar na crença.
 
 ```
-.sendOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", untell, beautiful);
+.hermes.sendOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", untell, beautiful);
 ```
 
 ### achieve
@@ -158,7 +158,7 @@ No exemplo abaixo é possível observar como um agente envia para um agente de o
 No exemplo abaixo é possível observar como um agente envia uma intenção para um agente de outro SMA.
 
 ```
-.sendOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", achieve, run);
+.hermes.sendOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", achieve, run);
 ```
 
 ### unachieve
@@ -166,7 +166,7 @@ No exemplo abaixo é possível observar como um agente envia uma intenção para
 No exemplo abaixo é possível observar como um agente envia para cancelar uma intenção para um agente de outro SMA.
 
 ```
-.sendOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", unachieve, run);
+.hermes.sendOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", unachieve, run);
 ```
 
 ### askOne
@@ -174,7 +174,7 @@ No exemplo abaixo é possível observar como um agente envia para cancelar uma i
 No exemplo abaixo é possível observar como um agente pergunta para um agente de outro SMA sobre uma crença.
 
 ```
-.sendOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", askOne, beautiful(X));
+.hermes.sendOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", askOne, beautiful(X));
 ```
 
 ### askAll
@@ -182,7 +182,7 @@ No exemplo abaixo é possível observar como um agente pergunta para um agente d
 No exemplo abaixo é possível observar como um agente pergunta para um agente de outro SMA todas as crenças que satisfaz um predicado.
 
 ```
-.sendOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", askAll, beautiful(X));
+.hermes.sendOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", askAll, beautiful(X));
 ```
 
 Ou seja, o agente receptor vai receber todas as crenças que possui o predicado beautiful(ALGUM_VALOR).
@@ -192,7 +192,7 @@ Ou seja, o agente receptor vai receber todas as crenças que possui o predicado 
 No exemplo abaixo é possível observar como um agente pede para um agente de outro SMA a implementação de um plano.
 
 ```
-.sendOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", askHow, {+!run});
+.hermes.sendOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", askHow, {+!run});
 ```
 
 OBS: O agente receber o pedido, já responde automaticamente. Sem precisar do uso do tellHow.
@@ -203,7 +203,7 @@ No exemplo abaixo é possível observar como um agente envia a implementação d
 
 1. Forma padrão da notação do **Jason**.
 ```
-.sendOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", tellHow, {+!run: true <- .print("I am Running with chave"); .wait(500); !run});
+.hermes.sendOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", tellHow, {+!run: true <- .print("I am Running with chave"); .wait(500); !run});
 ```
 
 2. Utilizando a anotação do plano.
@@ -221,13 +221,13 @@ Caso o plano tenha uma anotação "@p__1" como no exemplo abaixo:
 É possível enviar esse plano utilizando a anotação:
 
 ```
-.sendOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", tellHow, "@p__1");
+.hermes.sendOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", tellHow, "@p__1");
 ```
 
 3. Utilizando aspas.
 
 ```
-.sendOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", tellHow, "+!run: true <- .print(\"I am Running\"); .wait(500); !run.");
+.hermes.sendOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", tellHow, "+!run: true <- .print(\"I am Running\"); .wait(500); !run.");
 ```
 
 OBS: Nessa forma, todos os caracteres especiais utilizados na implementação do plano tem que vir com o caracter \ na frente. No exemplo anterior, é possível observar que possui um \" para inserir o caracter ***"*** na implementação do plano run.
@@ -238,7 +238,7 @@ No exemplo abaixo é possível observar como um agente envia para um agente de o
 
 1. Forma padrão da notação do **Jason**.
 ```
-.sendOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", untellHow, {+!run: true <- .print("I am Running with chave"); .wait(500); !run});
+.hermes.sendOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", untellHow, {+!run: true <- .print("I am Running with chave"); .wait(500); !run});
 ```
 
 2. Utilizando a anotação do plano.
@@ -256,13 +256,13 @@ Caso o plano tenha uma anotação "@p__1" como no exemplo abaixo:
 É possível enviar esse plano utilizando a anotação:
 
 ```
-.sendOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", untellHow, "@p__1");
+.hermes.sendOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", untellHow, "@p__1");
 ```
 
 3. Utilizando aspas.
 
 ```
-.sendOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", untellHow, "+!run: true <- .print(\"I am Running\"); .wait(500); !run.");
+.hermes.sendOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", untellHow, "+!run: true <- .print(\"I am Running\"); .wait(500); !run.");
 ```
 
 OBS: A mesma observação sobre os caracteres especiais também valem para o untellHow.
@@ -294,13 +294,13 @@ O protocolo de mutualismo existem três maneiras de ser executado:
 No exemplo abaixo é possível observar como executar o protocolo de mutualismo enviando todos os agentes do SMA de origem para outro SMA de destino, ficando somente o agente **Hermes** que está ativando o protocolo no SMA de origem.
 
 ```
-.moveOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", mutualism);
+.hermes.moveOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", mutualism);
 ```
 
 Caso queira especificar a conexão para execução do protocolo, no exemplo abaixo ilustra como especificar uma conexão com o nome de "*1*":
 
 ```
-.moveOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", mutualism, "1");
+.hermes.moveOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", mutualism, "1");
 ```
 
 2. Enviando um agente específico
@@ -310,13 +310,13 @@ No exemplo abaico é possível observar como executar o protocolo mutualismo env
 OBS: O agente deve existir no SMA de origem para ser enviado. Ou seja, o SMA de origem deve conter um agente chamado "*agent1*" para poder enviá-lo para outro SMA.
 
 ```
-.moveOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", mutualism, agent1);
+.hermes.moveOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", mutualism, agent1);
 ```
 
 Caso queira especificar a conexão para execução do protocolo, no exemplo abaixo ilustra como especificar uma conexão com o nome de "*1*":
 
 ```
-.moveOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", mutualism, agent1, "1");
+.hermes.moveOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", mutualism, agent1, "1");
 ```
 
 3. Enviando uma lista de agentes
@@ -326,13 +326,13 @@ No exemplo abaixo é possível observar como executar o protocolo mutualismo env
 OBS: Os agentes devem existir no SMA de origem para serem enviados. Ou seja, o SMA de origem deve conter os agentes chamados de "*agent1*", "*agent2*" para poder enviá-los para outro SMA.
 
 ```
-.moveOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", mutualism, [agent1, agent2]);
+.hermes.moveOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", mutualism, [agent1, agent2]);
 ```
 
 Caso queira especificar a conexão para execução do protocolo, no exemplo abaixo ilustra como especificar uma conexão com o nome de "*1*":
 
 ```
-.moveOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", mutualism, [agent1, agent2], "1");
+.hermes.moveOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", mutualism, [agent1, agent2], "1");
 ```
 
 ### Inquilinismo
@@ -344,13 +344,13 @@ O protocolo de inquilinismo envia todos os agentes do SMA de origem para o SMA d
 No exemplo abaixo é possível observar o acionamento do protocolo de inquilinismo:
 
 ```
-.moveOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", inquilinism);
+.hermes.moveOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", inquilinism);
 ```
 
 Caso queira especificar a conexão para execução do protocolo, no exemplo abaixo ilustra como especificar uma conexão com o nome de "*1*":
 
 ```
-.moveOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", inquilinism, "1");
+.hermes.moveOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", inquilinism, "1");
 ```
 
 ### Predação
@@ -362,13 +362,13 @@ Assim como o inquilinismo, o protocolo de predação envia todos os agentes do S
 No exemplo abaixo é possível observar o acionamento do protocolo de predação:
 
 ```
-.moveOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", predation);
+.hermes.moveOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", predation);
 ```
 
 Caso queira especificar a conexão para execução do protocolo, no exemplo abaixo ilustra como especificar uma conexão com o nome de "*1*":
 
 ```
-.moveOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", predation, "1");
+.hermes.moveOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", predation, "1");
 ```
 
 
@@ -405,7 +405,7 @@ A ação interna é **setTrophicLevel** segue o seguinte padrão: .<span style="
 No exemplo abaixo é possível observar como executar a atualização de nível trófico.
 
 ```
-.setTrophicLevel("PRIMARY_CONSUMER");
+.hermes.setTrophicLevel("PRIMARY_CONSUMER");
 ```
 
 Caso queira fazer a atualização de nível trófico por valor inteiro também é possível:
@@ -415,7 +415,7 @@ Caso queira fazer a atualização de nível trófico por valor inteiro também �
 - O valor **2** corresponde ao SECONDARY_CONSUMER.
 
 ```
-.setTrophicLevel(1);
+.hermes.setTrophicLevel(1);
 ```
 
 ### Clonagem
@@ -433,13 +433,13 @@ Os agentes **Hermes** recebidos assumem as conexões de rede do SMA de destino, 
 No exemplo abaixo é possível observar o acionamento do protocolo de clonagem:
 
 ```
-.moveOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", cloning);
+.hermes.moveOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", cloning);
 ```
 
 Caso queira especificar a conexão para execução do protocolo, no exemplo abaixo ilustra como especificar uma conexão com o nome de "*1*":
 
 ```
-.moveOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", cloning, "1");
+.hermes.moveOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", cloning, "1");
 ```
 
 2. Enviando um agente específico.
@@ -449,13 +449,13 @@ Neste método, somente um agente específico é clonado e enviado para outro SMA
 No exemplo abaixo é possível observar o acionamento do protocolo de clonagem especificando um único agente para a clonagem.
 
 ```
-.moveOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", cloning, agent1);
+.hermes.moveOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", cloning, agent1);
 ```
 
 Caso queira especificar a conexão para execução do protocolo, no exemplo abaixo ilustra como especificar uma conexão com o nome de "*1*":
 
 ```
-.moveOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", cloning, agent1, "1");
+.hermes.moveOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", cloning, agent1, "1");
 ```
 
 OBS: O agente deve existir no SMA de origem para ser clonado e enviado. Ou seja, o SMA de origem deve conter um agente chamado "*agent1*" para poder enviá-lo para outro SMA.
@@ -471,13 +471,13 @@ Neste método, um conjunto de agentes específicos são clonados e enviados para
 No exemplo abaixo é possível observar o acionamento do protocolo de clonagem especificando um grupo de agentes para a clonagem.
 
 ```
-.moveOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", cloning, [agent1, agent2]);
+.hermes.moveOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", cloning, [agent1, agent2]);
 ```
 
 Caso queira especificar a conexão para execução do protocolo, no exemplo abaixo ilustra como especificar uma conexão com o nome de "*1*":
 
 ```
-.moveOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", cloning, [agent1, agent2], "1");
+.hermes.moveOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", cloning, [agent1, agent2], "1");
 ```
 
 As observações levantadas do método anterior também são validas para esse. 
@@ -499,7 +499,7 @@ A ação interna é a **cryogenic** e segue o seguinte padrão: .<span style="co
 No exemplo abaixo é possível observar o acionamento da criogenia.
 
 ```
-.cryogenic;
+.hermes.cryogenic;
 ```
 
 **ATENÇÃO**: Cuidado com utilizar a ação interna de criogenia em um plano de crença, pois se a crença permanecer na mente do agente após a execução da criogenia, quando reiniar o SMA a crença que ativa esse plano de crença ainda estará na mente do agente e o plano de crença será ativado novamente criogenando o SMA novamente formando um ciclo.

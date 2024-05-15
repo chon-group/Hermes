@@ -9,8 +9,8 @@ day.
 /* Plans */
 
 +!start: contextnetServer(IP, PORT) <-
-    .configureContextNetConnection("2", IP, PORT, "788b2b22-baa6-4c61-b1bb-01cff1f5f882");
-    .connect("2");
+    .hermes.configureContextNetConnection("2", IP, PORT, "788b2b22-baa6-4c61-b1bb-01cff1f5f882");
+    .hermes.connect("2");
     .print("Hello world - autoConnection - inquilinism!!!").
 
 +hellodois[source(X)]: true <-

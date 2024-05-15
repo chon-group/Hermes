@@ -1,2 +1,2 @@
-contextnetServer("192.168.1.121", 3273).
+contextnetServer("uff.bot.chon.group",5500).
 

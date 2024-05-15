@@ -14,4 +14,4 @@ day.
     .print("Hello world - autoLocalization - inquilinism!!!");
     .wait(2000);
     .print("Starting Inquilinism");
-    .moveOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", inquilinism).
+    .hermes.moveOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", inquilinism).

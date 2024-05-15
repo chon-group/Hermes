@@ -9,8 +9,8 @@ day.
 /* Plans */
 
 +!start: contextnetServer(IP, PORT) <-
-    .configureContextNetConnection("1", IP, PORT, "788b2b22-baa6-4c61-b1bb-01cff1f5f880");
-    .connect("1");
+    .hermes.configureContextNetConnection("1", IP, PORT, "788b2b22-baa6-4c61-b1bb-01cff1f5f880");
+    .hermes.connect("1");
     .print("Hello world - untell!!!").
 
 +beautiful: true <-

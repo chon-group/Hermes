@@ -5,7 +5,7 @@ kqml::clear_source_self([source(self)|T],NT)[hide_in_mind_inspector,source(self)
 kqml::clear_source_self([A|T],[A|NT])[hide_in_mind_inspector,source(self)] :- ((A \== source(self)) & kqml::clear_source_self(T,NT)).
 agent5[source(self)].
 day[source(self)].
-Hermes::myMAS("helloAgent")[source(simple_agent)].
+hermes::myMAS("helloAgent")[source(simple_agent)].
 
 /* Initial goals */
 

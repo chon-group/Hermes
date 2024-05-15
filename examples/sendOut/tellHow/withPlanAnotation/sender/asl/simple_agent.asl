@@ -9,12 +9,12 @@ day.
 /* Plans */
 
 +!start: contextnetServer(IP, PORT) <-
-    .configureContextNetConnection("1", IP, PORT, "788b2b22-baa6-4c61-b1bb-01cff1f5f881");
-    .connect("1");
+    .hermes.configureContextNetConnection("1", IP, PORT, "788b2b22-baa6-4c61-b1bb-01cff1f5f881");
+    .hermes.connect("1");
     .print("Hello world - tellHow - withPlanAnotation!!!");
-    .sendOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", tellHow, "@p__1");
+    .hermes.sendOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", tellHow, "@p__1");
     .wait(1000);
-    .sendOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", achieve, run).
+    .hermes.sendOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", achieve, run).
 
 @p__1
 +!run: true <-

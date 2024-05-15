@@ -10,7 +10,7 @@ receiver.
 /* Plans */
 
 +!start: contextnetServer(IP, PORT) <-
-    .setTrophicLevel("PRIMARY_CONSUMER");
+    .hermes.setTrophicLevel("PRIMARY_CONSUMER");
     .configureContextNetConnection("1", IP, PORT, "788b2b22-baa6-4c61-b1bb-01cff1f5f880");
     .connect("1");
     .print("Hello world - moveOut - predation - dominant!!!").

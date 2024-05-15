@@ -9,11 +9,11 @@ day.
 /* Plans */
 
 +!start: contextnetServer(IP, PORT) <-
-    .configureContextNetConnection("3", IP, PORT, "788b2b22-baa6-4c61-b1bb-01cff1f5f881");
-    .connect("3");
+    .hermes.configureContextNetConnection("3", IP, PORT, "788b2b22-baa6-4c61-b1bb-01cff1f5f881");
+    .hermes.connect("3");
     .print("Hello world - autoConnection - inquilinism!!!");
     .print("Starting Inquilinism");
-    .moveOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", inquilinism).
+    .hermes.moveOut("788b2b22-baa6-4c61-b1bb-01cff1f5f880", inquilinism).
 
 +hello[source(X)]: true <-
     .print("Another Hermes agent tell me Hello - Sender!");
