@@ -1,0 +1,8 @@
+MAS hellsKitchen {
+	infrastructure: Centralised
+	agents:
+		maitre agentArchClass jason.Hermes;
+		gordon;
+	aslSourcePath:
+		 "examples/book/hellsKitchen/asl";
+}
