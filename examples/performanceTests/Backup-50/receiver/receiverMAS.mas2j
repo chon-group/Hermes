@@ -1,0 +1,10 @@
+MAS receiverMAS {
+
+	infrastructure: Centralised
+
+	agents:
+		receiver_agent agentArchClass jason.Hermes;
+
+	aslSourcePath:
+		"examples/performanceTests/50-agents/receiver/asl";
+}

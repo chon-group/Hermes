@@ -1,0 +1,11 @@
+MAS roseMAS {
+
+    infrastructure: Centralised
+
+    agents:
+        simple_agent agentArchClass jason.Hermes;
+
+    aslSourcePath:
+        "examples/scenarios/survival/rose/asl";
+
+}

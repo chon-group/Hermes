@@ -1,0 +1,11 @@
+MAS jackMAS {
+
+    infrastructure: Centralised
+
+    agents:
+        simple_agent agentArchClass jason.Hermes;
+
+    aslSourcePath:
+        "examples/scenarios/survival/jack/asl";
+
+}

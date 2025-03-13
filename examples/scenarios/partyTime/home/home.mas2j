@@ -1,0 +1,8 @@
+MAS home {
+	infrastructure: Centralised
+	agents:
+		mom agentArchClass jason.Hermes;
+		giacomo;
+	aslSourcePath:
+		"examples/scenarios/partyTime/home/asl";
+}

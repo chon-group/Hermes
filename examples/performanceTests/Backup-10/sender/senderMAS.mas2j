@@ -1,0 +1,29 @@
+MAS senderMAS {
+
+	infrastructure: Centralised
+
+	agents:
+	    agente_a;
+	    agente_a2;
+	    agente_a3;
+	    agente_a4;
+	    agente_a5;
+	    agente_a6;
+	    agente_a7;
+	    agente_b;
+	    agente_b2;
+	    agente_b3;
+	    agente_b4;
+	    agente_b5;
+	    agente_b6;
+	    agente_c;
+	    agente_c2;
+	    agente_c3;
+	    agente_c4;
+	    agente_c5;
+	    agente_c6;
+		sender_agent agentArchClass jason.Hermes;
+
+	aslSourcePath:
+		"examples/performanceTests/20-agents/sender/asl";
+}

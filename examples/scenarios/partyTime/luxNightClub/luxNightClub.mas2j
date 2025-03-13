@@ -1,0 +1,7 @@
+MAS luxNightClub {
+	infrastructure: Centralised
+	agents:
+		receptionist agentArchClass jason.Hermes;
+	aslSourcePath:
+		"examples/scenarios/partyTime/luxNightClub/asl";
+}

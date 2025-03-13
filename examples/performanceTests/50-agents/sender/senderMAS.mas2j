@@ -1,0 +1,59 @@
+MAS senderMAS {
+
+	infrastructure: Centralised
+
+	agents:
+	    agente_a;
+	    agente_a2;
+	    agente_a3;
+	    agente_a4;
+	    agente_a5;
+	    agente_a6;
+	    agente_a7;
+	    agente_a8;
+	    agente_a9;
+	    agente_a10;
+	    agente_a11;
+	    agente_a12;
+	    agente_a13;
+	    agente_a14;
+	    agente_a15;
+	    agente_a16;
+	    agente_a17;
+	    agente_b;
+	    agente_b2;
+	    agente_b3;
+	    agente_b4;
+	    agente_b5;
+	    agente_b6;
+	    agente_b7;
+	    agente_b8;
+	    agente_b9;
+	    agente_b10;
+	    agente_b11;
+	    agente_b12;
+	    agente_b13;
+	    agente_b14;
+	    agente_b15;
+	    agente_b16;
+	    agente_c;
+	    agente_c2;
+	    agente_c3;
+	    agente_c4;
+	    agente_c5;
+	    agente_c6;
+	    agente_c7;
+	    agente_c8;
+	    agente_c9;
+	    agente_c10;
+	    agente_c11;
+	    agente_c12;
+	    agente_c13;
+	    agente_c14;
+	    agente_c15;
+	    agente_c16;
+		sender_agent agentArchClass jason.Hermes;
+
+	aslSourcePath:
+		"examples/performanceTests/50-agents/sender/asl";
+}
