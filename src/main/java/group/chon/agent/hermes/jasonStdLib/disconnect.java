@@ -53,6 +53,8 @@ public class disconnect extends DefaultInternalAction {
         CommunicationMiddleware communicationMiddleware = hermes.getCommunicationMiddleware(configurationIdentifier);
         communicationMiddleware.disconnect();
 
+        hermes.getBioinspiredData().clean();
+
         return !communicationMiddleware.isConnected();
     }
 

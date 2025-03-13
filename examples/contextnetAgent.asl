@@ -1,2 +1,2 @@
-contextnetServer("uff.bot.chon.group",5500).
+contextnetServer("skynet.chon.group",5500).
 
