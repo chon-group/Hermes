@@ -125,4 +125,10 @@ public class Hermes extends AgArch implements Observer {
 
         super.stop();
     }
+
+    /* Aims to provide an only intra-MAS checkMail */
+    public void checkMailJasonAgArch(){
+        super.checkMail();
+    }
+
 }
