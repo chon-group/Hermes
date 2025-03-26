@@ -6,7 +6,7 @@
 
     <groupId>com.github.chon-group</groupId>
     <artifactId>Hermes</artifactId>
-    <version>25.3.12</version>
+    <version>25.3.26</version>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
